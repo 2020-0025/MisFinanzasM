@@ -13,6 +13,7 @@ namespace MisFinanzas.Domain.Entities
         public virtual ICollection<Category> Categories { get; set; } = new List<Category>();
         public virtual ICollection<ExpenseIncome> Transactions { get; set; } = new List<ExpenseIncome>();
         public virtual ICollection<FinancialGoal> FinancialGoals { get; set; } = new List<FinancialGoal>();
+        public ICollection<Budget> Budgets { get; set; } = new List<Budget>();
 
     }
 

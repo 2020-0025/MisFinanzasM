@@ -71,6 +71,7 @@ builder.Services.AddIdentityCore<MisFinanzas.Domain.Entities.ApplicationUser>(op
 builder.Services.AddScoped<ICategoryService, CategoryService> ();
 builder.Services.AddScoped<IExpenseIncomeService, ExpenseIncomeService>();
 builder.Services.AddScoped<IFinancialGoalService, FinancialGoalService>();
+builder.Services.AddScoped<IBudgetService, BudgetService>();
 
 
 var app = builder.Build();

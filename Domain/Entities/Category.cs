@@ -28,6 +28,7 @@ namespace MisFinanzas.Domain.Entities
         // Navigation Properties
         public virtual ApplicationUser? User { get; set; }
         public virtual ICollection<ExpenseIncome> ExpensesIncomes { get; set; } = new List<ExpenseIncome>();
+        public ICollection<Budget> Budgets { get; set; } = new List<Budget>();
 
         // Computed Property
         [NotMapped]

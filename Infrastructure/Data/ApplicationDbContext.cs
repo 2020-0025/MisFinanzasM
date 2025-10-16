@@ -16,6 +16,8 @@ namespace MisFinanzas.Infrastructure.Data
         public DbSet<ExpenseIncome> ExpensesIncomes { get; set; }
         public DbSet<FinancialGoal> FinancialGoals { get; set; }
 
+        public DbSet<Budget> Budgets { get; set; }
+
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
@@ -29,14 +31,14 @@ namespace MisFinanzas.Infrastructure.Data
                 .HasForeignKey(c => c.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            // Transaction → User (N:1)
+            // ExpenseIncome → User (N:1)
             builder.Entity<ExpenseIncome>()
                 .HasOne(t => t.User)
                 .WithMany(u => u.Transactions)
                 .HasForeignKey(t => t.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            // Transaction → Category (N:1)
+            // ExpenseIncome → Category (N:1)
             builder.Entity<ExpenseIncome>()
                 .HasOne(t => t.Category)
                 .WithMany(c => c.ExpensesIncomes)
