@@ -1,0 +1,249 @@
+﻿@* Componente para seleccionar iconos visualmente *@
+
+<div class="icon-selector-container">
+    <label class="form-label-glass">@Label</label>
+    
+    <!-- Display del ícono seleccionado (Dropdown style) -->
+    <div class="icon-selector-display @(showPicker ? "open" : "")" @onclick="ToggleIconPicker">
+        @if (!string.IsNullOrEmpty(SelectedIcon))
+        {
+            <span class="selected-icon-display">@SelectedIcon</span>
+            <span class="icon-selector-text has-selection">Icono seleccionado</span>
+        }
+        else
+        {
+            <i class="bi bi-emoji-smile" style="font-size: 1.5rem; color: rgba(255, 255, 255, 0.5);"></i>
+            <span class="icon-selector-text">Seleccionar icono</span>
+        }
+        <i class="bi bi-chevron-down icon-selector-arrow"></i>
+    </div>
+
+    <!-- Overlay para cerrar al hacer clic fuera -->
+    @if (showPicker)
+    {
+        <div class="icon-picker-overlay" @onclick="ToggleIconPicker"></div>
+    }
+
+    <!-- Panel de selección de íconos (Dropdown) -->
+    @if (showPicker)
+    {
+        <div class="icon-selector-panel" @onclick:stopPropagation="true">
+            <!-- Barra de búsqueda -->
+            <div class="icon-picker-header">
+                <input type="text"
+                       class="form-control-glass-search"
+                       placeholder="🔍 Buscar icono..."
+                       @bind="searchTerm"
+                       @bind:event="oninput"
+                       @onclick:stopPropagation="true" />
+            </div>
+
+            <!-- Grid de íconos -->
+            <div class="icon-grid" @onclick:stopPropagation="true">
+                @foreach (var icon in FilteredIcons)
+                {
+                    <button type="button"
+                            class="icon-option @(icon.Emoji == SelectedIcon ? "selected" : "")"
+                            @onclick="() => SelectIcon(icon.Emoji)"
+                            @onclick:stopPropagation="true"
+                            title="@icon.Name">
+                        @icon.Emoji
+                    </button>
+                }
+            </div>
+
+            <!-- Mensaje cuando no hay resultados -->
+            @if (!FilteredIcons.Any())
+            {
+                <div class="empty-state-icons">
+                    <i class="bi bi-search"></i>
+                    <p class="mb-0">No se encontraron iconos</p>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public string Label { get; set; } = "Icono";
+
+    [Parameter]
+    public string SelectedIcon { get; set; } = "";
+
+    [Parameter]
+    public EventCallback<string> SelectedIconChanged { get; set; }
+
+    private bool showPicker = false;
+    private string searchTerm = "";
+
+    private List<IconItem> FilteredIcons =>
+        string.IsNullOrWhiteSpace(searchTerm)
+            ? AvailableIcons
+            : AvailableIcons.Where(i => i.Name.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)).ToList();
+
+    private void ToggleIconPicker()
+    {
+        showPicker = !showPicker;
+    }
+
+    private async Task SelectIcon(string icon)
+    {
+        SelectedIcon = icon;
+        await SelectedIconChanged.InvokeAsync(icon);
+        showPicker = false;
+    }
+
+    // Lista de iconos disponibles organizados por categoría
+    private List<IconItem> AvailableIcons = new()
+    {
+        // Finanzas y Dinero
+        new("💰", "Dinero"),
+        new("💵", "Dólar"),
+        new("💳", "Tarjeta"),
+        new("🏦", "Banco"),
+        new("💎", "Diamante"),
+        new("🪙", "Moneda"),
+
+        // Comida y Bebida
+        new("🍔", "Hamburguesa"),
+        new("🍕", "Pizza"),
+        new("🍝", "Pasta"),
+        new("🍱", "Comida"),
+        new("🍜", "Sopa"),
+        new("☕", "Café"),
+        new("🍺", "Cerveza"),
+        new("🍷", "Vino"),
+        new("🥤", "Bebida"),
+        new("🍰", "Postre"),
+        new("🍎", "Fruta"),
+        new("🥗", "Ensalada"),
+
+        // Transporte
+        new("🚗", "Carro"),
+        new("🚕", "Taxi"),
+        new("🚌", "Bus"),
+        new("🚇", "Metro"),
+        new("✈️", "Avión"),
+        new("🚲", "Bicicleta"),
+        new("🛵", "Moto"),
+        new("⛽", "Gasolina"),
+        new("🚦", "Tráfico"),
+
+        // Hogar
+        new("🏠", "Casa"),
+        new("🏡", "Hogar"),
+        new("🛋️", "Muebles"),
+        new("🔑", "Llaves"),
+        new("💡", "Electricidad"),
+        new("🚿", "Agua"),
+        new("🧹", "Limpieza"),
+        new("🛏️", "Cama"),
+
+        // Entretenimiento
+        new("🎮", "Videojuegos"),
+        new("🎬", "Cine"),
+        new("🎵", "Música"),
+        new("📺", "TV"),
+        new("🎭", "Teatro"),
+        new("🎨", "Arte"),
+        new("🎪", "Eventos"),
+        new("🎯", "Hobby"),
+        new("⚽", "Deportes"),
+        new("🎾", "Tenis"),
+        new("🏋️", "Gimnasio"),
+
+        // Salud
+        new("🏥", "Hospital"),
+        new("💊", "Medicina"),
+        new("🩺", "Doctor"),
+        new("😷", "Salud"),
+        new("💪", "Fitness"),
+        new("🧘", "Yoga"),
+        new("💉", "Inyección"),
+
+        // Educación
+        new("📚", "Libros"),
+        new("✏️", "Escuela"),
+        new("🎓", "Universidad"),
+        new("📖", "Estudio"),
+        new("🖊️", "Escritura"),
+        new("📖", "Lectura"),
+
+        // Compras
+        new("🛒", "Supermercado"),
+        new("🛍️", "Compras"),
+        new("👕", "Ropa"),
+        new("👟", "Zapatos"),
+        new("💄", "Cosméticos"),
+        new("🎁", "Regalo"),
+
+        // Tecnología
+        new("💻", "Computadora"),
+        new("📱", "Teléfono"),
+        new("⌚", "Reloj"),
+        new("🖥️", "Monitor"),
+        new("⌨️", "Teclado"),
+        new("🖱️", "Mouse"),
+
+        // Servicios
+        new("📞", "Teléfono"),
+        new("📡", "Internet"),
+        new("📺", "Cable"),
+        new("🔧", "Reparaciones"),
+        new("✂️", "Peluquería"),
+        new("🧼", "Lavandería"),
+
+        // Mascotas
+        new("🐕", "Perro"),
+        new("🐈", "Gato"),
+        new("🐦", "Pájaro"),
+        new("🐠", "Pez"),
+
+        // Viajes
+        new("✈️", "Viaje"),
+        new("🗺️", "Mapa"),
+        new("🏖️", "Playa"),
+        new("⛰️", "Montaña"),
+        new("🏨", "Hotel"),
+        new("🎒", "Mochila"),
+
+        // Trabajo
+        new("💼", "Trabajo"),
+        new("👔", "Oficina"),
+        new("📊", "Negocios"),
+        new("📈", "Inversión"),
+        new("🏢", "Empresa"),
+
+        // Otros
+        new("🎉", "Fiesta"),
+        new("🎂", "Cumpleaños"),
+        new("🎁", "Regalo"),
+        new("💐", "Flores"),
+        new("🌟", "Especial"),
+        new("❤️", "Amor"),
+        new("📦", "Paquete"),
+        new("🔔", "Notificación"),
+        new("📁", "Documentos"),
+        new("⭐", "Favorito"),
+        new("🎯", "Meta"),
+        new("🏆", "Logro"),
+        new("💪", "Esfuerzo"),
+        new("💧", "Agua"),
+        new("🔥", "Fuego"),
+        new("⚙️", "Configuración"),
+        new("🔨", "Martillo"),
+    };
+
+    private class IconItem
+    {
+        public string Emoji { get; set; }
+        public string Name { get; set; }
+
+        public IconItem(string emoji, string name)
+        {
+            Emoji = emoji;
+            Name = name;
+        }
+    }
+}
