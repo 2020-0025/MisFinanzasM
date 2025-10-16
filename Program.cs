@@ -21,6 +21,9 @@ dominicanCulture.NumberFormat.CurrencyGroupSeparator = ",";
 CultureInfo.DefaultThreadCurrentCulture = dominicanCulture;
 CultureInfo.DefaultThreadCurrentUICulture = dominicanCulture;
 
+// Leer configuración de encriptación
+var useEncryption = builder.Configuration.GetValue<bool>("Security:UsePasswordEncryption");
+
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
@@ -43,6 +46,10 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+
+// Registrar el custom password hasher
+builder.Services.AddScoped<IPasswordHasher<ApplicationUser>>(
+    sp => new MisFinanzas.Infrastructure.Security.PlainTextPasswordHasher(useEncryption));
 
 //  CONFIGURAR IDENTITY CON ApplicationUser
 builder.Services.AddIdentityCore<MisFinanzas.Domain.Entities.ApplicationUser>(options =>
