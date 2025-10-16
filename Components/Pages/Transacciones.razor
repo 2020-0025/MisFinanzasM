@@ -3,7 +3,7 @@
 @using MisFinanzas.Domain.Enums
 @using MisFinanzas.Infrastructure.Interfaces
 @using System.Security.Claims
-@inject ITransactionService TransactionService
+@inject IExpenseIncomeService TransactionService
 @inject ICategoryService CategoryService
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject IJSRuntime JSRuntime
@@ -253,9 +253,9 @@
     private bool isSaving = false;
     private string userId = string.Empty;
 
-    private List<TransactionDto> transactions = new();
+    private List<ExpenseIncomeDto> transactions = new();
     private List<CategoryDto> categories = new();
-    private TransactionDto currentTransaction = new();
+    private ExpenseIncomeDto currentTransaction = new();
 
     // Filtros
     private int filterCategoryId = 0;
@@ -289,7 +289,7 @@
         }
     }
 
-    private IEnumerable<TransactionDto> FilteredAndSortedTransactions
+    private IEnumerable<ExpenseIncomeDto> FilteredAndSortedTransactions
     {
         get
         {
@@ -342,7 +342,7 @@
 
     private void OpenCreateModal()
     {
-        currentTransaction = new TransactionDto
+        currentTransaction = new ExpenseIncomeDto
         {
             Date = DateTime.Now,
             CategoryId = 0
@@ -351,9 +351,9 @@
         showModal = true;
     }
 
-    private void OpenEditModal(TransactionDto transaction)
+    private void OpenEditModal(ExpenseIncomeDto transaction)
     {
-        currentTransaction = new TransactionDto
+        currentTransaction = new ExpenseIncomeDto
         {
             TransactionId = transaction.TransactionId,
             CategoryId = transaction.CategoryId,

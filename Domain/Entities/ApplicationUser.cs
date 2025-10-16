@@ -11,7 +11,7 @@ namespace MisFinanzas.Domain.Entities
 
         // Navigation Properties
         public virtual ICollection<Category> Categories { get; set; } = new List<Category>();
-        public virtual ICollection<Transaction> Transactions { get; set; } = new List<Transaction>();
+        public virtual ICollection<ExpenseIncome> Transactions { get; set; } = new List<ExpenseIncome>();
         public virtual ICollection<FinancialGoal> FinancialGoals { get; set; } = new List<FinancialGoal>();
 
     }

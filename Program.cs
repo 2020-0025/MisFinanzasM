@@ -69,7 +69,7 @@ builder.Services.AddIdentityCore<MisFinanzas.Domain.Entities.ApplicationUser>(op
 
 // ⭐ REGISTRAR NUESTROS SERVICIOS (Dependency Injection)
 builder.Services.AddScoped<ICategoryService, CategoryService> ();
-builder.Services.AddScoped<ITransactionService, TransactionService>();
+builder.Services.AddScoped<IExpenseIncomeService, ExpenseIncomeService>();
 builder.Services.AddScoped<IFinancialGoalService, FinancialGoalService>();
 
 

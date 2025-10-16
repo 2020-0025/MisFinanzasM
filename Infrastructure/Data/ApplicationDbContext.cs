@@ -13,7 +13,7 @@ namespace MisFinanzas.Infrastructure.Data
 
         // DbSets para nuestras entidades
         public DbSet<Category> Categories { get; set; }
-        public DbSet<Transaction> Transactions { get; set; }
+        public DbSet<ExpenseIncome> ExpensesIncomes { get; set; }
         public DbSet<FinancialGoal> FinancialGoals { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
@@ -30,16 +30,16 @@ namespace MisFinanzas.Infrastructure.Data
                 .OnDelete(DeleteBehavior.Cascade);
 
             // Transaction → User (N:1)
-            builder.Entity<Transaction>()
+            builder.Entity<ExpenseIncome>()
                 .HasOne(t => t.User)
                 .WithMany(u => u.Transactions)
                 .HasForeignKey(t => t.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
 
             // Transaction → Category (N:1)
-            builder.Entity<Transaction>()
+            builder.Entity<ExpenseIncome>()
                 .HasOne(t => t.Category)
-                .WithMany(c => c.Transactions)
+                .WithMany(c => c.ExpensesIncomes)
                 .HasForeignKey(t => t.CategoryId)
                 .OnDelete(DeleteBehavior.Restrict); // No eliminar categoría si tiene transacciones
 
@@ -53,11 +53,11 @@ namespace MisFinanzas.Infrastructure.Data
             // ====== CONFIGURACIÓN DE ÍNDICES (Performance) ======
 
             // Índices para búsquedas frecuentes
-            builder.Entity<Transaction>()
+            builder.Entity<ExpenseIncome>()
                 .HasIndex(t => t.Date)
                 .HasDatabaseName("IX_Transaction_Date");
 
-            builder.Entity<Transaction>()
+            builder.Entity<ExpenseIncome>()
                 .HasIndex(t => t.UserId)
                 .HasDatabaseName("IX_Transaction_UserId");
 
@@ -79,7 +79,7 @@ namespace MisFinanzas.Infrastructure.Data
                 .Property(c => c.Icon)
                 .HasDefaultValue("📁");
 
-            builder.Entity<Transaction>()
+            builder.Entity<ExpenseIncome>()
                 .Property(t => t.Date)
                 .HasDefaultValueSql("datetime('now')");
 
