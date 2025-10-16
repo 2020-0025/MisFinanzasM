@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using MisFinanzas.Components;
-using MisFinanzas.Components.Account;
 using MisFinanzas.Domain.Entities;
 using MisFinanzas.Infrastructure.Data;
 using MisFinanzas.Infrastructure.Interfaces;
@@ -27,9 +26,9 @@ builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
 builder.Services.AddCascadingAuthenticationState();
-builder.Services.AddScoped<IdentityUserAccessor>();
-builder.Services.AddScoped<IdentityRedirectManager>();
-builder.Services.AddScoped<AuthenticationStateProvider, IdentityRevalidatingAuthenticationStateProvider>();
+
+
+
 
 builder.Services.AddAuthentication(options =>
     {
@@ -56,6 +55,7 @@ builder.Services.AddIdentityCore<MisFinanzas.Domain.Entities.ApplicationUser>(op
     options.Password.RequiredLength = 6;
 
 })
+    .AddRoles<IdentityRole>()  // Soporte para roles
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddSignInManager()
     .AddDefaultTokenProviders();
@@ -65,7 +65,6 @@ builder.Services.AddScoped<ICategoryService, CategoryService> ();
 builder.Services.AddScoped<ITransactionService, TransactionService>();
 builder.Services.AddScoped<IFinancialGoalService, FinancialGoalService>();
 
-builder.Services.AddSingleton<IEmailSender<MisFinanzas.Domain.Entities.ApplicationUser>, MisFinanzas.Components.Account.IdentityNoOpEmailSender>();
 
 var app = builder.Build();
 
@@ -88,8 +87,5 @@ app.UseAntiforgery();
 
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
-
-// Add additional endpoints required by the Identity /Account Razor components.
-app.MapAdditionalIdentityEndpoints();
 
 app.Run();
