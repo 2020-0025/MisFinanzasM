@@ -2,19 +2,20 @@ using Microsoft.AspNetCore.Identity;
 
 namespace MisFinanzas.Domain.Entities
 {
-    // Add profile data for application users by adding properties to the ApplicationUser class
     public class ApplicationUser : IdentityUser
     {
-        public string? FirstName { get; set; }
-        public string? LastName { get; set; }
-        public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
+        // Información personal
+        public string? FullName { get; set; }
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime? LastLogin { get; set; }
 
-        // Navigation Properties
-        public virtual ICollection<Category> Categories { get; set; } = new List<Category>();
-        public virtual ICollection<ExpenseIncome> Transactions { get; set; } = new List<ExpenseIncome>();
-        public virtual ICollection<FinancialGoal> FinancialGoals { get; set; } = new List<FinancialGoal>();
+        // Sistema de roles simplificado (además de Identity Roles)
+        public string UserRole { get; set; } = "User"; // "Admin" o "User"
+
+        // Navegación a entidades de negocio
+        public ICollection<Category> Categories { get; set; } = new List<Category>();
+        public ICollection<ExpenseIncome> ExpensesIncomes { get; set; } = new List<ExpenseIncome>();
+        public ICollection<FinancialGoal> FinancialGoals { get; set; } = new List<FinancialGoal>();
         public ICollection<Budget> Budgets { get; set; } = new List<Budget>();
-
     }
-
 }
