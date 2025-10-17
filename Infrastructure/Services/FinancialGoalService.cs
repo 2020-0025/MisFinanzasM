@@ -140,6 +140,7 @@ namespace MisFinanzas.Infrastructure.Services
                 return new FinancialGoalDto
                 {
                     GoalId = goal.GoalId,
+                    UserId = goal.UserId,
                     Title = goal.Title,
                     Description = goal.Description,
                     TargetAmount = goal.TargetAmount,

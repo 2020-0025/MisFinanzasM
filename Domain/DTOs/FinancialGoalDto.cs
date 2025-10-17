@@ -7,6 +7,7 @@ namespace MisFinanzas.Domain.DTOs
     {
 
         public int GoalId { get; set; }
+        public string UserId { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "El título es requerido")]
         [StringLength(100, ErrorMessage = "El título no puede exceder 100 caracteres")]

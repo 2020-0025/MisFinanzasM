@@ -5,8 +5,9 @@ namespace MisFinanzas.Domain.DTOs
 {
     public class CategoryDto
     {
-
         public int CategoryId { get; set; }
+
+        public string UserId { get; set; } = string.Empty;  // ⭐ AGREGAR ESTA LÍNEA
 
         [Required(ErrorMessage = "El título es requerido")]
         [StringLength(50, ErrorMessage = "El título no puede exceder 50 caracteres")]
@@ -20,5 +21,7 @@ namespace MisFinanzas.Domain.DTOs
         public TransactionType Type { get; set; } = TransactionType.Expense;
 
         public string TitleWithIcon => $"{Icon} {Title}";
+
+        public string TypeDisplay => Type == TransactionType.Income ? "Ingreso" : "Gasto";
     }
 }
