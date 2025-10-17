@@ -1,9 +1,19 @@
-﻿@using MisFinanzas.Components.Account.Shared
+﻿@using MisFinanzas.Components.Auth
 <Router AppAssembly="typeof(Program).Assembly">
     <Found Context="routeData">
         <AuthorizeRouteView RouteData="routeData" DefaultLayout="typeof(Layout.MainLayout)">
             <NotAuthorized>
-                <RedirectToLogin />
+                @if (context.User.Identity?.IsAuthenticated != true)
+                {
+                    <RedirectToLogin/>
+                }
+                else
+                {
+                    <div class="alert alert-danger" role="alert">
+                        <h4>Acceso Denegado</h4>
+                        <p>No tienes permisos para acceder a esta página.</p>
+                    </div>
+                }
             </NotAuthorized>
         </AuthorizeRouteView>
         <FocusOnNavigate RouteData="routeData" Selector="h1" />

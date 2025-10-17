@@ -1,10 +1,11 @@
 ﻿using MisFinanzas.Domain.Enums;
+using System.ComponentModel.DataAnnotations;
 
 namespace MisFinanzas.Domain.Entities
 {
     public class Budget
     {
-        //[Key]
+        [Key]
         public int Id { get; set; }
 
         // Relación con usuario

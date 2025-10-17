@@ -11,7 +11,7 @@ using MisFinanzas.Infrastructure.Data;
 namespace MisFinanzas.Infrastructure.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20251009185930_InitialCreate")]
+    [Migration("20251017030813_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -43,7 +43,23 @@ namespace MisFinanzas.Infrastructure.Data.Migrations
                         .IsUnique()
                         .HasDatabaseName("RoleNameIndex");
 
-                    b.ToTable("AspNetRoles", (string)null);
+                    b.ToTable("Roles", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "550e8400-e29b-41d4-a716-446655440000",
+                            ConcurrencyStamp = "550e8400-e29b-41d4-a716-446655440000",
+                            Name = "Admin",
+                            NormalizedName = "ADMIN"
+                        },
+                        new
+                        {
+                            Id = "550e8400-e29b-41d4-a716-446655440001",
+                            ConcurrencyStamp = "550e8400-e29b-41d4-a716-446655440001",
+                            Name = "User",
+                            NormalizedName = "USER"
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -66,7 +82,7 @@ namespace MisFinanzas.Infrastructure.Data.Migrations
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("AspNetRoleClaims", (string)null);
+                    b.ToTable("RoleClaims", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
@@ -89,7 +105,7 @@ namespace MisFinanzas.Infrastructure.Data.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("AspNetUserClaims", (string)null);
+                    b.ToTable("UserClaims", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
@@ -111,7 +127,7 @@ namespace MisFinanzas.Infrastructure.Data.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("AspNetUserLogins", (string)null);
+                    b.ToTable("UserLogins", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
@@ -126,7 +142,14 @@ namespace MisFinanzas.Infrastructure.Data.Migrations
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("AspNetUserRoles", (string)null);
+                    b.ToTable("UserRoles", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            UserId = "admin-550e8400-e29b-41d4-a716-446655440000",
+                            RoleId = "550e8400-e29b-41d4-a716-446655440000"
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
@@ -145,7 +168,7 @@ namespace MisFinanzas.Infrastructure.Data.Migrations
 
                     b.HasKey("UserId", "LoginProvider", "Name");
 
-                    b.ToTable("AspNetUserTokens", (string)null);
+                    b.ToTable("UserTokens", (string)null);
                 });
 
             modelBuilder.Entity("MisFinanzas.Domain.Entities.ApplicationUser", b =>
@@ -153,14 +176,11 @@ namespace MisFinanzas.Infrastructure.Data.Migrations
                     b.Property<string>("Id")
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("AccessFailedCount")
-                        .HasColumnType("INTEGER");
-
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
                         .HasColumnType("TEXT");
 
-                    b.Property<DateTime>("CreatedDate")
+                    b.Property<DateTime>("CreatedAt")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Email")
@@ -170,16 +190,11 @@ namespace MisFinanzas.Infrastructure.Data.Migrations
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("INTEGER");
 
-                    b.Property<string>("FirstName")
+                    b.Property<string>("FullName")
+                        .HasMaxLength(200)
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("LastName")
-                        .HasColumnType("TEXT");
-
-                    b.Property<bool>("LockoutEnabled")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<DateTimeOffset?>("LockoutEnd")
+                    b.Property<DateTime?>("LastLogin")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("NormalizedEmail")
@@ -193,21 +208,19 @@ namespace MisFinanzas.Infrastructure.Data.Migrations
                     b.Property<string>("PasswordHash")
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("PhoneNumber")
-                        .HasColumnType("TEXT");
-
-                    b.Property<bool>("PhoneNumberConfirmed")
-                        .HasColumnType("INTEGER");
-
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("TEXT");
-
-                    b.Property<bool>("TwoFactorEnabled")
-                        .HasColumnType("INTEGER");
 
                     b.Property<string>("UserName")
                         .HasMaxLength(256)
                         .HasColumnType("TEXT");
+
+                    b.Property<string>("UserRole")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(20)
+                        .HasColumnType("TEXT")
+                        .HasDefaultValue("User");
 
                     b.HasKey("Id");
 
@@ -218,7 +231,90 @@ namespace MisFinanzas.Infrastructure.Data.Migrations
                         .IsUnique()
                         .HasDatabaseName("UserNameIndex");
 
-                    b.ToTable("AspNetUsers", (string)null);
+                    b.HasIndex("UserRole");
+
+                    b.ToTable("Users", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "admin-550e8400-e29b-41d4-a716-446655440000",
+                            ConcurrencyStamp = "0771f3ac-4f3d-4607-8717-49206438202f",
+                            CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Email = "admin@misfinanzas.com",
+                            EmailConfirmed = true,
+                            FullName = "Administrador del Sistema",
+                            NormalizedEmail = "ADMIN@MISFINANZAS.COM",
+                            NormalizedUserName = "ADMIN",
+                            PasswordHash = "Admin123",
+                            SecurityStamp = "a297d9d5-1336-4adf-a6da-dc9629459c5d",
+                            UserName = "admin",
+                            UserRole = "Admin"
+                        });
+                });
+
+            modelBuilder.Entity("MisFinanzas.Domain.Entities.Budget", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<decimal>("AssignedAmount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int?>("CategoryId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasDefaultValue(true);
+
+                    b.Property<int>("Month")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("TEXT");
+
+                    b.Property<decimal>("SpentAmount")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("decimal(18,2)")
+                        .HasDefaultValue(0m);
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("Year")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CategoryId");
+
+                    b.HasIndex("UserId");
+
+                    b.HasIndex("UserId", "IsActive");
+
+                    b.HasIndex("UserId", "Month", "Year");
+
+                    b.HasIndex("UserId", "CategoryId", "Month", "Year");
+
+                    b.ToTable("Budgets", t =>
+                        {
+                            t.HasCheckConstraint("CK_Budget_AssignedAmount", "AssignedAmount > 0");
+
+                            t.HasCheckConstraint("CK_Budget_Month", "Month BETWEEN 1 AND 12");
+
+                            t.HasCheckConstraint("CK_Budget_SpentAmount", "SpentAmount >= 0");
+
+                            t.HasCheckConstraint("CK_Budget_Year", "Year >= 2020");
+                        });
                 });
 
             modelBuilder.Entity("MisFinanzas.Domain.Entities.Category", b =>
@@ -236,7 +332,7 @@ namespace MisFinanzas.Infrastructure.Data.Migrations
 
                     b.Property<string>("Title")
                         .IsRequired()
-                        .HasMaxLength(50)
+                        .HasMaxLength(100)
                         .HasColumnType("TEXT");
 
                     b.Property<int>("Type")
@@ -248,10 +344,60 @@ namespace MisFinanzas.Infrastructure.Data.Migrations
 
                     b.HasKey("CategoryId");
 
-                    b.HasIndex("UserId")
-                        .HasDatabaseName("IX_Category_UserId");
+                    b.HasIndex("UserId");
+
+                    b.HasIndex("UserId", "Title");
 
                     b.ToTable("Categories");
+                });
+
+            modelBuilder.Entity("MisFinanzas.Domain.Entities.ExpenseIncome", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("CategoryId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("Date")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT")
+                        .HasDefaultValueSql("datetime('now')");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(500)
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CategoryId");
+
+                    b.HasIndex("Date");
+
+                    b.HasIndex("UserId");
+
+                    b.HasIndex("UserId", "Date");
+
+                    b.HasIndex("UserId", "Type");
+
+                    b.ToTable("ExpensesIncomes", t =>
+                        {
+                            t.HasCheckConstraint("CK_ExpenseIncome_Amount", "Amount > 0");
+                        });
                 });
 
             modelBuilder.Entity("MisFinanzas.Domain.Entities.FinancialGoal", b =>
@@ -266,7 +412,7 @@ namespace MisFinanzas.Infrastructure.Data.Migrations
                         .HasDefaultValue(0m);
 
                     b.Property<string>("Description")
-                        .HasMaxLength(500)
+                        .HasMaxLength(1000)
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Icon")
@@ -290,7 +436,7 @@ namespace MisFinanzas.Infrastructure.Data.Migrations
 
                     b.Property<string>("Title")
                         .IsRequired()
-                        .HasMaxLength(100)
+                        .HasMaxLength(200)
                         .HasColumnType("TEXT");
 
                     b.Property<string>("UserId")
@@ -299,51 +445,20 @@ namespace MisFinanzas.Infrastructure.Data.Migrations
 
                     b.HasKey("GoalId");
 
-                    b.HasIndex("TargetDate")
-                        .HasDatabaseName("IX_FinancialGoal_TargetDate");
+                    b.HasIndex("TargetDate");
 
-                    b.HasIndex("UserId")
-                        .HasDatabaseName("IX_FinancialGoal_UserId");
+                    b.HasIndex("UserId");
 
-                    b.ToTable("FinancialGoals");
-                });
+                    b.HasIndex("UserId", "Status");
 
-            modelBuilder.Entity("MisFinanzas.Domain.Entities.Transaction", b =>
-                {
-                    b.Property<int>("TransactionId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                    b.ToTable("FinancialGoals", t =>
+                        {
+                            t.HasCheckConstraint("CK_Goal_CurrentAmount", "CurrentAmount >= 0");
 
-                    b.Property<decimal>("Amount")
-                        .HasColumnType("decimal(18,2)");
+                            t.HasCheckConstraint("CK_Goal_Dates", "TargetDate >= StartDate");
 
-                    b.Property<int>("CategoryId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<DateTime>("Date")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("TEXT")
-                        .HasDefaultValueSql("datetime('now')");
-
-                    b.Property<string>("Note")
-                        .HasMaxLength(500)
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("TransactionId");
-
-                    b.HasIndex("CategoryId");
-
-                    b.HasIndex("Date")
-                        .HasDatabaseName("IX_Transaction_Date");
-
-                    b.HasIndex("UserId")
-                        .HasDatabaseName("IX_Transaction_UserId");
-
-                    b.ToTable("Transactions");
+                            t.HasCheckConstraint("CK_Goal_TargetAmount", "TargetAmount > 0");
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -397,6 +512,24 @@ namespace MisFinanzas.Infrastructure.Data.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("MisFinanzas.Domain.Entities.Budget", b =>
+                {
+                    b.HasOne("MisFinanzas.Domain.Entities.Category", "Category")
+                        .WithMany("Budgets")
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("MisFinanzas.Domain.Entities.ApplicationUser", "User")
+                        .WithMany("Budgets")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Category");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("MisFinanzas.Domain.Entities.Category", b =>
                 {
                     b.HasOne("MisFinanzas.Domain.Entities.ApplicationUser", "User")
@@ -404,6 +537,25 @@ namespace MisFinanzas.Infrastructure.Data.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("MisFinanzas.Domain.Entities.ExpenseIncome", b =>
+                {
+                    b.HasOne("MisFinanzas.Domain.Entities.Category", "Category")
+                        .WithMany("ExpensesIncomes")
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("MisFinanzas.Domain.Entities.ApplicationUser", "User")
+                        .WithMany("ExpensesIncomes")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Category");
 
                     b.Navigation("User");
                 });
@@ -419,37 +571,22 @@ namespace MisFinanzas.Infrastructure.Data.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("MisFinanzas.Domain.Entities.Transaction", b =>
-                {
-                    b.HasOne("MisFinanzas.Domain.Entities.Category", "Category")
-                        .WithMany("Transactions")
-                        .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("MisFinanzas.Domain.Entities.ApplicationUser", "User")
-                        .WithMany("Transactions")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Category");
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("MisFinanzas.Domain.Entities.ApplicationUser", b =>
                 {
+                    b.Navigation("Budgets");
+
                     b.Navigation("Categories");
 
-                    b.Navigation("FinancialGoals");
+                    b.Navigation("ExpensesIncomes");
 
-                    b.Navigation("Transactions");
+                    b.Navigation("FinancialGoals");
                 });
 
             modelBuilder.Entity("MisFinanzas.Domain.Entities.Category", b =>
                 {
-                    b.Navigation("Transactions");
+                    b.Navigation("Budgets");
+
+                    b.Navigation("ExpensesIncomes");
                 });
 #pragma warning restore 612, 618
         }
