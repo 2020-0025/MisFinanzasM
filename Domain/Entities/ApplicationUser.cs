@@ -12,6 +12,9 @@ namespace MisFinanzas.Domain.Entities
         // Sistema de roles simplificado (además de Identity Roles)
         public string UserRole { get; set; } = "User"; // "Admin" o "User"
 
+        // Estado de la cuenta
+        public bool IsActive { get; set; } = true;
+
         // Navegación a entidades de negocio
         public ICollection<Category> Categories { get; set; } = new List<Category>();
         public ICollection<ExpenseIncome> ExpensesIncomes { get; set; } = new List<ExpenseIncome>();

@@ -1,0 +1,23 @@
+﻿@page "/logout"
+@using Microsoft.AspNetCore.Identity
+@using MisFinanzas.Domain.Entities
+@inject SignInManager<ApplicationUser> SignInManager
+@inject NavigationManager NavigationManager
+
+<PageTitle>Cerrando Sesión...</PageTitle>
+
+<div class="logout-container">
+    <div class="spinner-border text-light" role="status">
+        <span class="visually-hidden">Cerrando sesión...</span>
+    </div>
+    <p class="mt-3 text-white">Cerrando sesión...</p>
+</div>
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        await SignInManager.SignOutAsync();
+        await Task.Delay(1000);
+        NavigationManager.NavigateTo("/login", forceLoad: true);
+    }
+}

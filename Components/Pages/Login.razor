@@ -1,0 +1,158 @@
+﻿@page "/login"
+@using Microsoft.AspNetCore.Identity
+@using MisFinanzas.Domain.Entities
+@using System.ComponentModel.DataAnnotations
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
+@inject NavigationManager NavigationManager
+
+<PageTitle>Iniciar Sesión - MisFinanzas</PageTitle>
+
+<div class="auth-container">
+    <div class="auth-card">
+        <div class="auth-header">
+            <h2>💰 Iniciar Sesión</h2>
+            <p>Accede a tu cuenta de MisFinanzas</p>
+        </div>
+
+        @if (!string.IsNullOrEmpty(errorMessage))
+        {
+            <div class="alert alert-danger" role="alert">
+                @errorMessage
+            </div>
+        }
+
+        <EditForm Model="loginModel" OnValidSubmit="HandleLogin" FormName="loginForm">
+            <DataAnnotationsValidator />
+
+            <div class="mb-3">
+                <label for="username" class="form-label">Usuario o Email</label>
+                <InputText @bind-Value="loginModel.Username"
+                           class="form-control"
+                           id="username"
+                           placeholder="Ingresa tu usuario o email" />
+                <ValidationMessage For="() => loginModel.Username" class="text-danger" />
+            </div>
+
+            <div class="mb-3">
+                <label for="password" class="form-label">Contraseña</label>
+                <InputText @bind-Value="loginModel.Password"
+                           type="password"
+                           class="form-control"
+                           id="password"
+                           placeholder="Ingresa tu contraseña" />
+                <ValidationMessage For="() => loginModel.Password" class="text-danger" />
+            </div>
+
+            <div class="form-check mb-3">
+                <InputCheckbox @bind-Value="loginModel.RememberMe"
+                               class="form-check-input"
+                               id="rememberMe" />
+                <label class="form-check-label" for="rememberMe">
+                    Recordarme
+                </label>
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100 mb-3" disabled="@isLoading">
+                @if (isLoading)
+                {
+                    <span class="spinner-border spinner-border-sm me-2"></span>
+                    <span>Iniciando sesión...</span>
+                }
+                else
+                {
+                    <span>Iniciar Sesión</span>
+                }
+            </button>
+        </EditForm>
+
+        <div class="auth-footer">
+            <p class="mb-2">
+                <a href="/forgot-password">¿Olvidaste tu contraseña?</a>
+            </p>
+            <p>
+                ¿No tienes cuenta? <a href="/register">Regístrate aquí</a>
+            </p>
+        </div>
+    </div>
+</div>
+
+@code {
+    private LoginModel loginModel = new();
+    private string? errorMessage;
+    private bool isLoading = false;
+
+    private async Task HandleLogin()
+    {
+        try
+        {
+            isLoading = true;
+            errorMessage = null;
+
+            // Intentar encontrar el usuario por username o email
+            var user = await UserManager.FindByNameAsync(loginModel.Username)
+                      ?? await UserManager.FindByEmailAsync(loginModel.Username);
+
+            if (user == null)
+            {
+                errorMessage = "Usuario o contraseña incorrectos";
+                return;
+            }
+
+            // Verificar que el usuario esté activo
+            if (!user.IsActive)
+            {
+                errorMessage = "Tu cuenta ha sido desactivada. Contacta al administrador.";
+                return;
+            }
+
+            // Intentar login
+            var result = await SignInManager.PasswordSignInAsync(
+                user.UserName!,
+                loginModel.Password,
+                loginModel.RememberMe,
+                lockoutOnFailure: false
+            );
+
+            if (result.Succeeded)
+            {
+                // Actualizar LastLogin
+                user.LastLogin = DateTime.UtcNow;
+                await UserManager.UpdateAsync(user);
+
+                // Redirigir según el rol
+                if (user.UserRole == "Admin")
+                {
+                    NavigationManager.NavigateTo("/admin", forceLoad: true);
+                }
+                else
+                {
+                    NavigationManager.NavigateTo("/dashboard", forceLoad: true);
+                }
+            }
+            else
+            {
+                errorMessage = "Usuario o contraseña incorrectos";
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Error al iniciar sesión: {ex.Message}";
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private class LoginModel
+    {
+        [Required(ErrorMessage = "El usuario o email es requerido")]
+        public string Username { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "La contraseña es requerida")]
+        public string Password { get; set; } = string.Empty;
+
+        public bool RememberMe { get; set; } = false;
+    }
+}

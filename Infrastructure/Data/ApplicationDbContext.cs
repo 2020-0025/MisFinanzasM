@@ -42,8 +42,15 @@ namespace MisFinanzas.Infrastructure.Data
                     .HasMaxLength(20)
                     .HasDefaultValue("User");
 
+                entity.Property(u => u.IsActive)         
+                    .IsRequired()
+                    .HasDefaultValue(true);
+
                 // Índice para búsquedas por rol
                 entity.HasIndex(u => u.UserRole);
+
+                // Índice para búsquedas por estado
+                entity.HasIndex(u => u.IsActive);
 
                 // Ignorar campos de Identity que no usamos
                 entity.Ignore(u => u.PhoneNumber);
@@ -254,6 +261,7 @@ namespace MisFinanzas.Infrastructure.Data
                     SecurityStamp = Guid.NewGuid().ToString(),
                     FullName = "Administrador del Sistema",
                     UserRole = "Admin",
+                    IsActive = true,
                     CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                 }
             );

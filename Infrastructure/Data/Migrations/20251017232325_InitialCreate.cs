@@ -36,6 +36,7 @@ namespace MisFinanzas.Infrastructure.Data.Migrations
                     CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false),
                     LastLogin = table.Column<DateTime>(type: "TEXT", nullable: true),
                     UserRole = table.Column<string>(type: "TEXT", maxLength: 20, nullable: false, defaultValue: "User"),
+                    IsActive = table.Column<bool>(type: "INTEGER", nullable: false, defaultValue: true),
                     UserName = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
@@ -288,8 +289,8 @@ namespace MisFinanzas.Infrastructure.Data.Migrations
 
             migrationBuilder.InsertData(
                 table: "Users",
-                columns: new[] { "Id", "ConcurrencyStamp", "CreatedAt", "Email", "EmailConfirmed", "FullName", "LastLogin", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "SecurityStamp", "UserName", "UserRole" },
-                values: new object[] { "admin-550e8400-e29b-41d4-a716-446655440000", "0771f3ac-4f3d-4607-8717-49206438202f", new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), "admin@misfinanzas.com", true, "Administrador del Sistema", null, "ADMIN@MISFINANZAS.COM", "ADMIN", "Admin123", "a297d9d5-1336-4adf-a6da-dc9629459c5d", "admin", "Admin" });
+                columns: new[] { "Id", "ConcurrencyStamp", "CreatedAt", "Email", "EmailConfirmed", "FullName", "IsActive", "LastLogin", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "SecurityStamp", "UserName", "UserRole" },
+                values: new object[] { "admin-550e8400-e29b-41d4-a716-446655440000", "de546701-dba9-4807-839e-8638103995fa", new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), "admin@misfinanzas.com", true, "Administrador del Sistema", true, null, "ADMIN@MISFINANZAS.COM", "ADMIN", "Admin123", "5aa1287d-3ed9-45ab-89f1-5803c69d477b", "admin", "Admin" });
 
             migrationBuilder.InsertData(
                 table: "UserRoles",
@@ -401,6 +402,11 @@ namespace MisFinanzas.Infrastructure.Data.Migrations
                 name: "EmailIndex",
                 table: "Users",
                 column: "NormalizedEmail");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Users_IsActive",
+                table: "Users",
+                column: "IsActive");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Users_UserRole",

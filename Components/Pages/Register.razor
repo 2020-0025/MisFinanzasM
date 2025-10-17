@@ -1,0 +1,208 @@
+﻿@page "/register"
+@using Microsoft.AspNetCore.Identity
+@using MisFinanzas.Domain.Entities
+@using System.ComponentModel.DataAnnotations
+@inject UserManager<ApplicationUser> UserManager
+@inject SignInManager<ApplicationUser> SignInManager
+@inject NavigationManager NavigationManager
+
+<PageTitle>Registrarse - MisFinanzas</PageTitle>
+
+<div class="auth-container">
+    <div class="auth-card">
+        <div class="auth-header">
+            <h2>💰 Crear Cuenta</h2>
+            <p>Únete a MisFinanzas y gestiona tus finanzas</p>
+        </div>
+
+        @if (!string.IsNullOrEmpty(errorMessage))
+        {
+            <div class="alert alert-danger" role="alert">
+                @errorMessage
+            </div>
+        }
+
+        @if (!string.IsNullOrEmpty(successMessage))
+        {
+            <div class="alert alert-success" role="alert">
+                @successMessage
+            </div>
+        }
+
+        <EditForm Model="registerModel" OnValidSubmit="HandleRegister" FormName="registerForm">
+            <DataAnnotationsValidator />
+
+            <div class="mb-3">
+                <label for="fullName" class="form-label">Nombre Completo</label>
+                <InputText @bind-Value="registerModel.FullName"
+                           class="form-control"
+                           id="fullName"
+                           placeholder="Ej: Juan Pérez" />
+                <ValidationMessage For="() => registerModel.FullName" class="text-danger" />
+            </div>
+
+            <div class="mb-3">
+                <label for="username" class="form-label">Usuario</label>
+                <InputText @bind-Value="registerModel.Username"
+                           class="form-control"
+                           id="username"
+                           placeholder="Ej: juanperez" />
+                <ValidationMessage For="() => registerModel.Username" class="text-danger" />
+            </div>
+
+            <div class="mb-3">
+                <label for="email" class="form-label">Email</label>
+                <InputText @bind-Value="registerModel.Email"
+                           type="email"
+                           class="form-control"
+                           id="email"
+                           placeholder="tu@email.com" />
+                <ValidationMessage For="() => registerModel.Email" class="text-danger" />
+            </div>
+
+            <div class="mb-3">
+                <label for="password" class="form-label">Contraseña</label>
+                <InputText @bind-Value="registerModel.Password"
+                           type="password"
+                           class="form-control"
+                           id="password"
+                           placeholder="Mínimo 6 caracteres" />
+                <ValidationMessage For="() => registerModel.Password" class="text-danger" />
+                <small class="form-text text-muted">
+                    Debe contener mayúsculas, minúsculas y números
+                </small>
+            </div>
+
+            <div class="mb-3">
+                <label for="confirmPassword" class="form-label">Confirmar Contraseña</label>
+                <InputText @bind-Value="registerModel.ConfirmPassword"
+                           type="password"
+                           class="form-control"
+                           id="confirmPassword"
+                           placeholder="Repite tu contraseña" />
+                <ValidationMessage For="() => registerModel.ConfirmPassword" class="text-danger" />
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100 mb-3" disabled="@isLoading">
+                @if (isLoading)
+                {
+                    <span class="spinner-border spinner-border-sm me-2"></span>
+                    <span>Creando cuenta...</span>
+                }
+                else
+                {
+                    <span>Crear Cuenta</span>
+                }
+            </button>
+        </EditForm>
+
+        <div class="auth-footer">
+            <p>
+                ¿Ya tienes cuenta? <a href="/login">Inicia sesión aquí</a>
+            </p>
+        </div>
+    </div>
+</div>
+
+@code {
+    private RegisterModel registerModel = new();
+    private string? errorMessage;
+    private string? successMessage;
+    private bool isLoading = false;
+
+    private async Task HandleRegister()
+    {
+        try
+        {
+            isLoading = true;
+            errorMessage = null;
+            successMessage = null;
+
+            // Validar contraseñas coincidan
+            if (registerModel.Password != registerModel.ConfirmPassword)
+            {
+                errorMessage = "Las contraseñas no coinciden";
+                return;
+            }
+
+            // Verificar si el username ya existe
+            var existingUser = await UserManager.FindByNameAsync(registerModel.Username);
+            if (existingUser != null)
+            {
+                errorMessage = "El nombre de usuario ya está en uso";
+                return;
+            }
+
+            // Verificar si el email ya existe
+            var existingEmail = await UserManager.FindByEmailAsync(registerModel.Email);
+            if (existingEmail != null)
+            {
+                errorMessage = "El email ya está registrado";
+                return;
+            }
+
+            // Crear nuevo usuario
+            var user = new ApplicationUser
+            {
+                UserName = registerModel.Username,
+                Email = registerModel.Email,
+                FullName = registerModel.FullName,
+                EmailConfirmed = true,
+                UserRole = "User",
+                CreatedAt = DateTime.UtcNow,
+                IsActive = true
+            };
+
+            var result = await UserManager.CreateAsync(user, registerModel.Password);
+
+            if (result.Succeeded)
+            {
+                // Asignar rol User
+                await UserManager.AddToRoleAsync(user, "User");
+
+                // Login automático
+                await SignInManager.SignInAsync(user, isPersistent: false);
+
+                successMessage = "¡Cuenta creada exitosamente! Redirigiendo...";
+
+                await Task.Delay(2000);
+
+                NavigationManager.NavigateTo("/dashboard", forceLoad: true);
+            }
+            else
+            {
+                errorMessage = string.Join(", ", result.Errors.Select(e => e.Description));
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Error al crear la cuenta: {ex.Message}";
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private class RegisterModel
+    {
+        [Required(ErrorMessage = "El nombre completo es requerido")]
+        [StringLength(200, ErrorMessage = "El nombre no puede exceder 200 caracteres")]
+        public string FullName { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "El usuario es requerido")]
+        [StringLength(50, MinimumLength = 3, ErrorMessage = "El usuario debe tener entre 3 y 50 caracteres")]
+        public string Username { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "El email es requerido")]
+        [EmailAddress(ErrorMessage = "Email inválido")]
+        public string Email { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "La contraseña es requerida")]
+        [StringLength(100, MinimumLength = 6, ErrorMessage = "La contraseña debe tener al menos 6 caracteres")]
+        public string Password { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Debes confirmar la contraseña")]
+        public string ConfirmPassword { get; set; } = string.Empty;
+    }
+}

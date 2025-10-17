@@ -191,6 +191,11 @@ namespace MisFinanzas.Infrastructure.Data.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("TEXT");
 
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasDefaultValue(true);
+
                     b.Property<DateTime?>("LastLogin")
                         .HasColumnType("TEXT");
 
@@ -221,6 +226,8 @@ namespace MisFinanzas.Infrastructure.Data.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("IsActive");
+
                     b.HasIndex("NormalizedEmail")
                         .HasDatabaseName("EmailIndex");
 
@@ -236,15 +243,16 @@ namespace MisFinanzas.Infrastructure.Data.Migrations
                         new
                         {
                             Id = "admin-550e8400-e29b-41d4-a716-446655440000",
-                            ConcurrencyStamp = "0771f3ac-4f3d-4607-8717-49206438202f",
+                            ConcurrencyStamp = "de546701-dba9-4807-839e-8638103995fa",
                             CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Email = "admin@misfinanzas.com",
                             EmailConfirmed = true,
                             FullName = "Administrador del Sistema",
+                            IsActive = true,
                             NormalizedEmail = "ADMIN@MISFINANZAS.COM",
                             NormalizedUserName = "ADMIN",
                             PasswordHash = "Admin123",
-                            SecurityStamp = "a297d9d5-1336-4adf-a6da-dc9629459c5d",
+                            SecurityStamp = "5aa1287d-3ed9-45ab-89f1-5803c69d477b",
                             UserName = "admin",
                             UserRole = "Admin"
                         });
