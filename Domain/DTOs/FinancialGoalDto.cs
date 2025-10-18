@@ -1,44 +1,36 @@
 ﻿using MisFinanzas.Domain.Enums;
-using System.ComponentModel.DataAnnotations;
 
 namespace MisFinanzas.Domain.DTOs
 {
     public class FinancialGoalDto
     {
-
         public int GoalId { get; set; }
         public string UserId { get; set; } = string.Empty;
-
-        [Required(ErrorMessage = "El título es requerido")]
-        [StringLength(100, ErrorMessage = "El título no puede exceder 100 caracteres")]
         public string Title { get; set; } = string.Empty;
-
-        [StringLength(500, ErrorMessage = "La descripción no puede exceder 500 caracteres")]
         public string? Description { get; set; }
-
-        [Required(ErrorMessage = "El monto objetivo es requerido")]
-        [Range(0.01, double.MaxValue, ErrorMessage = "El monto debe ser mayor a 0")]
+        public string? Icon { get; set; } = "🎯";
         public decimal TargetAmount { get; set; }
-
-        public decimal CurrentAmount { get; set; } = 0;
-
-        [Required(ErrorMessage = "La fecha de inicio es requerida")]
-        public DateTime StartDate { get; set; } = DateTime.Now;
-
-        [Required(ErrorMessage = "La fecha objetivo es requerida")]
+        public decimal CurrentAmount { get; set; }
+        public DateTime StartDate { get; set; }
         public DateTime TargetDate { get; set; }
+        public GoalStatus Status { get; set; }
+        public DateTime? CompletedAt { get; set; }  // ⭐ Agregar si no existe
 
-        public GoalStatus Status { get; set; } = GoalStatus.InProgress;
+        // Propiedades calculadas
+        public decimal RemainingAmount => TargetAmount - CurrentAmount;
+        public decimal ProgressPercentage => TargetAmount > 0
+            ? (CurrentAmount / TargetAmount) * 100
+            : 0;
+        public int DaysRemaining => (TargetDate - DateTime.Now).Days;
+        public bool IsOverdue => DateTime.Now > TargetDate && Status == GoalStatus.InProgress;
 
-        [Required(ErrorMessage = "El icono es requerido")]
-        [StringLength(10)]
-        public string Icon { get; set; } = "🎯";
-
-        // Computed properties
-        public decimal ProgressPercentage { get; set; }
-        public decimal RemainingAmount { get; set; }
-        public int DaysRemaining { get; set; }
-        public bool IsCompleted { get; set; }
-        public bool IsOverdue { get; set; }
+        // ⭐ Agregar esta propiedad
+        public string StatusDisplay => Status switch
+        {
+            GoalStatus.InProgress => "🟢 En Progreso",
+            GoalStatus.Completed => "✅ Completada",
+            GoalStatus.Cancelled => "❌ Cancelada",
+            _ => "?"
+        };
     }
 }

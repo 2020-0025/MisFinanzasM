@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using MisFinanzas.Domain.Entities;
+using MisFinanzas.Domain.Enums;
 
 namespace MisFinanzas.Infrastructure.Data
 {
@@ -130,10 +131,15 @@ namespace MisFinanzas.Infrastructure.Data
 
                 entity.Property(g => g.Title)
                     .IsRequired()
-                    .HasMaxLength(200);
+                    .HasMaxLength(100);
 
                 entity.Property(g => g.Description)
-                    .HasMaxLength(1000);
+                    .HasMaxLength(500);
+
+                entity.Property(g => g.Icon)
+                    .IsRequired()
+                    .HasMaxLength(10)
+                    .HasDefaultValue("🎯");
 
                 entity.Property(g => g.TargetAmount)
                     .HasColumnType("decimal(18,2)")
@@ -145,6 +151,16 @@ namespace MisFinanzas.Infrastructure.Data
 
                 entity.Property(g => g.StartDate)
                     .HasDefaultValueSql("datetime('now')");
+
+                entity.Property(g => g.TargetDate)
+                    .IsRequired();
+
+                entity.Property(g => g.Status)
+                    .IsRequired();
+                   
+
+                entity.Property(g => g.CompletedAt)
+                    .IsRequired(false);
 
                 // Relación con ApplicationUser
                 entity.HasOne(g => g.User)

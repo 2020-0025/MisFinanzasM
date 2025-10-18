@@ -243,7 +243,7 @@ namespace MisFinanzas.Infrastructure.Data.Migrations
                         new
                         {
                             Id = "admin-550e8400-e29b-41d4-a716-446655440000",
-                            ConcurrencyStamp = "de546701-dba9-4807-839e-8638103995fa",
+                            ConcurrencyStamp = "92ba6e7f-a076-4f46-add2-4694dd79f215",
                             CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Email = "admin@misfinanzas.com",
                             EmailConfirmed = true,
@@ -252,7 +252,7 @@ namespace MisFinanzas.Infrastructure.Data.Migrations
                             NormalizedEmail = "ADMIN@MISFINANZAS.COM",
                             NormalizedUserName = "ADMIN",
                             PasswordHash = "Admin123",
-                            SecurityStamp = "5aa1287d-3ed9-45ab-89f1-5803c69d477b",
+                            SecurityStamp = "5bbb9c2f-a22e-4d50-81ae-ea37195e059f",
                             UserName = "admin",
                             UserRole = "Admin"
                         });
@@ -411,19 +411,24 @@ namespace MisFinanzas.Infrastructure.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
+                    b.Property<DateTime?>("CompletedAt")
+                        .HasColumnType("TEXT");
+
                     b.Property<decimal>("CurrentAmount")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("decimal(18,2)")
                         .HasDefaultValue(0m);
 
                     b.Property<string>("Description")
-                        .HasMaxLength(1000)
+                        .HasMaxLength(500)
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Icon")
                         .IsRequired()
+                        .ValueGeneratedOnAdd()
                         .HasMaxLength(10)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("TEXT")
+                        .HasDefaultValue("🎯");
 
                     b.Property<DateTime>("StartDate")
                         .ValueGeneratedOnAdd()
@@ -441,7 +446,7 @@ namespace MisFinanzas.Infrastructure.Data.Migrations
 
                     b.Property<string>("Title")
                         .IsRequired()
-                        .HasMaxLength(200)
+                        .HasMaxLength(100)
                         .HasColumnType("TEXT");
 
                     b.Property<string>("UserId")

@@ -55,77 +55,101 @@
             </div>
         }
 
-        <!-- Categorías de Gastos -->
-        <div class="categories-section">
-            <h4 class="section-title">📉 Categorías de Gastos</h4>
-            <div class="row">
-                @if (expenseCategories.Any())
-                {
-                    @foreach (var category in expenseCategories)
+        @if (isLoading)
+        {
+            <div class="text-center py-5">
+                <div class="spinner-border text-light" role="status"></div>
+                <p class="text-white mt-3">Cargando categorías...</p>
+            </div>
+        }
+        else
+        {
+            <!-- Categorías de Gastos -->
+            <div class="categories-section">
+                <h4 class="section-title">📉 Categorías de Gastos</h4>
+                <div class="row">
+                    @if (expenseCategories.Any())
                     {
-                        <div class="col-md-3 col-sm-6 mb-3">
-                            <div class="category-card expense">
-                                <div class="category-icon">@category.Icon</div>
-                                <div class="category-info">
-                                    <h5>@category.Title</h5>
-                                    <span class="badge bg-danger">Gasto</span>
-                                </div>
-                                <div class="category-actions">
-                                    <button class="btn btn-sm btn-warning" @onclick="() => EditCategory(category)">
-                                        <i class="bi bi-pencil"></i>
-                                    </button>
-                                    <button class="btn btn-sm btn-danger" @onclick="() => ConfirmDelete(category.CategoryId, category.Title)">
-                                        <i class="bi bi-trash"></i>
-                                    </button>
+                        @foreach (var category in expenseCategories)
+                        {
+                            <div class="col-md-3 col-sm-6 mb-3">
+                                <div class="category-card expense">
+                                    <div class="category-icon">@category.Icon</div>
+                                    <div class="category-info">
+                                        <h5>@category.Title</h5>
+                                        <span class="badge bg-danger">Gasto</span>
+                                    </div>
+                                    <div class="category-actions">
+                                        <button class="btn btn-sm btn-warning" @onclick="() => EditCategory(category)">
+                                            <i class="bi bi-pencil"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-danger" @onclick="() => ConfirmDelete(category.CategoryId, category.Title)">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
+                        }
+                    }
+                    else
+                    {
+                        <div class="col-12">
+                            <p class="text-white text-center">No hay categorías de gastos. Crea una para comenzar.</p>
                         </div>
                     }
-                }
-                else
-                {
-                    <div class="col-12">
-                        <p class="text-white text-center">No hay categorías de gastos. Crea una para comenzar.</p>
-                    </div>
-                }
+                </div>
             </div>
-        </div>
 
-        <!-- Categorías de Ingresos -->
-        <div class="categories-section">
-            <h4 class="section-title">📈 Categorías de Ingresos</h4>
-            <div class="row">
-                @if (incomeCategories.Any())
-                {
-                    @foreach (var category in incomeCategories)
+            <!-- Categorías de Ingresos -->
+            <div class="categories-section">
+                <h4 class="section-title">📈 Categorías de Ingresos</h4>
+                <div class="row">
+                    @if (incomeCategories.Any())
                     {
-                        <div class="col-md-3 col-sm-6 mb-3">
-                            <div class="category-card income">
-                                <div class="category-icon">@category.Icon</div>
-                                <div class="category-info">
-                                    <h5>@category.Title</h5>
-                                    <span class="badge bg-success">Ingreso</span>
-                                </div>
-                                <div class="category-actions">
-                                    <button class="btn btn-sm btn-warning" @onclick="() => EditCategory(category)">
-                                        <i class="bi bi-pencil"></i>
-                                    </button>
-                                    <button class="btn btn-sm btn-danger" @onclick="() => ConfirmDelete(category.CategoryId, category.Title)">
-                                        <i class="bi bi-trash"></i>
-                                    </button>
+                        @foreach (var category in incomeCategories)
+                        {
+                            <div class="col-md-3 col-sm-6 mb-3">
+                                <div class="category-card income">
+                                    <div class="category-icon">@category.Icon</div>
+                                    <div class="category-info">
+                                        <h5>@category.Title</h5>
+                                        <span class="badge bg-success">Ingreso</span>
+                                    </div>
+                                    <div class="category-actions">
+                                        <button class="btn btn-sm btn-warning" @onclick="() => EditCategory(category)">
+                                            <i class="bi bi-pencil"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-danger" @onclick="() => ConfirmDelete(category.CategoryId, category.Title)">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
+                        }
+                    }
+                    else
+                    {
+                        <div class="col-12">
+                            <p class="text-white text-center">No hay categorías de ingresos. Crea una para comenzar.</p>
                         </div>
                     }
-                }
-                else
-                {
-                    <div class="col-12">
-                        <p class="text-white text-center">No hay categorías de ingresos. Crea una para comenzar.</p>
-                    </div>
-                }
+                </div>
             </div>
-        </div>
+
+
+
+
+
+
+
+
+
+
+
+
+        }
+
+        
     }
 </div>
 

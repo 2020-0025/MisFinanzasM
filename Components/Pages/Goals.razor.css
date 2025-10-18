@@ -1,128 +1,312 @@
-﻿body {
-}
-
-.goals-container {
-    padding: 2rem;
+﻿.goals-container {
     min-height: 100vh;
+    padding: 30px;
 }
 
-.goals-header {
-    padding: 1.5rem 2rem;
-    margin-bottom: 2rem;
-}
-
-/* Botón de acción principal */
-.glass-button-action {
-    background: rgba(76, 175, 80, 0.2);
-    border: 1px solid rgba(76, 175, 80, 0.4);
-    color: #4CAF50;
-    padding: 0.75rem 1.5rem;
-    border-radius: 10px;
-    font-weight: 600;
-    transition: all 0.3s ease;
-    cursor: pointer;
-    display: inline-flex;
-    align-items: center;
-}
-
-    .glass-button-action:hover:not(:disabled) {
-        background: rgba(76, 175, 80, 0.3);
-        transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(76, 175, 80, 0.3);
-    }
-
-    .glass-button-action:disabled {
-        opacity: 0.6;
-        cursor: not-allowed;
-    }
-
-.glass-button-secondary {
+.page-header {
     background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: 15px;
     border: 1px solid rgba(255, 255, 255, 0.2);
-    color: rgba(255, 255, 255, 0.9);
-    padding: 0.75rem 1.5rem;
-    border-radius: 10px;
-    font-weight: 500;
-    transition: all 0.3s ease;
-    cursor: pointer;
+    padding: 30px;
+    margin-bottom: 30px;
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
 }
 
-    .glass-button-secondary:hover {
-        background: rgba(255, 255, 255, 0.15);
+    .page-header h1 {
+        color: white;
+        margin-bottom: 5px;
+        font-weight: 600;
     }
 
+    .page-header p {
+        color: rgba(255, 255, 255, 0.8);
+    }
 
-/* Select personalizado */
-.form-control-glass select,
-select.form-control-glass {
-    appearance: none;
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%234CAF50' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 1rem center;
-    background-size: 12px;
-    padding-right: 2.5rem;
-    cursor: pointer;
+/* Balance Info Card */
+.balance-info-card {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: 15px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    padding: 25px;
+    margin-bottom: 30px;
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
 }
 
+    .balance-info-card h5 {
+        color: rgba(255, 255, 255, 0.8);
+        font-size: 0.9rem;
+        margin-bottom: 10px;
+    }
 
-.form-control-glass option {
-    background: rgba(15, 23, 42, 0.95);
-    color: white;
-    padding: 0.5rem;
+    .balance-info-card h3 {
+        font-size: 2rem;
+        font-weight: bold;
+        margin-bottom: 5px;
+    }
+
+    .balance-info-card small {
+        color: rgba(255, 255, 255, 0.6);
+    }
+
+    .balance-info-card p {
+        color: rgba(255, 255, 255, 0.9);
+        margin-bottom: 5px;
+    }
+
+/* Filters Card */
+.filters-card {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: 15px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    padding: 20px;
+    margin-bottom: 30px;
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
 }
 
+    .filters-card .btn-group {
+        width: 100%;
+    }
 
+    .filters-card .btn {
+        flex: 1;
+    }
 
-/* Para navegadores webkit (Chrome, Safari, Edge) */
-.form-control-glass select option:checked,
-.form-control-glass select option:hover {
-    background: rgba(76, 175, 80, 0.2);
-}
-
-
-
-
-
+/* Goal Card */
 .goal-card {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: 15px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    padding: 25px;
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
     transition: all 0.3s ease;
-    border-left: 4px solid #0d6efd !important;
+    border-left: 4px solid #17a2b8;
 }
 
     .goal-card:hover {
         transform: translateY(-5px);
-        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15) !important;
+        box-shadow: 0 12px 40px 0 rgba(31, 38, 135, 0.5);
     }
 
-.goal-completed {
-    border-left-color: #198754 !important;
-    background-color: rgba(25, 135, 84, 0.03);
-}
+    .goal-card.completed {
+        border-left-color: #28a745;
+        opacity: 0.8;
+    }
 
-.goal-overdue {
-    border-left-color: #dc3545 !important;
-    background-color: rgba(220, 53, 69, 0.03);
+    .goal-card.cancelled {
+        border-left-color: #6c757d;
+        opacity: 0.6;
+    }
+
+.goal-header {
+    margin-bottom: 20px;
 }
 
 .goal-icon {
-    font-size: 2.5rem;
-    line-height: 1;
+    font-size: 3rem;
 }
 
-.card-hover {
-    transition: all 0.3s ease;
+.goal-header h4 {
+    color: white;
+    margin-bottom: 10px;
+    font-weight: 600;
 }
 
-    .card-hover:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1) !important;
+.goal-actions {
+    display: flex;
+    gap: 5px;
+}
+
+.goal-description {
+    color: rgba(255, 255, 255, 0.8);
+    margin-bottom: 20px;
+    font-size: 0.95rem;
+}
+
+/* Goal Progress */
+.goal-progress {
+    margin-bottom: 20px;
+}
+
+    .goal-progress span {
+        color: rgba(255, 255, 255, 0.9);
+        font-size: 0.9rem;
     }
 
-.progress {
-    background-color: rgba(0, 0, 0, 0.05);
+    .goal-progress .progress {
+        height: 25px;
+        background: rgba(0, 0, 0, 0.3);
+        border-radius: 10px;
+        overflow: hidden;
+    }
+
+    .goal-progress .progress-bar {
+        font-weight: bold;
+        transition: width 0.6s ease;
+    }
+
+/* Goal Dates */
+.goal-dates {
+    padding: 15px;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+    margin-bottom: 15px;
 }
 
-.progress-bar {
-    transition: width 0.6s ease;
+    .goal-dates small {
+        color: rgba(255, 255, 255, 0.6);
+        display: block;
+        margin-bottom: 5px;
+    }
+
+    .goal-dates p {
+        color: white;
+        font-weight: 500;
+        margin-bottom: 0;
+    }
+
+/* Goal Completed */
+.goal-completed {
+    background: rgba(40, 167, 69, 0.2);
+    border: 1px solid rgba(40, 167, 69, 0.5);
+    border-radius: 10px;
+    padding: 10px 15px;
+    color: #28a745;
+    font-weight: 500;
+    text-align: center;
+}
+
+    .goal-completed i {
+        margin-right: 8px;
+    }
+
+/* Alertas */
+.alert {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+    border-radius: 10px;
+}
+
+.alert-success {
+    border-left: 4px solid #28a745;
+}
+
+.alert-danger {
+    border-left: 4px solid #dc3545;
+}
+
+.alert-info {
+    border-left: 4px solid #17a2b8;
+    background: rgba(23, 162, 184, 0.1);
+}
+
+/* Modal */
+.modal-backdrop.show {
+    opacity: 0.7;
+}
+
+.modal-content {
+    background: rgba(33, 37, 41, 0.95);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 15px;
+}
+
+    .modal-content .form-control,
+    .modal-content .form-select {
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        color: white;
+    }
+
+        .modal-content .form-control:focus,
+        .modal-content .form-select:focus {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.5);
+            color: white;
+            box-shadow: 0 0 0 0.25rem rgba(255, 255, 255, 0.1);
+        }
+
+        .modal-content .form-control::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+    .modal-content .form-label {
+        color: rgba(255, 255, 255, 0.9);
+        font-weight: 500;
+    }
+
+.form-text {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.875rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .goals-container {
+        padding: 15px;
+    }
+
+    .page-header {
+        padding: 20px;
+    }
+
+        .page-header .d-flex {
+            flex-direction: column;
+            align-items: flex-start !important;
+        }
+
+            .page-header .d-flex > div,
+            .page-header .d-flex > button {
+                width: 100%;
+                margin-bottom: 10px;
+            }
+
+    .balance-info-card h3 {
+        font-size: 1.5rem;
+    }
+
+    .balance-info-card .text-end {
+        text-align: left !important;
+        margin-top: 15px;
+    }
+
+    .filters-card .btn-group {
+        flex-direction: column;
+    }
+
+    .filters-card .btn {
+        width: 100%;
+        margin-bottom: 5px;
+    }
+
+    .goal-card {
+        padding: 20px;
+    }
+
+    .goal-icon {
+        font-size: 2.5rem;
+    }
+
+    .goal-header h4 {
+        font-size: 1.2rem;
+    }
+
+    .goal-actions {
+        flex-wrap: wrap;
+    }
+
+        .goal-actions .btn {
+            flex: 1;
+            min-width: 45px;
+        }
 }

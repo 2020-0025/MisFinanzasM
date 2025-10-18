@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace MisFinanzas.Infrastructure.Data.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class NombreDeLaMigracion : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -100,14 +100,15 @@ namespace MisFinanzas.Infrastructure.Data.Migrations
                 {
                     GoalId = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    Title = table.Column<string>(type: "TEXT", maxLength: 200, nullable: false),
-                    Description = table.Column<string>(type: "TEXT", maxLength: 1000, nullable: true),
+                    Title = table.Column<string>(type: "TEXT", maxLength: 100, nullable: false),
+                    Description = table.Column<string>(type: "TEXT", maxLength: 500, nullable: true),
                     TargetAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     CurrentAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: false, defaultValue: 0m),
                     StartDate = table.Column<DateTime>(type: "TEXT", nullable: false, defaultValueSql: "datetime('now')"),
                     TargetDate = table.Column<DateTime>(type: "TEXT", nullable: false),
                     Status = table.Column<int>(type: "INTEGER", nullable: false),
-                    Icon = table.Column<string>(type: "TEXT", maxLength: 10, nullable: false),
+                    Icon = table.Column<string>(type: "TEXT", maxLength: 10, nullable: false, defaultValue: "🎯"),
+                    CompletedAt = table.Column<DateTime>(type: "TEXT", nullable: true),
                     UserId = table.Column<string>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
@@ -290,7 +291,7 @@ namespace MisFinanzas.Infrastructure.Data.Migrations
             migrationBuilder.InsertData(
                 table: "Users",
                 columns: new[] { "Id", "ConcurrencyStamp", "CreatedAt", "Email", "EmailConfirmed", "FullName", "IsActive", "LastLogin", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "SecurityStamp", "UserName", "UserRole" },
-                values: new object[] { "admin-550e8400-e29b-41d4-a716-446655440000", "de546701-dba9-4807-839e-8638103995fa", new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), "admin@misfinanzas.com", true, "Administrador del Sistema", true, null, "ADMIN@MISFINANZAS.COM", "ADMIN", "Admin123", "5aa1287d-3ed9-45ab-89f1-5803c69d477b", "admin", "Admin" });
+                values: new object[] { "admin-550e8400-e29b-41d4-a716-446655440000", "92ba6e7f-a076-4f46-add2-4694dd79f215", new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), "admin@misfinanzas.com", true, "Administrador del Sistema", true, null, "ADMIN@MISFINANZAS.COM", "ADMIN", "Admin123", "5bbb9c2f-a22e-4d50-81ae-ea37195e059f", "admin", "Admin" });
 
             migrationBuilder.InsertData(
                 table: "UserRoles",
