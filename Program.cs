@@ -72,6 +72,7 @@ builder.Services.AddScoped<ICategoryService, CategoryService> ();
 builder.Services.AddScoped<IExpenseIncomeService, ExpenseIncomeService>();
 builder.Services.AddScoped<IFinancialGoalService, FinancialGoalService>();
 builder.Services.AddScoped<IBudgetService, BudgetService>();
+builder.Services.AddScoped<IUserService, UserService>();
 
 
 var app = builder.Build();

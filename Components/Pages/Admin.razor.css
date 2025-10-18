@@ -1,2 +1,183 @@
-﻿body {
+﻿.admin-container {
+    min-height: 100vh;
+    padding: 30px;
+}
+
+.admin-header {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: 15px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    padding: 30px;
+    margin-bottom: 30px;
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+}
+
+    .admin-header h1 {
+        color: white;
+        margin-bottom: 5px;
+        font-weight: 600;
+    }
+
+    .admin-header p {
+        color: rgba(255, 255, 255, 0.8);
+    }
+
+/* Tarjetas de Estadísticas */
+.stats-card {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: 15px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    padding: 25px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+    transition: transform 0.3s ease;
+}
+
+    .stats-card:hover {
+        transform: translateY(-5px);
+    }
+
+.stats-icon {
+    font-size: 3rem;
+}
+
+.stats-info h3 {
+    color: white;
+    font-size: 2rem;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.stats-info p {
+    color: rgba(255, 255, 255, 0.8);
+    margin-bottom: 0;
+    font-size: 0.9rem;
+}
+
+/* Tarjeta de Tabla */
+.users-table-card {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: 15px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    overflow: hidden;
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+}
+
+    .users-table-card .card-header {
+        background: rgba(255, 255, 255, 0.05);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        padding: 20px 30px;
+    }
+
+        .users-table-card .card-header h4 {
+            color: white;
+            margin-bottom: 0;
+            font-weight: 600;
+        }
+
+    .users-table-card .card-body {
+        padding: 0;
+    }
+
+/* Tabla */
+.table-responsive {
+    border-radius: 0 0 15px 15px;
+}
+
+.table-dark {
+    background: transparent;
+    color: rgba(255, 255, 255, 0.9);
+    margin-bottom: 0;
+}
+
+    .table-dark thead th {
+        background: rgba(255, 255, 255, 0.05);
+        border-color: rgba(255, 255, 255, 0.1);
+        color: white;
+        font-weight: 600;
+        padding: 15px;
+        white-space: nowrap;
+    }
+
+    .table-dark tbody tr {
+        border-color: rgba(255, 255, 255, 0.1);
+        transition: background-color 0.2s ease;
+    }
+
+        .table-dark tbody tr:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+    .table-dark tbody td {
+        padding: 15px;
+        vertical-align: middle;
+        border-color: rgba(255, 255, 255, 0.1);
+    }
+
+.password-display {
+    font-family: 'Courier New', monospace;
+    background: rgba(0, 0, 0, 0.3);
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.9rem;
+}
+
+/* Alertas */
+.alert {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+    border-radius: 10px;
+}
+
+.alert-success {
+    border-left: 4px solid #28a745;
+}
+
+.alert-danger {
+    border-left: 4px solid #dc3545;
+}
+
+/* Modal */
+.modal-backdrop.show {
+    opacity: 0.7;
+}
+
+.modal-content {
+    background: rgba(33, 37, 41, 0.95);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 15px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .admin-container {
+        padding: 15px;
+    }
+
+    .admin-header {
+        padding: 20px;
+    }
+
+    .stats-card {
+        margin-bottom: 15px;
+    }
+
+    .table-responsive {
+        font-size: 0.85rem;
+    }
+
+    .password-display {
+        font-size: 0.75rem;
+    }
 }
