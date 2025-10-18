@@ -17,33 +17,54 @@ namespace MisFinanzas.Infrastructure.Services
 
         public async Task<List<BudgetDto>> GetAllByUserAsync(string userId)
         {
-            return await _context.Budgets
+            var budgets = await _context.Budgets
                 .Include(b => b.Category)
                 .Where(b => b.UserId == userId)
                 .OrderByDescending(b => b.Year)
                 .ThenByDescending(b => b.Month)
-                .Select(b => MapToDto(b))
                 .ToListAsync();
+
+            return budgets.Select(MapToDto).ToList();
         }
 
         public async Task<List<BudgetDto>> GetActiveByUserAsync(string userId)
         {
-            return await _context.Budgets
+            var budgets = await _context.Budgets
                 .Include(b => b.Category)
                 .Where(b => b.UserId == userId && b.IsActive)
                 .OrderByDescending(b => b.Year)
                 .ThenByDescending(b => b.Month)
-                .Select(b => MapToDto(b))
                 .ToListAsync();
+
+            return budgets.Select(MapToDto).ToList();
         }
 
         public async Task<List<BudgetDto>> GetByUserAndPeriodAsync(string userId, int month, int year)
         {
-            return await _context.Budgets
-                .Include(b => b.Category)
-                .Where(b => b.UserId == userId && b.Month == month && b.Year == year && b.IsActive)
-                .Select(b => MapToDto(b))
-                .ToListAsync();
+            var budgets = await _context.Budgets
+        .Include(b => b.Category)
+        .Where(b => b.UserId == userId && b.Month == month && b.Year == year && b.IsActive)
+        .ToListAsync();
+
+            // Calcular gastos reales por categoría
+            var spentByCategory = await CalculateSpentByCategoryAsync(userId, month, year);
+
+            // Mapear y asignar SpentAmount real
+            return budgets.Select(b =>
+            {
+                var dto = MapToDto(b);
+
+                // Asignar el gasto real calculado
+                dto.SpentAmount = spentByCategory.GetValueOrDefault(b.CategoryId, 0);
+
+                // Recalcular propiedades dependientes
+                dto.AvailableAmount = dto.AssignedAmount - dto.SpentAmount;
+                dto.UsedPercentage = dto.AssignedAmount > 0 ? (dto.SpentAmount / dto.AssignedAmount) * 100 : 0;
+                dto.IsOverBudget = dto.SpentAmount > dto.AssignedAmount;
+                dto.IsNearLimit = dto.UsedPercentage >= 80 && dto.UsedPercentage < 100;
+
+                return dto;
+            }).ToList();
         }
 
         public async Task<BudgetDto?> GetByIdAsync(int id, string userId)
@@ -160,38 +181,64 @@ namespace MisFinanzas.Infrastructure.Services
 
         public async Task<List<BudgetDto>> GetBudgetsByCategoryAsync(string userId, int month, int year)
         {
-            return await _context.Budgets
+            var budgets = await _context.Budgets
                 .Include(b => b.Category)
                 .Where(b => b.UserId == userId &&
                            b.Month == month &&
                            b.Year == year &&
                            b.IsActive)
-                .Select(b => MapToDto(b))
                 .ToListAsync();
+
+            return budgets.Select(MapToDto).ToList();
         }
 
         public async Task<decimal> GetTotalBudgetForMonthAsync(string userId, int month, int year)
         {
-            return await _context.Budgets
+            var budgets = await _context.Budgets
                 .Where(b => b.UserId == userId &&
                             b.Month == month &&
                             b.Year == year &&
                             b.IsActive)
-                .SumAsync(b => b.AssignedAmount);
+                .ToListAsync();
+
+            return budgets.Sum(b => b.AssignedAmount);
         }
 
         public async Task<decimal> GetTotalSpentForMonthAsync(string userId, int month, int year)
         {
-            return await _context.Budgets
-                .Where(b => b.UserId == userId &&
-                            b.Month == month &&
-                            b.Year == year &&
-                            b.IsActive)
-                .SumAsync(b => b.SpentAmount);
+            var firstDay = new DateTime(year, month, 1);
+            var lastDay = firstDay.AddMonths(1).AddDays(-1);
+
+            var expenses = await _context.ExpensesIncomes
+                .Where(e => e.UserId == userId &&
+                            e.Type == Domain.Enums.TransactionType.Expense &&
+                            e.Date >= firstDay &&
+                            e.Date <= lastDay)
+                .ToListAsync();
+
+            return expenses.Sum(e => e.Amount);
+        }
+
+        private async Task<Dictionary<int, decimal>> CalculateSpentByCategoryAsync(string userId, int month, int year)
+        {
+            // Calcular gastos reales desde ExpensesIncomes
+            var firstDay = new DateTime(year, month, 1);
+            var lastDay = firstDay.AddMonths(1).AddDays(-1);
+
+            var expenses = await _context.ExpensesIncomes
+                .Where(e => e.UserId == userId &&
+                            e.Type == Domain.Enums.TransactionType.Expense &&
+                            e.Date >= firstDay &&
+                            e.Date <= lastDay)
+                .ToListAsync();
+
+            return expenses
+                .GroupBy(e => e.CategoryId)
+                .ToDictionary(g => g.Key, g => g.Sum(e => e.Amount));
         }
 
         // Helper para mapear Budget a BudgetDto
-        private BudgetDto MapToDto(Budget budget)
+        private static BudgetDto MapToDto(Budget budget)
         {
             return new BudgetDto
             {
