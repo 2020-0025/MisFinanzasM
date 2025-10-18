@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace MisFinanzas.Infrastructure.Data.Migrations
 {
     /// <inheritdoc />
-    public partial class NombreDeLaMigracion : Migration
+    public partial class InitialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -222,9 +222,9 @@ namespace MisFinanzas.Infrastructure.Data.Migrations
                     SpentAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: false, defaultValue: 0m),
                     Month = table.Column<int>(type: "INTEGER", nullable: false),
                     Year = table.Column<int>(type: "INTEGER", nullable: false),
-                    CategoryId = table.Column<int>(type: "INTEGER", nullable: true),
-                    CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    IsActive = table.Column<bool>(type: "INTEGER", nullable: false, defaultValue: true)
+                    CategoryId = table.Column<int>(type: "INTEGER", nullable: false),
+                    IsActive = table.Column<bool>(type: "INTEGER", nullable: false, defaultValue: true),
+                    CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -238,7 +238,7 @@ namespace MisFinanzas.Infrastructure.Data.Migrations
                         column: x => x.CategoryId,
                         principalTable: "Categories",
                         principalColumn: "CategoryId",
-                        onDelete: ReferentialAction.SetNull);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Budgets_Users_UserId",
                         column: x => x.UserId,
@@ -291,7 +291,7 @@ namespace MisFinanzas.Infrastructure.Data.Migrations
             migrationBuilder.InsertData(
                 table: "Users",
                 columns: new[] { "Id", "ConcurrencyStamp", "CreatedAt", "Email", "EmailConfirmed", "FullName", "IsActive", "LastLogin", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "SecurityStamp", "UserName", "UserRole" },
-                values: new object[] { "admin-550e8400-e29b-41d4-a716-446655440000", "92ba6e7f-a076-4f46-add2-4694dd79f215", new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), "admin@misfinanzas.com", true, "Administrador del Sistema", true, null, "ADMIN@MISFINANZAS.COM", "ADMIN", "Admin123", "5bbb9c2f-a22e-4d50-81ae-ea37195e059f", "admin", "Admin" });
+                values: new object[] { "admin-550e8400-e29b-41d4-a716-446655440000", "2f46c249-a361-4f21-ac8f-77fb87dc4a69", new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), "admin@misfinanzas.com", true, "Administrador del Sistema", true, null, "ADMIN@MISFINANZAS.COM", "ADMIN", "Admin123", "041fbd77-e20c-44a6-a25b-c33eff6d7611", "admin", "Admin" });
 
             migrationBuilder.InsertData(
                 table: "UserRoles",

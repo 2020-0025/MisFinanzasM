@@ -208,11 +208,11 @@ namespace MisFinanzas.Infrastructure.Data
                     .HasForeignKey(b => b.UserId)
                     .OnDelete(DeleteBehavior.Cascade);
 
-                // Relación opcional con Category
+                // Relación REQUERIDA con Category
                 entity.HasOne(b => b.Category)
                     .WithMany(c => c.Budgets)
                     .HasForeignKey(b => b.CategoryId)
-                    .OnDelete(DeleteBehavior.SetNull);
+                    .OnDelete(DeleteBehavior.Cascade); // Si se elimina categoría, elimina presupuestos
 
                 // Índices
                 entity.HasIndex(b => b.UserId);
@@ -234,6 +234,7 @@ namespace MisFinanzas.Infrastructure.Data
                 entity.Ignore(b => b.AvailableAmount);
                 entity.Ignore(b => b.UsedPercentage);
                 entity.Ignore(b => b.IsOverBudget);
+                entity.Ignore(b => b.IsNearLimit);
             });
 
             // ====== SEED DATA: ROLES Y USUARIO ADMIN ======

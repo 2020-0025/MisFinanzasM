@@ -57,20 +57,26 @@ namespace MisFinanzas.Infrastructure.Services
 
         public async Task<(bool Success, string? Error, BudgetDto? Budget)> CreateAsync(BudgetDto dto, string userId)
         {
-            // Validar que no exista otro presupuesto activo para la misma categoría en el mismo periodo
-            if (dto.CategoryId.HasValue)
-            {
-                var existingBudget = await _context.Budgets
-                    .AnyAsync(b => b.UserId == userId &&
-                                  b.CategoryId == dto.CategoryId &&
-                                  b.Month == dto.Month &&
-                                  b.Year == dto.Year &&
-                                  b.IsActive);
+            // Validar que la categoría exista
+            var categoryExists = await _context.Categories
+                .AnyAsync(c => c.CategoryId == dto.CategoryId && c.UserId == userId);
 
-                if (existingBudget)
-                {
-                    return (false, "Ya existe un presupuesto activo para esta categoría en este periodo", null);
-                }
+            if (!categoryExists)
+            {
+                return (false, "La categoría seleccionada no existe", null);
+            }
+
+            // Validar que no exista otro presupuesto activo para la misma categoría en el mismo periodo
+            var existingBudget = await _context.Budgets
+                .AnyAsync(b => b.UserId == userId &&
+                              b.CategoryId == dto.CategoryId &&
+                              b.Month == dto.Month &&
+                              b.Year == dto.Year &&
+                              b.IsActive);
+
+            if (existingBudget)
+            {
+                return (false, "Ya existe un presupuesto activo para esta categoría en este periodo", null);
             }
 
             var budget = new Budget
@@ -89,12 +95,7 @@ namespace MisFinanzas.Infrastructure.Services
             _context.Budgets.Add(budget);
             await _context.SaveChangesAsync();
 
-            dto.Id = budget.Id;
-            dto.UserId = userId;
-            dto.SpentAmount = 0;
-            dto.IsActive = true;
-
-            return (true, null, dto);
+            return (true, null, MapToDto(budget));
         }
 
         public async Task<bool> UpdateAsync(int id, BudgetDto dto, string userId)
@@ -164,10 +165,29 @@ namespace MisFinanzas.Infrastructure.Services
                 .Where(b => b.UserId == userId &&
                            b.Month == month &&
                            b.Year == year &&
-                           b.IsActive &&
-                           b.CategoryId != null)
+                           b.IsActive)
                 .Select(b => MapToDto(b))
                 .ToListAsync();
+        }
+
+        public async Task<decimal> GetTotalBudgetForMonthAsync(string userId, int month, int year)
+        {
+            return await _context.Budgets
+                .Where(b => b.UserId == userId &&
+                            b.Month == month &&
+                            b.Year == year &&
+                            b.IsActive)
+                .SumAsync(b => b.AssignedAmount);
+        }
+
+        public async Task<decimal> GetTotalSpentForMonthAsync(string userId, int month, int year)
+        {
+            return await _context.Budgets
+                .Where(b => b.UserId == userId &&
+                            b.Month == month &&
+                            b.Year == year &&
+                            b.IsActive)
+                .SumAsync(b => b.SpentAmount);
         }
 
         // Helper para mapear Budget a BudgetDto
@@ -183,11 +203,12 @@ namespace MisFinanzas.Infrastructure.Services
                 AvailableAmount = budget.AvailableAmount,
                 UsedPercentage = budget.UsedPercentage,
                 IsOverBudget = budget.IsOverBudget,
+                IsNearLimit = budget.IsNearLimit,
                 Month = budget.Month,
                 Year = budget.Year,
                 CategoryId = budget.CategoryId,
-                CategoryTitle = budget.Category?.Title,
-                CategoryIcon = budget.Category?.Icon,
+                CategoryTitle = budget.Category?.Title ?? "Sin categoría",
+                CategoryIcon = budget.Category?.Icon ?? "📁",
                 IsActive = budget.IsActive,
                 CreatedAt = budget.CreatedAt
             };

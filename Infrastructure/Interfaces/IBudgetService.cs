@@ -22,5 +22,8 @@ namespace MisFinanzas.Infrastructure.Interfaces
 
         // Para gráficos
         Task<List<BudgetDto>> GetBudgetsByCategoryAsync(string userId, int month, int year);
+
+        Task<decimal> GetTotalBudgetForMonthAsync(string userId, int month, int year);
+        Task<decimal> GetTotalSpentForMonthAsync(string userId, int month, int year);
     }
 }

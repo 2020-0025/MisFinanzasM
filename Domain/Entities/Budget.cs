@@ -1,5 +1,5 @@
-﻿using MisFinanzas.Domain.Enums;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MisFinanzas.Domain.Entities
 {
@@ -8,32 +8,52 @@ namespace MisFinanzas.Domain.Entities
         [Key]
         public int Id { get; set; }
 
-        // Relación con usuario
+        [Required]
         public string UserId { get; set; } = string.Empty;
-        public ApplicationUser User { get; set; } = null!;
 
-        // Información del presupuesto
+        [Required]
+        [StringLength(200)]
         public string Name { get; set; } = string.Empty;
-        public decimal AssignedAmount { get; set; } // Monto asignado
-        public decimal SpentAmount { get; set; } = 0; // Monto gastado
 
-        // Periodo
-        public int Month { get; set; } // 1-12
+        [Required]
+        [Column(TypeName = "decimal(18,2)")]
+        [Range(0.01, double.MaxValue)]
+        public decimal AssignedAmount { get; set; }
+
+        [Column(TypeName = "decimal(18,2)")]
+        [Range(0, double.MaxValue)]
+        public decimal SpentAmount { get; set; } = 0;
+
+        [Required]
+        [Range(1, 12)]
+        public int Month { get; set; }
+
+        [Required]
+        [Range(2020, 2100)]
         public int Year { get; set; }
 
-        // Relación opcional con categoría
-        public int? CategoryId { get; set; }
-        public Category? Category { get; set; }
+        [Required] // ⭐ REQUERIDO - siempre es por categoría
+        public int CategoryId { get; set; }
 
-        // Metadatos
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public bool IsActive { get; set; } = true;
 
-        // Propiedades calculadas (no se mapean a la BD)
-        public decimal AvailableAmount => AssignedAmount - SpentAmount;
-        public decimal UsedPercentage => AssignedAmount > 0
-            ? (SpentAmount / AssignedAmount) * 100
-            : 0;
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
+        // Navigation Properties
+        public virtual ApplicationUser? User { get; set; }
+        public virtual Category? Category { get; set; }
+
+        // Computed Properties
+        [NotMapped]
+        public decimal AvailableAmount => Math.Max(AssignedAmount - SpentAmount, 0);
+
+        [NotMapped]
+        public decimal UsedPercentage => AssignedAmount > 0 ? (SpentAmount / AssignedAmount) * 100 : 0;
+
+        [NotMapped]
         public bool IsOverBudget => SpentAmount > AssignedAmount;
+
+        [NotMapped]
+        public bool IsNearLimit => UsedPercentage >= 80 && UsedPercentage < 100;
     }
 }

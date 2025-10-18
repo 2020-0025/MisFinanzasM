@@ -11,8 +11,8 @@ using MisFinanzas.Infrastructure.Data;
 namespace MisFinanzas.Infrastructure.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20251018043929_NombreDeLaMigracion")]
-    partial class NombreDeLaMigracion
+    [Migration("20251018063235_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -246,7 +246,7 @@ namespace MisFinanzas.Infrastructure.Data.Migrations
                         new
                         {
                             Id = "admin-550e8400-e29b-41d4-a716-446655440000",
-                            ConcurrencyStamp = "92ba6e7f-a076-4f46-add2-4694dd79f215",
+                            ConcurrencyStamp = "2f46c249-a361-4f21-ac8f-77fb87dc4a69",
                             CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Email = "admin@misfinanzas.com",
                             EmailConfirmed = true,
@@ -255,7 +255,7 @@ namespace MisFinanzas.Infrastructure.Data.Migrations
                             NormalizedEmail = "ADMIN@MISFINANZAS.COM",
                             NormalizedUserName = "ADMIN",
                             PasswordHash = "Admin123",
-                            SecurityStamp = "5bbb9c2f-a22e-4d50-81ae-ea37195e059f",
+                            SecurityStamp = "041fbd77-e20c-44a6-a25b-c33eff6d7611",
                             UserName = "admin",
                             UserRole = "Admin"
                         });
@@ -270,7 +270,7 @@ namespace MisFinanzas.Infrastructure.Data.Migrations
                     b.Property<decimal>("AssignedAmount")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<int?>("CategoryId")
+                    b.Property<int>("CategoryId")
                         .HasColumnType("INTEGER");
 
                     b.Property<DateTime>("CreatedAt")
@@ -530,7 +530,8 @@ namespace MisFinanzas.Infrastructure.Data.Migrations
                     b.HasOne("MisFinanzas.Domain.Entities.Category", "Category")
                         .WithMany("Budgets")
                         .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.SetNull);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("MisFinanzas.Domain.Entities.ApplicationUser", "User")
                         .WithMany("Budgets")
