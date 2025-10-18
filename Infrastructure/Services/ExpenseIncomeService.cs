@@ -158,16 +158,20 @@ namespace MisFinanzas.Infrastructure.Services
         // Cálculos
         public async Task<decimal> GetTotalIngresosByUserAsync(string userId)
         {
-            return await _context.ExpensesIncomes
-                .Where(gi => gi.UserId == userId && gi.Type == TransactionType.Income)
-                .SumAsync(gi => gi.Amount);
+            var items = await _context.ExpensesIncomes
+                .Where(ei => ei.UserId == userId && ei.Type == TransactionType.Income)
+                .ToListAsync();
+
+            return items.Sum(ei => ei.Amount);
         }
 
         public async Task<decimal> GetTotalGastosByUserAsync(string userId)
         {
-            return await _context.ExpensesIncomes
-                .Where(gi => gi.UserId == userId && gi.Type == TransactionType.Expense)
-                .SumAsync(gi => gi.Amount);
+            var items = await _context.ExpensesIncomes
+                .Where(ei => ei.UserId == userId && ei.Type == TransactionType.Expense)
+                .ToListAsync();
+
+            return items.Sum(ei => ei.Amount);
         }
 
         public async Task<decimal> GetBalanceByUserAsync(string userId)
@@ -182,12 +186,14 @@ namespace MisFinanzas.Infrastructure.Services
             var primerDiaMes = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
             var ultimoDiaMes = primerDiaMes.AddMonths(1).AddDays(-1);
 
-            return await _context.ExpensesIncomes
-                .Where(gi => gi.UserId == userId &&
-                            gi.Type == TransactionType.Income &&
-                            gi.Date >= primerDiaMes &&
-                            gi.Date <= ultimoDiaMes)
-                .SumAsync(gi => gi.Amount);
+            var items = await _context.ExpensesIncomes
+                .Where(ei => ei.UserId == userId &&
+                            ei.Type == TransactionType.Income &&
+                            ei.Date >= primerDiaMes &&
+                            ei.Date <= ultimoDiaMes)
+                .ToListAsync();
+
+            return items.Sum(ei => ei.Amount);
         }
 
         public async Task<decimal> GetGastosMesActualAsync(string userId)
@@ -195,12 +201,14 @@ namespace MisFinanzas.Infrastructure.Services
             var primerDiaMes = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
             var ultimoDiaMes = primerDiaMes.AddMonths(1).AddDays(-1);
 
-            return await _context.ExpensesIncomes
-                .Where(gi => gi.UserId == userId &&
-                            gi.Type == TransactionType.Expense &&
-                            gi.Date >= primerDiaMes &&
-                            gi.Date <= ultimoDiaMes)
-                .SumAsync(gi => gi.Amount);
+            var items = await _context.ExpensesIncomes
+                .Where(ei => ei.UserId == userId &&
+                            ei.Type == TransactionType.Expense &&
+                            ei.Date >= primerDiaMes &&
+                            ei.Date <= ultimoDiaMes)
+                .ToListAsync();
+
+            return items.Sum(ei => ei.Amount);
         }
     }
 }

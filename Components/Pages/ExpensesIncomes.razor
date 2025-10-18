@@ -1,0 +1,543 @@
+﻿@page "/expenses-incomes"
+@page "/transacciones"
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
+@using Microsoft.JSInterop
+@using MisFinanzas.Infrastructure.Interfaces
+@using MisFinanzas.Domain.DTOs
+@using MisFinanzas.Domain.Enums
+@using System.ComponentModel.DataAnnotations
+@inject IExpenseIncomeService ExpenseIncomeService
+@inject ICategoryService CategoryService
+@inject IBudgetService BudgetService
+@inject IJSRuntime JSRuntime
+@inject NavigationManager NavigationManager
+
+<PageTitle>Gastos e Ingresos - MisFinanzas</PageTitle>
+
+<div class="expenses-container">
+    @if (!isAuthorized)
+    {
+        <div class="text-center text-white">
+            <div class="spinner-border" role="status">
+                <span class="visually-hidden">Verificando permisos...</span>
+            </div>
+            <p class="mt-3">Cargando...</p>
+        </div>
+    }
+    else
+    {
+        <!-- Header -->
+        <div class="page-header">
+            <div class="d-flex justify-content-between align-items-center flex-wrap">
+                <div class="mb-3 mb-md-0">
+                    <h1>💰 Gastos e Ingresos</h1>
+                    <p class="mb-0">Administra tus transacciones financieras</p>
+                </div>
+                <div class="d-flex gap-2">
+                    <button class="btn btn-danger" @onclick="() => OpenModal(TransactionType.Expense)">
+                        <i class="bi bi-dash-circle"></i> Agregar Gasto
+                    </button>
+                    <button class="btn btn-success" @onclick="() => OpenModal(TransactionType.Income)">
+                        <i class="bi bi-plus-circle"></i> Agregar Ingreso
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Balance -->
+        <div class="row mb-4">
+            <div class="col-md-4">
+                <div class="balance-card income">
+                    <div class="balance-icon">📈</div>
+                    <div class="balance-info">
+                        <p>Total Ingresos</p>
+                        <h3>@totalIngresos.ToString("C")</h3>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="balance-card expense">
+                    <div class="balance-icon">📉</div>
+                    <div class="balance-info">
+                        <p>Total Gastos</p>
+                        <h3>@totalGastos.ToString("C")</h3>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="balance-card balance">
+                    <div class="balance-icon">💵</div>
+                    <div class="balance-info">
+                        <p>Balance</p>
+                        <h3>@balance.ToString("C")</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mensajes -->
+        @if (!string.IsNullOrEmpty(successMessage))
+        {
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                @successMessage
+                <button type="button" class="btn-close" @onclick="() => successMessage = null"></button>
+            </div>
+        }
+
+        @if (!string.IsNullOrEmpty(errorMessage))
+        {
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                @errorMessage
+                <button type="button" class="btn-close" @onclick="() => errorMessage = null"></button>
+            </div>
+        }
+
+        <!-- Tabla de Transacciones -->
+        <div class="transactions-card">
+            <div class="card-header">
+                <h4>📋 Historial de Transacciones</h4>
+            </div>
+            <div class="card-body">
+                @if (isLoading)
+                {
+                    <div class="text-center py-5">
+                        <div class="spinner-border text-light" role="status"></div>
+                        <p class="text-white mt-3">Cargando transacciones...</p>
+                    </div>
+                }
+                else if (expensesIncomes == null || !expensesIncomes.Any())
+                {
+                    <div class="text-center py-5">
+                        <p class="text-white">No hay transacciones registradas</p>
+                        <p class="text-muted">Comienza agregando un gasto o ingreso</p>
+                    </div>
+                }
+                else
+                {
+                    <div class="table-responsive">
+                        <table class="table table-dark table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Fecha</th>
+                                    <th>Tipo</th>
+                                    <th>Categoría</th>
+                                    <th>Descripción</th>
+                                    <th>Monto</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in expensesIncomes)
+                                {
+                                    <tr>
+                                        <td>
+                                            <small>@item.Date.ToString("dd/MM/yyyy")</small>
+                                        </td>
+                                        <td>
+                                            <span class="badge @(item.Type == TransactionType.Income ? "bg-success" : "bg-danger")">
+                                                @item.TypeDisplay
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <span>@item.CategoryIcon @item.CategoryTitle</span>
+                                        </td>
+                                        <td>
+                                            @(item.Description ?? "-")
+                                        </td>
+                                        <td>
+                                            <strong class="@(item.Type == TransactionType.Income ? "text-success" : "text-danger")">
+                                                @item.Amount.ToString("C")
+                                            </strong>
+                                        </td>
+                                        <td>
+                                            <div class="btn-group btn-group-sm">
+                                                <button class="btn btn-warning" @onclick="() => EditTransaction(item)">
+                                                    <i class="bi bi-pencil"></i>
+                                                </button>
+                                                <button class="btn btn-danger" @onclick="() => ConfirmDelete(item.Id, item.Description ?? item.CategoryTitle)">
+                                                    <i class="bi bi-trash"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+            </div>
+        </div>
+    }
+</div>
+
+<!-- Modal Agregar/Editar -->
+@if (showModal)
+{
+    <div class="modal-backdrop show"></div>
+    <div class="modal show d-block" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content bg-dark text-white">
+                <div class="modal-header border-secondary">
+                    <h5 class="modal-title">
+                        @(isEditing ? "✏️ Editar" : (currentType == TransactionType.Income ? "📈 Agregar Ingreso" : "📉 Agregar Gasto"))
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" @onclick="CloseModal"></button>
+                </div>
+                <div class="modal-body">
+                    <EditForm Model="formModel" OnValidSubmit="SaveTransaction">
+                        <DataAnnotationsValidator />
+
+                        <div class="mb-3">
+                            <label class="form-label">Categoría</label>
+                            <InputSelect @bind-Value="formModel.CategoryId" class="form-select">
+                                <option value="0">Selecciona una categoría</option>
+                                @foreach (var category in availableCategories)
+                                {
+                                    <option value="@category.CategoryId">@category.Icon @category.Title</option>
+                                }
+                            </InputSelect>
+                            <ValidationMessage For="() => formModel.CategoryId" class="text-danger" />
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Monto</label>
+                            <InputNumber @bind-Value="formModel.Amount" class="form-control" placeholder="0.00" />
+                            <ValidationMessage For="() => formModel.Amount" class="text-danger" />
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Fecha</label>
+                            <InputDate @bind-Value="formModel.Date" class="form-control" />
+                            <ValidationMessage For="() => formModel.Date" class="text-danger" />
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Descripción (Opcional)</label>
+                            <InputTextArea @bind-Value="formModel.Description" class="form-control" rows="3" placeholder="Ej: Compra en supermercado" />
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary" disabled="@isSaving">
+                                @if (isSaving)
+                                {
+                                    <span class="spinner-border spinner-border-sm me-2"></span>
+                                    <span>Guardando...</span>
+                                }
+                                else
+                                {
+                                    <span>Guardar</span>
+                                }
+                            </button>
+                            <button type="button" class="btn btn-secondary" @onclick="CloseModal">Cancelar</button>
+                        </div>
+                    </EditForm>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<!-- Modal de Confirmación de Eliminación -->
+@if (showDeleteModal)
+{
+    <div class="modal-backdrop show"></div>
+    <div class="modal show d-block" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content bg-dark text-white">
+                <div class="modal-header border-secondary">
+                    <h5 class="modal-title">⚠️ Confirmar Eliminación</h5>
+                    <button type="button" class="btn-close btn-close-white" @onclick="CancelDelete"></button>
+                </div>
+                <div class="modal-body">
+                    <p>¿Estás seguro de que deseas eliminar esta transacción?</p>
+                    <p class="text-muted"><strong>@transactionToDelete</strong></p>
+                    <p class="text-danger mb-0">
+                        <small>Esta acción no se puede deshacer.</small>
+                    </p>
+                </div>
+                <div class="modal-footer border-secondary">
+                    <button type="button" class="btn btn-secondary" @onclick="CancelDelete">Cancelar</button>
+                    <button type="button" class="btn btn-danger" @onclick="DeleteTransaction">
+                        <i class="bi bi-trash"></i> Eliminar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    private bool isAuthorized = false;
+    private bool isLoading = true;
+    private string? currentUserId;
+
+    // Listas
+    private List<ExpenseIncomeDto> expensesIncomes = new();
+    private List<CategoryDto> allCategories = new();
+    private List<CategoryDto> availableCategories = new();
+
+    // Balance
+    private decimal totalIngresos = 0;
+    private decimal totalGastos = 0;
+    private decimal balance = 0;
+
+    // Mensajes
+    private string? successMessage;
+    private string? errorMessage;
+
+    // Modal
+    private bool showModal = false;
+    private bool isSaving = false;
+    private bool isEditing = false;
+    private TransactionType currentType = TransactionType.Expense;
+    private ExpenseIncomeFormModel formModel = new();
+
+    // Modal de eliminación
+    private bool showDeleteModal = false;
+    private int transactionIdToDelete;
+    private string? transactionToDelete;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await CheckAuthorization();
+
+            if (isAuthorized)
+            {
+                await LoadData();
+            }
+
+            StateHasChanged();
+        }
+    }
+
+    private async Task CheckAuthorization()
+    {
+        try
+        {
+            currentUserId = await JSRuntime.InvokeAsync<string>("sessionStorage.getItem", "userId");
+
+            if (string.IsNullOrEmpty(currentUserId))
+            {
+                await JSRuntime.InvokeVoidAsync("eval", "window.location.href = '/login'");
+                return;
+            }
+
+            isAuthorized = true;
+        }
+        catch
+        {
+            await JSRuntime.InvokeVoidAsync("eval", "window.location.href = '/login'");
+        }
+    }
+
+    private async Task LoadData()
+    {
+        try
+        {
+            isLoading = true;
+
+            if (string.IsNullOrEmpty(currentUserId))
+                return;
+
+            // Cargar transacciones
+            expensesIncomes = await ExpenseIncomeService.GetAllByUserAsync(currentUserId);
+
+            // Cargar categorías
+            allCategories = await CategoryService.GetAllByUserAsync(currentUserId);
+
+            // Calcular balance
+            totalIngresos = await ExpenseIncomeService.GetTotalIngresosByUserAsync(currentUserId);
+            totalGastos = await ExpenseIncomeService.GetTotalGastosByUserAsync(currentUserId);
+            balance = totalIngresos - totalGastos;
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Error al cargar datos: {ex.Message}";
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private void OpenModal(TransactionType type)
+    {
+        currentType = type;
+        isEditing = false;
+        formModel = new ExpenseIncomeFormModel
+        {
+            Date = DateTime.Now,
+            Type = type
+        };
+
+        // Filtrar categorías por tipo
+        availableCategories = allCategories
+            .Where(c => c.Type == type)
+            .ToList();
+
+        showModal = true;
+    }
+
+    private void EditTransaction(ExpenseIncomeDto transaction)
+    {
+        isEditing = true;
+        currentType = transaction.Type;
+
+        formModel = new ExpenseIncomeFormModel
+        {
+            Id = transaction.Id,
+            CategoryId = transaction.CategoryId,
+            Amount = transaction.Amount,
+            Date = transaction.Date,
+            Description = transaction.Description,
+            Type = transaction.Type
+        };
+
+        // Filtrar categorías por tipo
+        availableCategories = allCategories
+            .Where(c => c.Type == currentType)
+            .ToList();
+
+        showModal = true;
+    }
+
+    private async Task SaveTransaction()
+    {
+        try
+        {
+            isSaving = true;
+            errorMessage = null;
+
+            if (formModel.CategoryId == 0)
+            {
+                errorMessage = "Debes seleccionar una categoría";
+                return;
+            }
+
+            if (formModel.Amount <= 0)
+            {
+                errorMessage = "El monto debe ser mayor a cero";
+                return;
+            }
+
+            var dto = new ExpenseIncomeDto
+            {
+                Id = formModel.Id,
+                CategoryId = formModel.CategoryId,
+                Amount = formModel.Amount,
+                Date = formModel.Date,
+                Description = formModel.Description,
+                Type = formModel.Type
+            };
+
+            if (isEditing)
+            {
+                var result = await ExpenseIncomeService.UpdateAsync(formModel.Id, dto, currentUserId!);
+
+                if (result)
+                {
+                    successMessage = "Transacción actualizada correctamente";
+                    CloseModal();
+                    await LoadData();
+                }
+                else
+                {
+                    errorMessage = "No se pudo actualizar la transacción";
+                }
+            }
+            else
+            {
+                var created = await ExpenseIncomeService.CreateAsync(dto, currentUserId!);
+
+                if (created != null)
+                {
+                    successMessage = $"{(formModel.Type == TransactionType.Income ? "Ingreso" : "Gasto")} agregado correctamente";
+                    CloseModal();
+                    await LoadData();
+
+                    // TODO: Descontar de presupuesto si es gasto
+                    // Lo implementaremos en una siguiente iteración
+                }
+                else
+                {
+                    errorMessage = "No se pudo crear la transacción";
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Error: {ex.Message}";
+        }
+        finally
+        {
+            isSaving = false;
+        }
+    }
+
+    private void CloseModal()
+    {
+        showModal = false;
+        formModel = new();
+        isEditing = false;
+    }
+
+    private void ConfirmDelete(int id, string? description)
+    {
+        transactionIdToDelete = id;
+        transactionToDelete = description ?? "esta transacción";
+        showDeleteModal = true;
+    }
+
+    private void CancelDelete()
+    {
+        showDeleteModal = false;
+        transactionIdToDelete = 0;
+        transactionToDelete = null;
+    }
+
+    private async Task DeleteTransaction()
+    {
+        try
+        {
+            var result = await ExpenseIncomeService.DeleteAsync(transactionIdToDelete, currentUserId!);
+
+            if (result)
+            {
+                successMessage = "Transacción eliminada correctamente";
+                showDeleteModal = false;
+                transactionIdToDelete = 0;
+                transactionToDelete = null;
+                await LoadData();
+            }
+            else
+            {
+                errorMessage = "No se pudo eliminar la transacción";
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Error: {ex.Message}";
+        }
+    }
+
+    private class ExpenseIncomeFormModel
+    {
+        public int Id { get; set; }
+
+        [Required(ErrorMessage = "La categoría es requerida")]
+        public int CategoryId { get; set; }
+
+        [Required(ErrorMessage = "El monto es requerido")]
+        [Range(0.01, double.MaxValue, ErrorMessage = "El monto debe ser mayor a cero")]
+        public decimal Amount { get; set; }
+
+        [Required(ErrorMessage = "La fecha es requerida")]
+        public DateTime Date { get; set; } = DateTime.Now;
+
+        public string? Description { get; set; }
+
+        public TransactionType Type { get; set; }
+    }
+}
