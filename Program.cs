@@ -6,6 +6,7 @@ using MisFinanzas.Domain.Entities;
 using MisFinanzas.Infrastructure.Data;
 using MisFinanzas.Infrastructure.Interfaces;
 using MisFinanzas.Infrastructure.Services;
+using MisFinanzas.Services;
 using System.Globalization;
 
 
@@ -67,12 +68,14 @@ builder.Services.AddIdentityCore<MisFinanzas.Domain.Entities.ApplicationUser>(op
     .AddSignInManager()
     .AddDefaultTokenProviders();
 
-// ⭐ REGISTRAR NUESTROS SERVICIOS (Dependency Injection)
+// REGISTRAR NUESTROS SERVICIOS (Dependency Injection)
 builder.Services.AddScoped<ICategoryService, CategoryService> ();
 builder.Services.AddScoped<IExpenseIncomeService, ExpenseIncomeService>();
 builder.Services.AddScoped<IFinancialGoalService, FinancialGoalService>();
 builder.Services.AddScoped<IBudgetService, BudgetService>();
 builder.Services.AddScoped<IUserService, UserService>();
+// AGREGAR AuthService como Scoped
+builder.Services.AddScoped<AuthService>();
 
 
 var app = builder.Build();

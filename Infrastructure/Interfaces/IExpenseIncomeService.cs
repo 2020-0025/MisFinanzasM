@@ -21,5 +21,15 @@ namespace MisFinanzas.Infrastructure.Interfaces
         Task<decimal> GetIngresosMesActualAsync(string userId);
         Task<decimal> GetGastosMesActualAsync(string userId);
 
+        // Para Dashboard - Gráfico de líneas
+        Task<Dictionary<DateTime, decimal>> GetDailyIncomesAsync(string userId, DateTime startDate, DateTime endDate);
+        Task<Dictionary<DateTime, decimal>> GetDailyExpensesAsync(string userId, DateTime startDate, DateTime endDate);
+
+        // Para Dashboard - Últimas transacciones
+        Task<List<ExpenseIncomeDto>> GetRecentTransactionsAsync(string userId, int count);
+
+        // Para Dashboard - Comparativa mensual
+        Task<(decimal Ingresos, decimal Gastos)> GetTotalsByMonthAsync(string userId, int month, int year);
+
     }
 }

@@ -210,5 +210,77 @@ namespace MisFinanzas.Infrastructure.Services
 
             return items.Sum(ei => ei.Amount);
         }
+
+        // ========== MÉTODOS PARA DASHBOARD ==========
+
+        public async Task<Dictionary<DateTime, decimal>> GetDailyIncomesAsync(string userId, DateTime startDate, DateTime endDate)
+        {
+            var items = await _context.ExpensesIncomes
+                .Where(e => e.UserId == userId &&
+                            e.Type == TransactionType.Income &&
+                            e.Date >= startDate &&
+                            e.Date <= endDate)
+                .ToListAsync();
+
+            return items
+                .GroupBy(e => e.Date.Date)
+                .ToDictionary(g => g.Key, g => g.Sum(e => e.Amount));
+        }
+
+        public async Task<Dictionary<DateTime, decimal>> GetDailyExpensesAsync(string userId, DateTime startDate, DateTime endDate)
+        {
+            var items = await _context.ExpensesIncomes
+                .Where(e => e.UserId == userId &&
+                            e.Type == TransactionType.Expense &&
+                            e.Date >= startDate &&
+                            e.Date <= endDate)
+                .ToListAsync();
+
+            return items
+                .GroupBy(e => e.Date.Date)
+                .ToDictionary(g => g.Key, g => g.Sum(e => e.Amount));
+        }
+
+        public async Task<List<ExpenseIncomeDto>> GetRecentTransactionsAsync(string userId, int count)
+        {
+            return await _context.ExpensesIncomes
+                .Include(e => e.Category)
+                .Where(e => e.UserId == userId)
+                .OrderByDescending(e => e.Date)
+                .ThenByDescending(e => e.Id)
+                .Take(count)
+                .Select(e => new ExpenseIncomeDto
+                {
+                    Id = e.Id,
+                    UserId = e.UserId,
+                    CategoryId = e.CategoryId,
+                    CategoryTitle = e.Category.Title,
+                    CategoryIcon = e.Category.Icon,
+                    Amount = e.Amount,
+                    Date = e.Date,
+                    Description = e.Description,
+                    Type = e.Type
+                })
+                .ToListAsync();
+        }
+
+        public async Task<(decimal Ingresos, decimal Gastos)> GetTotalsByMonthAsync(string userId, int month, int year)
+        {
+            var firstDay = new DateTime(year, month, 1);
+            var lastDay = firstDay.AddMonths(1).AddDays(-1);
+
+            var items = await _context.ExpensesIncomes
+                .Where(e => e.UserId == userId &&
+                            e.Date >= firstDay &&
+                            e.Date <= lastDay)
+                .ToListAsync();
+
+            var ingresos = items.Where(e => e.Type == TransactionType.Income).Sum(e => e.Amount);
+            var gastos = items.Where(e => e.Type == TransactionType.Expense).Sum(e => e.Amount);
+
+            return (ingresos, gastos);
+        }
     }
 }
+    
+

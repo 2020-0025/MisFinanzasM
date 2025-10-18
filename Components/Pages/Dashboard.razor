@@ -1,13 +1,138 @@
 ﻿@page "/dashboard"
-@* @attribute [Authorize] *@
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
+@using Microsoft.JSInterop
+@using MisFinanzas.Infrastructure.Interfaces
+@using MisFinanzas.Domain.DTOs
+@using MisFinanzas.Domain.Enums
+@inject IExpenseIncomeService ExpenseIncomeService
+@inject IBudgetService BudgetService
+@inject IFinancialGoalService GoalService
+@inject IJSRuntime JSRuntime
+@inject NavigationManager NavigationManager
 
-<PageTitle>Dashboard</PageTitle>
+<PageTitle>Dashboard - MisFinanzas</PageTitle>
 
-<div class="container-fluid">
-    <h3>Dashboard</h3>
-    <p>Esta página será actualizada en la Fase 11</p>
+<div class="dashboard-container">
+    @if (!isAuthorized)
+    {
+        <div class="text-center text-white">
+            <div class="spinner-border" role="status">
+                <span class="visually-hidden">Cargando...</span>
+            </div>
+            <p class="mt-3">Cargando dashboard...</p>
+        </div>
+    }
+    else
+    {
+        @if (isLoading)
+        {
+            <div class="text-center text-white py-5">
+                <div class="spinner-border" role="status"></div>
+                <p class="mt-3">Cargando datos...</p>
+            </div>
+        }
+        else
+        {
+            <!-- Header -->
+            <div class="dashboard-header">
+                <h1>📊 Dashboard</h1>
+                <p>Resumen de tus finanzas personales</p>
+            </div>
+
+            <!-- TODO: Tarjetas de resumen -->
+            <div class="summary-cards">
+                <p class="text-white">Tarjetas de resumen aquí...</p>
+            </div>
+
+            <!-- TODO: Gráfico de líneas -->
+            <div class="chart-card">
+                <p class="text-white">Gráfico de líneas aquí...</p>
+            </div>
+
+            <!-- TODO: Gráfico de pastel y widgets -->
+        }
+    }
 </div>
 
 @code {
-    // Temporalmente vacío - se implementará en Fase 11
+    private bool isAuthorized = false;
+    private bool isLoading = true;
+    private string? currentUserId;
+
+    // Variables que usaremos después
+    private decimal totalIngresos = 0;
+    private decimal totalGastos = 0;
+    private decimal balance = 0;
+    private int activeGoalsCount = 0;
+
+    private string? errorMessage;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await CheckAuthorization();
+
+            if (isAuthorized)
+            {
+                await LoadData();
+            }
+
+            StateHasChanged();
+        }
+    }
+
+    private async Task CheckAuthorization()
+    {
+        try
+        {
+            currentUserId = await JSRuntime.InvokeAsync<string>("sessionStorage.getItem", "userId");
+
+            if (string.IsNullOrEmpty(currentUserId))
+            {
+                await JSRuntime.InvokeVoidAsync("eval", "window.location.href = '/login'");
+                return;
+            }
+
+            isAuthorized = true;
+        }
+        catch
+        {
+            await JSRuntime.InvokeVoidAsync("eval", "window.location.href = '/login'");
+        }
+    }
+
+    private async Task LoadData()
+    {
+        try
+        {
+            isLoading = true;
+
+            if (string.IsNullOrEmpty(currentUserId))
+                return;
+
+            var currentMonth = DateTime.Now.Month;
+            var currentYear = DateTime.Now.Year;
+
+            // Cargar totales del mes actual
+            var totals = await ExpenseIncomeService.GetTotalsByMonthAsync(currentUserId, currentMonth, currentYear);
+            totalIngresos = totals.Ingresos;
+            totalGastos = totals.Gastos;
+            balance = totalIngresos - totalGastos;
+
+            // Contar metas activas
+            activeGoalsCount = await GoalService.GetActiveGoalsCountAsync(currentUserId);
+
+            // TODO: Cargar más datos después
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Error al cargar datos: {ex.Message}";
+            Console.WriteLine($"Error: {ex.Message}");
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
 }

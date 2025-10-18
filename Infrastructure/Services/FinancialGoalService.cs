@@ -185,6 +185,24 @@ namespace MisFinanzas.Infrastructure.Services
                 .CountAsync();
         }
 
+        // ========== MÉTODOS PARA DASHBOARD ==========
+
+        public async Task<List<FinancialGoalDto>> GetTopGoalsByProgressAsync(string userId, int count)
+        {
+            var goals = await _context.FinancialGoals
+                .Where(g => g.UserId == userId && g.Status == GoalStatus.InProgress)
+                .OrderByDescending(g => g.ProgressPercentage)
+                .Take(count)
+                .ToListAsync();
+
+            return goals.Select(MapToDto).ToList();
+        }
+
+        public async Task<int> GetActiveGoalsCountAsync(string userId)
+        {
+            return await _context.FinancialGoals
+                .CountAsync(g => g.UserId == userId && g.Status == GoalStatus.InProgress);
+        }
         private static FinancialGoalDto MapToDto(FinancialGoal goal)
         {
             return new FinancialGoalDto

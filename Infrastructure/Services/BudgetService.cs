@@ -237,6 +237,20 @@ namespace MisFinanzas.Infrastructure.Services
                 .ToDictionary(g => g.Key, g => g.Sum(e => e.Amount));
         }
 
+        // ========== MÉTODOS PARA DASHBOARD ==========
+
+        public async Task<List<BudgetDto>> GetBudgetsForChartAsync(string userId, int month, int year)
+        {
+            // Reutilizamos GetByUserAndPeriodAsync que ya calcula SpentAmount dinámicamente
+            return await GetByUserAndPeriodAsync(userId, month, year);
+        }
+
+        public async Task<List<BudgetDto>> GetExceededBudgetsAsync(string userId, int month, int year)
+        {
+            var budgets = await GetByUserAndPeriodAsync(userId, month, year);
+            return budgets.Where(b => b.IsOverBudget || b.IsNearLimit).ToList();
+        }
+
         // Helper para mapear Budget a BudgetDto
         private static BudgetDto MapToDto(Budget budget)
         {

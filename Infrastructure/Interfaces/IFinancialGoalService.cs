@@ -19,5 +19,9 @@ namespace MisFinanzas.Infrastructure.Interfaces
 
         // Estadísticas
         Task<int> GetCompletedGoalsCountAsync(string userId);
+
+        // Para Dashboard
+        Task<List<FinancialGoalDto>> GetTopGoalsByProgressAsync(string userId, int count);
+        Task<int> GetActiveGoalsCountAsync(string userId);
     }
 }

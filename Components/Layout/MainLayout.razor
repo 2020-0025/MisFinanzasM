@@ -1,8 +1,10 @@
-﻿@inherits LayoutComponentBase
+﻿@using MisFinanzas.Services
+@inherits LayoutComponentBase
+@inject AuthService AuthService
+@inject IJSRuntime JSRuntime
 
 <div class="page-wrapper">
     <NavMenu />
-    
     <main class="main-content">
         @Body
     </main>
@@ -13,6 +15,37 @@
     <a href="" class="reload">Reload</a>
     <a class="dismiss">🗙</a>
 </div>
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        Console.WriteLine("🚀 MainLayout: OnInitializedAsync - Inicializando AuthService...");
+
+        // Inicializar AuthService solo si no está inicializado
+        if (!AuthService.IsInitialized)
+        {
+            await AuthService.InitializeAsync();
+            Console.WriteLine($"🚀 MainLayout: AuthService inicializado - IsAuth: {AuthService.IsAuthenticated}");
+        }
+        else
+        {
+            Console.WriteLine("🚀 MainLayout: AuthService ya estaba inicializado");
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            // Verificar de nuevo después del render por si acaso
+            if (!AuthService.IsInitialized)
+            {
+                Console.WriteLine("🚀 MainLayout: OnAfterRenderAsync - Re-inicializando AuthService...");
+                await AuthService.InitializeAsync();
+            }
+        }
+    }
+}
 
 <style>
     .page-wrapper {

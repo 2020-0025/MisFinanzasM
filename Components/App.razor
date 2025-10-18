@@ -33,6 +33,25 @@
 
     <!-- AGREGAR NUESTRO SCRIPT PARA LOS GRAFICOS -->
     <script src="js/charts.js"></script>
+
+    <!--Testing-->
+    <script>
+        // Test sessionStorage
+        window.testSessionStorage = function() {
+            try {
+                sessionStorage.setItem('test', 'test');
+                sessionStorage.removeItem('test');
+                console.log('✅ SessionStorage funcionando');
+                return true;
+            } catch(e) {
+                console.error('❌ SessionStorage no disponible', e);
+                return false;
+            }
+        }
+
+        // Ejecutar al cargar
+        window.testSessionStorage();
+    </script>
 </body>
 
 </html>

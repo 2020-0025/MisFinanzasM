@@ -4,6 +4,10 @@
 @using MisFinanzas.Domain.Entities
 @using System.ComponentModel.DataAnnotations
 @using Microsoft.JSInterop
+@using MisFinanzas.Components.Layout
+@using MisFinanzas.Services
+@inject AuthService AuthService
+@layout MinimalLayout
 @inject UserManager<ApplicationUser> UserManager
 @inject NavigationManager NavigationManager
 @inject IJSRuntime JSRuntime
@@ -124,12 +128,15 @@
             // Redirigir usando JavaScript
             string redirectUrl = user.UserRole == "Admin" ? "/admin" : "/dashboard";
 
-            // Guardar datos en sessionStorage
-            await JSRuntime.InvokeVoidAsync("sessionStorage.setItem", "justLoggedIn", "true");
-            await JSRuntime.InvokeVoidAsync("sessionStorage.setItem", "userId", user.Id);
-            await JSRuntime.InvokeVoidAsync("sessionStorage.setItem", "userRole", user.UserRole);
 
-            await JSRuntime.InvokeVoidAsync("eval", $"window.location.href = '{redirectUrl}'");
+            // ⭐ Usar AuthService
+            await AuthService.LoginAsync(user.Id, user.UserName ?? user.FullName ?? "Usuario", user.UserRole);
+
+            // Pequeño delay
+            await Task.Delay(100);
+
+            // Redirigir
+            NavigationManager.NavigateTo(redirectUrl, forceLoad: true);
         }
         catch (Exception ex)
         {

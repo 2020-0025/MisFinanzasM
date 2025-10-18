@@ -4,6 +4,10 @@
 @using MisFinanzas.Domain.Entities
 @using System.ComponentModel.DataAnnotations
 @using Microsoft.JSInterop
+@using MisFinanzas.Components.Layout
+@using MisFinanzas.Services
+@inject AuthService AuthService
+@layout MinimalLayout
 @inject UserManager<ApplicationUser> UserManager
 @inject NavigationManager NavigationManager
 @inject IJSRuntime JSRuntime
@@ -166,13 +170,11 @@
 
                 await Task.Delay(2000);
 
-                // Guardar datos en sessionStorage
-                await JSRuntime.InvokeVoidAsync("sessionStorage.setItem", "justLoggedIn", "true");
-                await JSRuntime.InvokeVoidAsync("sessionStorage.setItem", "userId", user.Id);
-                await JSRuntime.InvokeVoidAsync("sessionStorage.setItem", "userRole", user.UserRole);
+                // ⭐ Usar AuthService
+                await AuthService.LoginAsync(user.Id, user.UserName ?? user.FullName, user.UserRole);
 
-                // Redirigir usando JavaScript
-                await JSRuntime.InvokeVoidAsync("eval", "window.location.href = '/dashboard'");
+                await Task.Delay(100);
+                NavigationManager.NavigateTo("/dashboard", forceLoad: true);
             }
             else
             {

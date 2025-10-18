@@ -25,5 +25,9 @@ namespace MisFinanzas.Infrastructure.Interfaces
 
         Task<decimal> GetTotalBudgetForMonthAsync(string userId, int month, int year);
         Task<decimal> GetTotalSpentForMonthAsync(string userId, int month, int year);
+
+        // Para Dashboard
+        Task<List<BudgetDto>> GetBudgetsForChartAsync(string userId, int month, int year);
+        Task<List<BudgetDto>> GetExceededBudgetsAsync(string userId, int month, int year);
     }
 }
