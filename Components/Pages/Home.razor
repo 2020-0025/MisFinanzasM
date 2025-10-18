@@ -23,7 +23,7 @@
                     <span style="color: rgba(255, 255, 255, 0.9); font-size: 1rem;">
                         ¡Hola, <strong>@context.User.Identity?.Name</strong>! 👋
                     </span>
-                    <form action="/Account/Logout" method="post" class="logout-form">
+                    <form action="/logout" method="post" class="logout-form">
                         <AntiforgeryToken />
                         <input type="hidden" name="ReturnUrl" value="@currentUrl" />
                         <button type="submit" class="btn-logout" style="cursor: pointer; border: none;">🔐</button>
@@ -155,8 +155,8 @@
                     <h3 style="margin: 0; color: white; font-weight: 600;">Mis Finanzas</h3>
                 </div>
                 <div style="display: flex; gap: 15px; flex-wrap: wrap;">
-                    <a href="/Account/Register" class="glass-button">Registrar</a>
-                    <a href="/Account/Login" class="glass-button">Iniciar Sesión</a>
+                    <a href="/register" class="glass-button">Registrar</a>
+                    <a href="/login" class="glass-button">Iniciar Sesión</a>
 
                     <!-- Para cuando se agregue la version Demo -->
                     @* <button class="glass-button" style="cursor: pointer; border: none;">Probar Demo</button> *@
@@ -327,7 +327,7 @@
                     Comienza desde hoy a tomar el control de tu dinero
                 </p>
                 <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
-                    <a href="/Account/Register" class="glass-button" style="font-size: 1.1rem; padding: 14px 32px;">Comenzar</a>
+                    <a href="/register" class="glass-button" style="font-size: 1.1rem; padding: 14px 32px;">Comenzar</a>
 
                     <!-- Para cuando se agregue la version Demo -->
                     @* <button class="glass-button" style="cursor: pointer; border: none; font-size: 1.1rem; padding: 14px 32px;">Ver Demo</button> *@

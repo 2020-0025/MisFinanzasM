@@ -1,8 +1,11 @@
 ﻿@page "/logout"
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
 @using Microsoft.AspNetCore.Identity
 @using MisFinanzas.Domain.Entities
-@inject SignInManager<ApplicationUser> SignInManager
+@using Microsoft.JSInterop
+@inject UserManager<ApplicationUser> UserManager
 @inject NavigationManager NavigationManager
+@inject IJSRuntime JSRuntime
 
 <PageTitle>Cerrando Sesión...</PageTitle>
 
@@ -14,10 +17,17 @@
 </div>
 
 @code {
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        await SignInManager.SignOutAsync();
-        await Task.Delay(1000);
-        NavigationManager.NavigateTo("/login", forceLoad: true);
+        if (firstRender)
+        {
+            // Limpiar sessionStorage
+            await JSRuntime.InvokeVoidAsync("sessionStorage.clear");
+
+            await Task.Delay(1000);
+
+            // Redirigir usando JavaScript
+            await JSRuntime.InvokeVoidAsync("eval", "window.location.href = '/login'");
+        }
     }
 }

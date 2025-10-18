@@ -9,7 +9,7 @@
         <div class="navbar-user">
             <AuthorizeView>
                 <Authorized>
-                    <form action="/Account/Logout" method="post" class="logout-form">
+                    <form action="/logout" method="post" class="logout-form">
                         <AntiforgeryToken />
                         <input type="hidden" name="ReturnUrl" value="@currentUrl" />
                         <button type="submit" class="btn-logout" title="Cerrar Sesión">
@@ -22,7 +22,7 @@
                     </div>
                 </Authorized>
                 <NotAuthorized>
-                    <NavLink class="nav-link-horizontal" href="/Account/Login">
+                    <NavLink class="nav-link-horizontal" href="login">
                         <span style="font-size: 15px;">🔑</span>
                         <span>Iniciar Sesión</span>
                     </NavLink>
@@ -68,7 +68,7 @@
         <div class="navbar-mobile">
             <AuthorizeView>
                 <Authorized>
-                    <form action="/Account/Logout" method="post" class="logout-form-mobile-nav">
+                    <form action="/logout" method="post" class="logout-form-mobile-nav">
                         <AntiforgeryToken />
                         <input type="hidden" name="ReturnUrl" value="@currentUrl" />
                         <button type="submit" class="btn-logout-mobile" title="Cerrar Sesión">
