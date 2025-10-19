@@ -28,6 +28,13 @@
             </div>
         }
 
+        @if (!string.IsNullOrEmpty(successMessage))
+        {
+            <div class="alert alert-success" role="alert">
+                @successMessage
+            </div>
+        }
+
         <EditForm Model="loginModel" OnValidSubmit="HandleLogin">
             <DataAnnotationsValidator />
 
@@ -86,7 +93,16 @@
 @code {
     private LoginModel loginModel = new();
     private string? errorMessage;
+    private string? successMessage;
     private bool isLoading = false;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && AuthService.IsAuthenticated)
+        {
+            NavigationManager.NavigateTo("/dashboard", forceLoad: true);
+        }
+    }
 
     private async Task HandleLogin()
     {
@@ -94,6 +110,8 @@
         {
             isLoading = true;
             errorMessage = null;
+            successMessage = null;
+            StateHasChanged();
 
             // Buscar usuario
             var user = await UserManager.FindByNameAsync(loginModel.Username)
@@ -112,7 +130,7 @@
                 return;
             }
 
-            // Verificar contraseña manualmente
+            // Verificar contraseña
             var passwordValid = await UserManager.CheckPasswordAsync(user, loginModel.Password);
 
             if (!passwordValid)
@@ -125,18 +143,28 @@
             user.LastLogin = DateTime.UtcNow;
             await UserManager.UpdateAsync(user);
 
-            // Redirigir usando JavaScript
+            // Guardar en sessionStorage usando AuthService
+            var loginSuccess = await AuthService.LoginAsync(
+                user.Id,
+                user.UserName ?? user.FullName ?? "Usuario",
+                user.UserRole ?? "User"
+            );
+
+            if (!loginSuccess)
+            {
+                errorMessage = "Error al establecer la sesión. Por favor, intenta de nuevo.";
+                return;
+            }
+
+            successMessage = "✅ Login exitoso! Redirigiendo...";
+            StateHasChanged();
+            await Task.Delay(1000);
+
+            // Determinar URL de redirección
             string redirectUrl = user.UserRole == "Admin" ? "/admin" : "/dashboard";
 
-
-            // ⭐ Usar AuthService
-            await AuthService.LoginAsync(user.Id, user.UserName ?? user.FullName ?? "Usuario", user.UserRole);
-
-            // Pequeño delay
-            await Task.Delay(100);
-
             // Redirigir
-            NavigationManager.NavigateTo(redirectUrl, forceLoad: true);
+            await JSRuntime.InvokeVoidAsync("eval", $"window.location.href = '{redirectUrl}'");
         }
         catch (Exception ex)
         {
@@ -145,6 +173,7 @@
         finally
         {
             isLoading = false;
+            StateHasChanged();
         }
     }
 

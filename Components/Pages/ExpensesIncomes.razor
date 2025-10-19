@@ -116,7 +116,7 @@
                     <div class="table-responsive">
                         <table class="table table-dark table-hover">
                             <thead>
-                                <tr>
+                                <tr class="text-white">
                                     <th>Fecha</th>
                                     <th>Tipo</th>
                                     <th>Categoría</th>
@@ -130,7 +130,7 @@
                                 {
                                     <tr>
                                         <td>
-                                            <small>@item.Date.ToString("dd/MM/yyyy")</small>
+                                            <small class="text-white">@item.Date.ToString("dd/MM/yyyy")</small>
                                         </td>
                                         <td>
                                             <span class="badge @(item.Type == TransactionType.Income ? "bg-success" : "bg-danger")">
@@ -138,9 +138,9 @@
                                             </span>
                                         </td>
                                         <td>
-                                            <span>@item.CategoryIcon @item.CategoryTitle</span>
+                                            <span class="text-white">@item.CategoryIcon @item.CategoryTitle</span>
                                         </td>
-                                        <td>
+                                        <td class="text-white">
                                             @(item.Description ?? "-")
                                         </td>
                                         <td>

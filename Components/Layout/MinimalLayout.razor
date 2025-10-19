@@ -1,4 +1,6 @@
-﻿@inherits LayoutComponentBase
+﻿@using MisFinanzas.Services
+@inherits LayoutComponentBase
+@inject AuthService AuthService
 
 <div class="page">
     <main>
@@ -6,3 +8,25 @@
     </main>
 </div>
 
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        // Inicializar AuthService solo si no está inicializado
+        if (!AuthService.IsInitialized)
+        {
+            await AuthService.InitializeAsync();
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            // Verificar de nuevo después del render por si acaso
+            if (!AuthService.IsInitialized)
+            {
+                await AuthService.InitializeAsync();
+            }
+        }
+    }
+}

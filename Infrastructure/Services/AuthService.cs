@@ -1,4 +1,5 @@
 ﻿using Microsoft.JSInterop;
+using System.Text.Json;
 
 namespace MisFinanzas.Services
 {
@@ -24,131 +25,183 @@ namespace MisFinanzas.Services
         public string? UserId => _userId;
         public bool IsInitialized => _isInitialized;
 
-        public async Task InitializeAsync()
+        public async Task<bool> InitializeAsync()
         {
             if (_isInitialized)
             {
-                Console.WriteLine("⚠️ AuthService: Ya inicializado, evitando doble inicialización");
-                return;
+                Console.WriteLine("⚠️ AuthService: Already initialized");
+                return _isAuthenticated;
             }
 
-            await CheckAuthenticationAsync();
-            _isInitialized = true;
-        }
+            Console.WriteLine("🚀 AuthService: Initializing...");
 
-        public async Task CheckAuthenticationAsync()
-        {
+            // Wait for JS to be ready
+            await Task.Delay(100);
+
             try
             {
-                Console.WriteLine("🔍 AuthService: Verificando autenticación...");
+                // Use the JavaScript helper to get auth data
+                var authDataJson = await _jsRuntime.InvokeAsync<string>("eval",
+                    "JSON.stringify(window.authHelper ? window.authHelper.getAuthData() : null)");
 
-                // Usar un pequeño delay para asegurar que sessionStorage esté disponible
-                await Task.Delay(50);
-
-                var userId = await _jsRuntime.InvokeAsync<string?>("sessionStorage.getItem", "userId");
-                var userName = await _jsRuntime.InvokeAsync<string?>("sessionStorage.getItem", "userName");
-                var userRole = await _jsRuntime.InvokeAsync<string?>("sessionStorage.getItem", "userRole");
-
-                Console.WriteLine($"AuthService - userId: '{userId}'");
-                Console.WriteLine($"AuthService - userName: '{userName}'");
-                Console.WriteLine($"AuthService - userRole: '{userRole}'");
-
-                if (!string.IsNullOrEmpty(userId))
+                if (!string.IsNullOrEmpty(authDataJson) && authDataJson != "null")
                 {
-                    _isAuthenticated = true;
-                    _userId = userId;
-                    _userName = userName ?? "Usuario";
-                    _isAdmin = userRole == "Admin";
+                    var authData = JsonSerializer.Deserialize<AuthData>(authDataJson);
 
-                    Console.WriteLine($"✅ AuthService: Usuario autenticado - {_userName} (Admin: {_isAdmin})");
+                    if (authData != null && !string.IsNullOrEmpty(authData.userId))
+                    {
+                        _isAuthenticated = true;
+                        _userId = authData.userId;
+                        _userName = authData.userName ?? "Usuario";
+                        _isAdmin = authData.userRole == "Admin";
+
+                        Console.WriteLine($"✅ AuthService: User authenticated - {_userName} (Admin: {_isAdmin})");
+                    }
+                    else
+                    {
+                        ResetAuthState();
+                    }
                 }
                 else
                 {
-                    _isAuthenticated = false;
-                    _userId = null;
-                    _userName = "Usuario";
-                    _isAdmin = false;
+                    ResetAuthState();
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"❌ AuthService initialization error: {ex.Message}");
+                ResetAuthState();
+            }
 
-                    Console.WriteLine("❌ AuthService: No autenticado");
+            _isInitialized = true;
+            NotifyStateChanged();
+
+            return _isAuthenticated;
+        }
+
+        public async Task<bool> CheckAuthenticationAsync()
+        {
+            try
+            {
+                Console.WriteLine("🔍 AuthService: Checking authentication...");
+
+                // Use JavaScript helper
+                var authDataJson = await _jsRuntime.InvokeAsync<string>("eval",
+                    "JSON.stringify(window.authHelper ? window.authHelper.getAuthData() : null)");
+
+                if (!string.IsNullOrEmpty(authDataJson) && authDataJson != "null")
+                {
+                    var authData = JsonSerializer.Deserialize<AuthData>(authDataJson);
+
+                    if (authData != null && !string.IsNullOrEmpty(authData.userId))
+                    {
+                        _isAuthenticated = true;
+                        _userId = authData.userId;
+                        _userName = authData.userName ?? "Usuario";
+                        _isAdmin = authData.userRole == "Admin";
+
+                        Console.WriteLine($"✅ Found authenticated user: {_userName}");
+                        NotifyStateChanged();
+                        return true;
+                    }
                 }
 
+                ResetAuthState();
                 NotifyStateChanged();
+                return false;
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"❌ AuthService Error: {ex.Message}");
-                _isAuthenticated = false;
+                Console.WriteLine($"❌ CheckAuthentication error: {ex.Message}");
+                ResetAuthState();
                 NotifyStateChanged();
+                return false;
             }
         }
 
-        public async Task LoginAsync(string userId, string userName, string userRole)
+        public async Task<bool> LoginAsync(string userId, string userName, string userRole)
         {
             try
             {
-                Console.WriteLine($"🔐 AuthService: Iniciando login para {userName}...");
+                Console.WriteLine($"🔐 AuthService: Logging in {userName}...");
 
-                // Guardar en sessionStorage
-                await _jsRuntime.InvokeVoidAsync("sessionStorage.setItem", "userId", userId);
-                await _jsRuntime.InvokeVoidAsync("sessionStorage.setItem", "userName", userName);
-                await _jsRuntime.InvokeVoidAsync("sessionStorage.setItem", "userRole", userRole);
+                // Use JavaScript helper to save
+                var success = await _jsRuntime.InvokeAsync<bool>("eval",
+                    $"window.authHelper ? window.authHelper.saveAuthData('{userId}', '{userName}', '{userRole}') : false");
 
-                // Actualizar estado local
-                _isAuthenticated = true;
-                _userId = userId;
-                _userName = userName;
-                _isAdmin = userRole == "Admin";
+                if (success)
+                {
+                    _isAuthenticated = true;
+                    _userId = userId;
+                    _userName = userName;
+                    _isAdmin = userRole == "Admin";
 
-                Console.WriteLine($"✅ AuthService: Login exitoso - {userName} (Admin: {_isAdmin})");
+                    Console.WriteLine($"✅ Login successful for {userName}");
+                    NotifyStateChanged();
+                    return true;
+                }
 
-                // Notificar cambio de estado
-                NotifyStateChanged();
+                Console.WriteLine("❌ Failed to save auth data");
+                return false;
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"❌ AuthService Login Error: {ex.Message}");
-                throw; // Re-lanzar para que el componente pueda manejar el error
+                Console.WriteLine($"❌ Login error: {ex.Message}");
+                return false;
             }
         }
 
-        public async Task LogoutAsync()
+        public async Task<bool> LogoutAsync()
         {
             try
             {
-                Console.WriteLine("🔓 AuthService: Cerrando sesión...");
+                Console.WriteLine("🔓 AuthService: Logging out...");
 
-                // Limpiar sessionStorage
-                await _jsRuntime.InvokeVoidAsync("sessionStorage.removeItem", "userId");
-                await _jsRuntime.InvokeVoidAsync("sessionStorage.removeItem", "userName");
-                await _jsRuntime.InvokeVoidAsync("sessionStorage.removeItem", "userRole");
+                // Use JavaScript helper to clear
+                await _jsRuntime.InvokeAsync<bool>("eval",
+                    "window.authHelper ? window.authHelper.clearAuthData() : false");
 
-                // Resetear estado local
-                _isAuthenticated = false;
-                _userId = null;
-                _userName = "Usuario";
-                _isAdmin = false;
-
-                Console.WriteLine("✅ AuthService: Logout exitoso");
-
-                // Notificar cambio de estado
+                ResetAuthState();
                 NotifyStateChanged();
+
+                Console.WriteLine("✅ Logout successful");
+                return true;
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"❌ AuthService Logout Error: {ex.Message}");
-                throw;
+                Console.WriteLine($"❌ Logout error: {ex.Message}");
+                return false;
             }
         }
 
-        public async Task RefreshAuthenticationAsync()
+        public async Task<bool> ForceRefreshAsync()
         {
-            await CheckAuthenticationAsync();
+            Console.WriteLine("🔄 Forcing auth refresh...");
+            _isInitialized = false;
+            return await InitializeAsync();
+        }
+
+        private void ResetAuthState()
+        {
+            _isAuthenticated = false;
+            _userId = null;
+            _userName = "Usuario";
+            _isAdmin = false;
+            Console.WriteLine("🔄 Auth state reset");
         }
 
         private void NotifyStateChanged()
         {
-            Console.WriteLine($"📢 AuthService: Notificando cambio de estado - IsAuth: {_isAuthenticated}");
+            Console.WriteLine($"📢 Notifying auth state change - IsAuth: {_isAuthenticated}");
             OnAuthStateChanged?.Invoke();
+        }
+
+        // Helper class for JSON deserialization
+        private class AuthData
+        {
+            public string? userId { get; set; }
+            public string? userName { get; set; }
+            public string? userRole { get; set; }
         }
     }
 }

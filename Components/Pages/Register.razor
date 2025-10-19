@@ -116,6 +116,14 @@
     private string? successMessage;
     private bool isLoading = false;
 
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && AuthService.IsAuthenticated)
+        {
+            NavigationManager.NavigateTo("/dashboard", forceLoad: true);
+        }
+    }
+
     private async Task HandleRegister()
     {
         try
@@ -123,6 +131,7 @@
             isLoading = true;
             errorMessage = null;
             successMessage = null;
+            StateHasChanged();
 
             // Validar contraseñas coincidan
             if (registerModel.Password != registerModel.ConfirmPassword)
@@ -166,19 +175,37 @@
                 // Asignar rol User
                 await UserManager.AddToRoleAsync(user, "User");
 
-                successMessage = "¡Cuenta creada exitosamente! Redirigiendo...";
+                successMessage = "✅ ¡Cuenta creada exitosamente! Iniciando sesión...";
+                StateHasChanged();
+                await Task.Delay(1000);
 
-                await Task.Delay(2000);
+                // Guardar en sessionStorage usando AuthService
+                var loginSuccess = await AuthService.LoginAsync(
+                    user.Id,
+                    user.UserName ?? user.FullName ?? "Usuario",
+                    user.UserRole ?? "User"
+                );
 
-                // ⭐ Usar AuthService
-                await AuthService.LoginAsync(user.Id, user.UserName ?? user.FullName, user.UserRole);
+                if (!loginSuccess)
+                {
+                    errorMessage = "Cuenta creada pero hubo un error al iniciar sesión. Por favor, inicia sesión manualmente.";
+                    await Task.Delay(2000);
+                    NavigationManager.NavigateTo("/login", forceLoad: true);
+                    return;
+                }
 
-                await Task.Delay(100);
-                NavigationManager.NavigateTo("/dashboard", forceLoad: true);
+                successMessage = "✅ ¡Registro completo! Redirigiendo...";
+                StateHasChanged();
+                await Task.Delay(1000);
+
+                // Redirigir
+                string redirectUrl = user.UserRole == "Admin" ? "/admin" : "/dashboard";
+                await JSRuntime.InvokeVoidAsync("eval", $"window.location.href = '{redirectUrl}'");
             }
             else
             {
-                errorMessage = string.Join(", ", result.Errors.Select(e => e.Description));
+                var errors = string.Join(", ", result.Errors.Select(e => e.Description));
+                errorMessage = $"Error al crear la cuenta: {errors}";
             }
         }
         catch (Exception ex)
@@ -188,6 +215,7 @@
         finally
         {
             isLoading = false;
+            StateHasChanged();
         }
     }
 

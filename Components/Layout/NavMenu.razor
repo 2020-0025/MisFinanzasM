@@ -3,14 +3,7 @@
 @inject NavigationManager NavigationManager
 @inject AuthService AuthService
 @inject IJSRuntime JSRuntime
-
-<!-- ⭐ DEBUG TEMPORAL -->
-<div style="position: fixed; top: 80px; left: 10px; background: red; color: white; padding: 10px; z-index: 9999; border-radius: 5px;">
-    isAuthenticated: @AuthService.IsAuthenticated<br />
-    isAdmin: @AuthService.IsAdmin<br />
-    userName: @AuthService.UserName<br />
-    isInitialized: @AuthService.IsInitialized
-</div>
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
 
 <!-- Nav Horizontal -->
 <nav class="navbar-horizontal">
@@ -18,14 +11,14 @@
 
         <!-- User Section (solo desktop) -->
         <div class="navbar-user">
-            @if (AuthService.IsAuthenticated)
+            @if (_isAuthenticated)
             {
                 <button @onclick="Logout" class="btn-logout" title="Cerrar Sesión">
                     <span style="font-size: 15px;">🔐</span>
                 </button>
-                <a href="@(AuthService.IsAdmin ? "/admin" : "/profile")" class="user-info">
+                <a href="@(_isAdmin ? "/admin" : "/profile")" class="user-info">
                     <span style="font-size: 17px;">🧑‍💼</span>
-                    <span class="user-name">@AuthService.UserName</span>
+                    <span class="user-name">@_userName</span>
                 </a>
             }
             else
@@ -39,12 +32,8 @@
 
         <!-- Links Horizontales (solo desktop) -->
         <div class="navbar-links">
-            @if (AuthService.IsAuthenticated)
+            @if (_isAuthenticated)
             {
-                <NavLink class="nav-link-horizontal" href="/" Match="NavLinkMatch.All">
-                    <span style="font-size: 17px;">🏠</span>
-                    <span class="text-white">Inicio</span>
-                </NavLink>
                 <NavLink class="nav-link-horizontal" href="/dashboard">
                     <span style="font-size: 17px;">📊</span>
                     <span class="text-white">Dashboard</span>
@@ -53,19 +42,23 @@
                     <span style="font-size: 17px;">📁</span>
                     <span class="text-white">Categorías</span>
                 </NavLink>
-                <NavLink class="nav-link-horizontal" href="/expenses-incomes">
-                    <span style="font-size: 17px;">💳</span>
-                    <span class="text-white">Transacciones</span>
+                <NavLink class="nav-link-horizontal" href="/budgets">
+                    <span style="font-size: 17px;">💰</span>
+                    <span class="text-white">Presupuestos</span>
                 </NavLink>
                 <NavLink class="nav-link-horizontal" href="/goals">
                     <span style="font-size: 17px;">🎯</span>
                     <span class="text-white">Metas</span>
                 </NavLink>
-                <NavLink class="nav-link-horizontal" href="/budgets">
-                    <span style="font-size: 17px;">💰</span>
-                    <span class="text-white">Presupuestos</span>
+                <NavLink class="nav-link-horizontal" href="/expenses-incomes">
+                    <span style="font-size: 17px;">💳</span>
+                    <span class="text-white">Transacciones</span>
                 </NavLink>
-                @if (AuthService.IsAdmin)
+
+
+
+
+                @if (_isAdmin)
                 {
                     <NavLink class="nav-link-horizontal admin-link" href="/admin">
                         <span style="font-size: 17px;">👨‍💼</span>
@@ -77,15 +70,22 @@
 
         <!-- Menu Horizontal en Mobile-->
         <div class="navbar-mobile">
-            @if (AuthService.IsAuthenticated)
+            @if (_isAuthenticated)
             {
                 <button @onclick="Logout" class="btn-logout-mobile" title="Cerrar Sesión">
                     <span style="font-size: 15px;">🔐</span>
                 </button>
-                <a href="@(AuthService.IsAdmin ? "/admin" : "/profile")" class="user-info-mobile">
+                <a href="@(_isAdmin ? "/admin" : "/profile")" class="user-info-mobile">
                     <span style="font-size: 17px;">🧑‍💼</span>
-                    <span class="user-name">@AuthService.UserName</span>
+                    <span class="user-name">@_userName</span>
                 </a>
+            }
+            else
+            {
+                <NavLink class="nav-link-horizontal" href="login">
+                    <span style="font-size: 15px;">🔑</span>
+                    <span>Iniciar Sesión</span>
+                </NavLink>
             }
         </div>
     </div>
@@ -93,13 +93,8 @@
 
 <!-- Footer Navegación Móvil -->
 <nav class="footer-mobile-nav">
-    @if (AuthService.IsAuthenticated)
+    @if (_isAuthenticated)
     {
-        <NavLink href="/" class="footer-nav-item" Match="NavLinkMatch.All">
-            <span style="font-size: 17px;">🏠</span>
-            <span class="text-white">Inicio</span>
-        </NavLink>
-
         <NavLink href="/dashboard" class="footer-nav-item">
             <span style="font-size: 17px;">📊</span>
             <span class="text-white">Dashboard</span>
@@ -110,9 +105,9 @@
             <span class="text-white">Categorías</span>
         </NavLink>
 
-        <NavLink href="/expenses-incomes" class="footer-nav-item">
-            <span style="font-size: 17px;">💳</span>
-            <span class="text-white">Transacciones</span>
+        <NavLink href="/budgets" class="footer-nav-item">
+            <span style="font-size: 17px;">💰</span>
+            <span class="text-white">Presupuestos</span>
         </NavLink>
 
         <NavLink href="/goals" class="footer-nav-item">
@@ -120,58 +115,431 @@
             <span class="text-white">Metas</span>
         </NavLink>
 
-        <NavLink href="/budgets" class="footer-nav-item">
-            <span style="font-size: 17px;">💰</span>
-            <span class="text-white">Presupuestos</span>
+        <NavLink href="/expenses-incomes" class="footer-nav-item">
+            <span style="font-size: 17px;">💳</span>
+            <span class="text-white">Transacciones</span>
         </NavLink>
     }
 </nav>
 
-@code {
-    protected override async Task OnInitializedAsync()
-    {
-        Console.WriteLine("🔧 NavMenu: OnInitializedAsync - Suscribiéndose a AuthService...");
-        AuthService.OnAuthStateChanged += HandleAuthStateChanged;
+<style>
 
-        // Si el AuthService no está inicializado, verificar autenticación
-        if (!AuthService.IsInitialized)
-        {
-            Console.WriteLine("🔧 NavMenu: AuthService no inicializado, verificando autenticación...");
-            await AuthService.CheckAuthenticationAsync();
+    
+    /* ===== NAVBAR HORIZONTAL ===== */
+    .navbar-horizontal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 70px;
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(20px);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        z-index: 1000;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+    }
+
+    .navbar-content {
+        height: 100%;
+        padding: 0 2rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 2rem;
+    }
+
+    /* ===== LINKS DESKTOP ===== */
+    .navbar-links {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        flex: 1;
+        justify-content: center;
+        margin-left: 16rem;
+    }
+
+    .nav-link-horizontal {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 1rem;
+        color: rgba(255, 255, 255, 0.8);
+        text-decoration: none;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 13px;
+        transition: all 0.3s ease;
+        font-weight: 500;
+        font-size: 0.95rem;
+    }
+
+        .nav-link-horizontal:hover {
+            background: rgba(255, 255, 255, 0.15);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
         }
 
-        Console.WriteLine($"🔧 NavMenu: Estado inicial - IsAuth: {AuthService.IsAuthenticated}");
+        .nav-link-horizontal.active {
+            background: rgba(76, 175, 80, 0.25);
+            border-color: rgba(76, 175, 80, 0.5);
+            color: #4CAF50;
+            font-weight: 600;
+            box-shadow: 0 0 12px rgba(76, 175, 80, 0.3);
+        }
+
+        .nav-link-horizontal.admin-link.active {
+            background: rgba(255, 152, 0, 0.25);
+            border-color: rgba(255, 152, 0, 0.5);
+            color: #FF9800;
+        }
+
+    /* ===== USER SECTION DESKTOP ===== */
+    .navbar-user {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .user-info {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 1rem;
+        background: rgba(33, 150, 243, 0.15);
+        border: 1px solid rgba(33, 150, 243, 0.3);
+        border-radius: 10px;
+        color: white;
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+
+        .user-info:hover {
+            background: rgba(33, 150, 243, 0.25);
+            transform: translateY(-2px);
+        }
+
+    .user-name {
+        font-size: 0.9rem;
+        max-width: 150px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .btn-logout {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        background: rgba(244, 67, 54, 0.15);
+        border: 1px solid rgba(244, 67, 54, 0.3);
+        border-radius: 10px;
+        color: #F44336;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-size: 1.1rem;
+    }
+
+        .btn-logout:hover {
+            background: rgba(244, 67, 54, 0.25);
+            transform: translateY(-2px);
+        }
+
+    /* ===== MOBILE SECTION ===== */
+    .navbar-mobile {
+        display: none;
+        width: 100%;
+        justify-content: space-between;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .user-info-mobile {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 1rem;
+        background: rgba(33, 150, 243, 0.15);
+        border: 1px solid rgba(33, 150, 243, 0.3);
+        border-radius: 10px;
+        color: white;
+        max-width: 200px;
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+
+        .user-info-mobile:hover {
+            background: rgba(33, 150, 243, 0.25);
+        }
+
+        .user-info-mobile span {
+            font-size: 0.9rem;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            flex: 1;
+        }
+
+    .btn-logout-mobile {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 44px;
+        height: 44px;
+        background: rgba(244, 67, 54, 0.15);
+        border: 1px solid rgba(244, 67, 54, 0.3);
+        border-radius: 10px;
+        color: #F44336;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-size: 1.2rem;
+    }
+
+        .btn-logout-mobile:hover {
+            background: rgba(244, 67, 54, 0.25);
+            transform: scale(1.05);
+        }
+
+    /* ===== FOOTER NAVEGACIÓN MÓVIL ===== */
+    .footer-mobile-nav {
+        display: none;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 70px;
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        z-index: 1000;
+        padding: 0.5rem 0;
+        box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.3);
+    }
+
+    .footer-nav-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        flex: 1;
+        color: rgba(255, 255, 255, 0.7);
+        text-decoration: none;
+        transition: all 0.3s ease;
+        padding: 0.5rem 0.25rem;
+        gap: 0.25rem;
+        background: transparent;
+        min-width: 0;
+    }
+
+        .footer-nav-item:hover {
+            color: white;
+        }
+
+        .footer-nav-item.active {
+            color: #4CAF50;
+        }
+
+            .footer-nav-item.active span:first-child {
+                transform: scale(1.15);
+            }
+
+        .footer-nav-item span {
+            font-size: 0.75rem;
+            font-weight: 500;
+            text-align: center;
+            white-space: nowrap;
+        }
+
+            .footer-nav-item span:first-child {
+                font-size: 1.5rem;
+                line-height: 1;
+            }
+
+    /* ===== RESPONSIVE ===== */
+
+    /* Tablet Grande (hasta 1200px) */
+    @@media (max-width: 1200px) {
+        .navbar-links
+
+    {
+        gap: 0.25rem;
+    }
+
+    .nav-link-horizontal {
+        padding: 0.5rem 0.75rem;
+        font-size: 0.9rem;
+    }
+
+    }
+
+    /* Tablet (hasta 992px) */
+    @@media (max-width: 992px) {
+        .navbar-links
+
+    {
+        display: none;
+    }
+
+    .navbar-user {
+        display: none;
+    }
+
+    .navbar-mobile {
+        display: flex;
+    }
+
+    .footer-mobile-nav {
+        display: flex;
+    }
+
+    .footer-nav-item span:first-child {
+        font-size: 1.75rem;
+    }
+
+    .footer-nav-item span {
+        font-size: 0.8rem;
+    }
+
+    }
+
+    /* Mobile Grande (hasta 768px) */
+    @@media (max-width: 768px) {
+        .footer-mobile-nav
+
+    {
+        height: 75px;
+        padding: 0.75rem 0;
+    }
+
+    .footer-nav-item {
+        padding: 0.5rem 0.5rem;
+    }
+
+        .footer-nav-item span:first-child {
+            font-size: 2rem;
+        }
+
+        .footer-nav-item span {
+            font-size: 0.85rem;
+        }
+
+    }
+
+    /* Mobile (hasta 576px) */
+    @@media (max-width: 576px) {
+        .navbar-content
+
+    {
+        padding: 0 1rem;
+    }
+
+    .footer-mobile-nav {
+        height: 80px;
+        padding: 0.75rem 0.25rem;
+    }
+
+    .footer-nav-item {
+        padding: 0.5rem 0.25rem;
+        gap: 0.35rem;
+    }
+
+        .footer-nav-item span:first-child {
+            font-size: 2.25rem;
+        }
+
+        .footer-nav-item span {
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+
+    }
+
+    /* Mobile Pequeño (hasta 400px) */
+    @@media (max-width: 400px) {
+        .footer-nav-item span:first-child
+
+    {
+        font-size: 2rem;
+    }
+
+    .footer-nav-item span {
+        font-size: 0.65rem;
+    }
+
+    }
+
+    /* ===== FIX PARA EMOJIS ===== */
+    ::deep span[style*="font-size"] {
+        display: inline-block;
+    }
+
+    .nav-link-horizontal span:first-child,
+    .footer-nav-item span:first-child {
+        display: inline-block;
+    }
+
+</style>
+
+@code {
+    private bool _isAuthenticated = false;
+    private bool _isAdmin = false;
+    private string _userName = "Usuario";
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Suscribirse a cambios de autenticación
+        AuthService.OnAuthStateChanged += HandleAuthStateChanged;
+
+        // Actualizar estado inicial
+        UpdateLocalState();
+
+        // Inicializar si es necesario
+        if (!AuthService.IsInitialized)
+        {
+            await Task.Delay(300);
+            await AuthService.InitializeAsync();
+            UpdateLocalState();
+        }
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (firstRender)
+        if (firstRender && !AuthService.IsInitialized)
         {
-            // Verificar autenticación después del primer render si es necesario
-            if (!AuthService.IsInitialized)
-            {
-                Console.WriteLine("🔧 NavMenu: OnAfterRenderAsync - Verificando autenticación...");
-                await AuthService.InitializeAsync();
-            }
+            await Task.Delay(500);
+            await AuthService.InitializeAsync();
+            UpdateLocalState();
+            await InvokeAsync(StateHasChanged);
         }
+    }
+
+    private void UpdateLocalState()
+    {
+        _isAuthenticated = AuthService.IsAuthenticated;
+        _isAdmin = AuthService.IsAdmin;
+        _userName = AuthService.UserName;
     }
 
     private void HandleAuthStateChanged()
     {
-        Console.WriteLine($"🔄 NavMenu: Recibida notificación de cambio de estado - IsAuth: {AuthService.IsAuthenticated}");
+        UpdateLocalState();
         InvokeAsync(StateHasChanged);
     }
 
     private async Task Logout()
     {
-        Console.WriteLine("🔓 NavMenu: Iniciando logout...");
-        await AuthService.LogoutAsync();
-        NavigationManager.NavigateTo("/login", forceLoad: true);
+        var success = await AuthService.LogoutAsync();
+        if (success)
+        {
+            NavigationManager.NavigateTo("/login", forceLoad: true);
+        }
     }
 
     public void Dispose()
     {
-        Console.WriteLine("🧹 NavMenu: Dispose - Desuscribiendo de AuthService");
         AuthService.OnAuthStateChanged -= HandleAuthStateChanged;
     }
 }
