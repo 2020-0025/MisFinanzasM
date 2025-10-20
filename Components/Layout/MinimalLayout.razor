@@ -1,4 +1,5 @@
-﻿@using MisFinanzas.Services
+﻿
+@using MisFinanzas.Services
 @inherits LayoutComponentBase
 @inject AuthService AuthService
 
@@ -12,10 +13,12 @@
     protected override async Task OnInitializedAsync()
     {
         // Inicializar AuthService solo si no está inicializado
-        if (!AuthService.IsInitialized)
-        {
-            await AuthService.InitializeAsync();
-        }
+        // if (!AuthService.IsInitialized)
+        // {
+        //     await AuthService.InitializeAsync();
+        // }
+        Console.WriteLine("🚀 MinimalLayout: OnInitialized (sin JS)");
+
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)

@@ -24,6 +24,16 @@
         color: rgba(255, 255, 255, 0.8);
     }
 
+.btnAddBudgets {
+    background: rgba(76, 175, 80, 0.25);
+    border-color: rgba(76, 175, 80, 0.5);
+    color: white;
+    font-weight: 600;
+    box-shadow: 0 0 12px rgba(76, 175, 80, 0.3);
+    border-radius: 20px;
+    padding: 0.5rem 1rem;
+}
+
 /* Selector de Periodo */
 .period-selector-card {
     background: rgba(255, 255, 255, 0.05);
@@ -53,6 +63,17 @@
             background: #212529;
             color: white;
         }
+
+.btnCurrectMonth {
+    background: rgba(33, 150, 243, 0.15);
+    border: 1px solid rgba(33, 150, 243, 0.3);
+    color: white;
+    font-weight: 600;
+    box-shadow: 0 0 12px rgba(76, 175, 80, 0.3);
+    border-radius: 20px;
+    padding: 0.5rem 0.5rem;
+    margin-top:1.9rem;
+}
 
 /* Resumen General */
 .summary-card {

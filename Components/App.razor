@@ -1,4 +1,5 @@
-﻿<!DOCTYPE html>
+﻿
+<!DOCTYPE html>
 <html lang="es">
 
 <head>
@@ -88,10 +89,18 @@
             console.log('==================');
         };
     </script>
+
+    <!-- Chart.js -->
+     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+    <!-- Dashboard Charts - cargar DESPUÉS de Chart.js -->
+    <script src="js/dashboard-charts.js"></script>
+
 </head>
 
 <body>
     <Routes />
+    <script src="/_framework/aspnetcore-browser-refresh.js"></script>
     <script src="_framework/blazor.web.js"></script>
 
     <!-- Script adicional después de que Blazor cargue -->
@@ -112,16 +121,16 @@
             } else {
                 console.error('❌ SessionStorage not available!');
             }
-        });
 
-        // Marcar que Blazor está listo cuando se conecte
-        if (window.Blazor) {
-            Blazor.start().then(function() {
+            // Marcar que el entorno está listo
+            setTimeout(function() {
                 window.blazorReady = true;
-                console.log('✅ Blazor started successfully');
-            });
-        }
+                console.log('✅ Environment ready');
+            }, 100);
+        });
     </script>
+
+    
 </body>
 
 </html>

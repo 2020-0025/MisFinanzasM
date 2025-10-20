@@ -12,6 +12,7 @@ using System.Globalization;
 
 var builder = WebApplication.CreateBuilder(args);
 
+
 // CONFIGURACIÓN DE MONEDA DOMINICANA (PESO DOMINICANO - DOP)
 var dominicanCulture = new CultureInfo("es-DO");
 dominicanCulture.NumberFormat.CurrencySymbol = "RD$";
@@ -76,6 +77,13 @@ builder.Services.AddScoped<IBudgetService, BudgetService>();
 builder.Services.AddScoped<IUserService, UserService>();
 // AGREGAR AuthService como Scoped
 builder.Services.AddScoped<AuthService>();
+// Registrar UserService
+builder.Services.AddScoped<UserService>();
+builder.Services.AddScoped<CategoryService>();
+builder.Services.AddScoped<ExpenseIncomeService>();
+builder.Services.AddScoped<FinancialGoalService>();
+builder.Services.AddScoped<BudgetService>();
+
 
 
 var app = builder.Build();

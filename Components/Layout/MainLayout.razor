@@ -1,12 +1,34 @@
 ﻿@using MisFinanzas.Services
 @inherits LayoutComponentBase
 @inject AuthService AuthService
-@inject IJSRuntime JSRuntime
+@inject NavigationManager Navigation
 
 <div class="page-wrapper">
     <NavMenu />
     <main class="main-content">
-        @Body
+        @* --- ESTE ES EL CAMBIO CLAVE --- *@
+        @if (!_isInitialized)
+        {
+            <div style="display: flex; justify-content: center; align-items: center; height: 80vh;">
+                <div class="spinner-border" style="width: 3rem; height: 3rem;" role="status">
+                    <span class="visually-hidden">Inicializando...</span>
+                </div>
+            </div>
+        }
+        else
+        {
+            <ErrorBoundary>
+                <ChildContent>
+                    @Body
+                </ChildContent>
+                <ErrorContent Context="ex">
+                    @* Tu contenido de error se queda igual *@
+                    <div style="background: rgba(244, 67, 54, 0.2); ...">
+                        ...
+                    </div>
+                </ErrorContent>
+            </ErrorBoundary>
+        }
     </main>
 </div>
 
@@ -17,33 +39,49 @@
 </div>
 
 @code {
+    private bool _isInitialized = false; // <-- Nueva variable de estado
+
+    private void ReloadPage()
+    {
+        Navigation.NavigateTo(Navigation.Uri, forceLoad: true);
+    }
+
     protected override async Task OnInitializedAsync()
     {
-        Console.WriteLine("🚀 MainLayout: OnInitializedAsync - Inicializando AuthService...");
-
-        // Inicializar AuthService solo si no está inicializado
-        if (!AuthService.IsInitialized)
+        // Este método se ejecuta ANTES del renderizado.
+        // Es el lugar perfecto para inicializar el servicio de autenticación.
+        try
         {
+            Console.WriteLine("🚀 MainLayout: OnInitializedAsync - Inicializando AuthService...");
+
+            // Suscribirse a cambios en la autenticación para actualizar la UI si el usuario cierra sesión.
+            AuthService.OnAuthStateChanged += OnAuthenticationStateChanged;
+
             await AuthService.InitializeAsync();
+
             Console.WriteLine($"🚀 MainLayout: AuthService inicializado - IsAuth: {AuthService.IsAuthenticated}");
         }
-        else
+        catch (Exception ex)
         {
-            Console.WriteLine("🚀 MainLayout: AuthService ya estaba inicializado");
+            Console.WriteLine($"❌ MainLayout: Error catastrófico inicializando AuthService: {ex.Message}");
+            // Aquí podrías redirigir a una página de error si la inicialización falla.
+        }
+        finally
+        {
+            _isInitialized = true; // <-- Marcamos que la inicialización terminó (con éxito o no)
         }
     }
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
+    private async void OnAuthenticationStateChanged()
     {
-        if (firstRender)
-        {
-            // Verificar de nuevo después del render por si acaso
-            if (!AuthService.IsInitialized)
-            {
-                Console.WriteLine("🚀 MainLayout: OnAfterRenderAsync - Re-inicializando AuthService...");
-                await AuthService.InitializeAsync();
-            }
-        }
+        // Este método se llamará si el estado de auth cambia (ej. logout)
+        await InvokeAsync(StateHasChanged);
+    }
+
+    // Método para limpiar la suscripción y evitar fugas de memoria
+    public void Dispose()
+    {
+        AuthService.OnAuthStateChanged -= OnAuthenticationStateChanged;
     }
 }
 

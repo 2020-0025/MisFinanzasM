@@ -94,7 +94,7 @@
         <!-- Tabla de Transacciones -->
         <div class="transactions-card">
             <div class="card-header">
-                <h4>📋 Historial de Transacciones</h4>
+                <h4>📋 Historial</h4>
             </div>
             <div class="card-body">
                 @if (isLoading)
@@ -107,7 +107,7 @@
                 else if (expensesIncomes == null || !expensesIncomes.Any())
                 {
                     <div class="text-center py-5">
-                        <p class="text-white">No hay transacciones registradas</p>
+                        <p class="text-white">No hay registros</p>
                         <p class="text-muted">Comienza agregando un gasto o ingreso</p>
                     </div>
                 }

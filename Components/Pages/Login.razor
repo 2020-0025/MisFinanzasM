@@ -18,7 +18,7 @@
     <div class="auth-card">
         <div class="auth-header">
             <h2>💰 Iniciar Sesión</h2>
-            <p>Accede a tu cuenta de MisFinanzas</p>
+            <p class="text-white">Accede a tu cuenta de MisFinanzas</p>
         </div>
 
         @if (!string.IsNullOrEmpty(errorMessage))
@@ -98,9 +98,10 @@
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
+        
         if (firstRender && AuthService.IsAuthenticated)
         {
-            NavigationManager.NavigateTo("/dashboard", forceLoad: true);
+             NavigationManager.NavigateTo("/profile", forceLoad: true);
         }
     }
 
@@ -161,7 +162,7 @@
             await Task.Delay(1000);
 
             // Determinar URL de redirección
-            string redirectUrl = user.UserRole == "Admin" ? "/admin" : "/dashboard";
+            string redirectUrl = user.UserRole == "Admin" ? "/admin" : "/profile";
 
             // Redirigir
             await JSRuntime.InvokeVoidAsync("eval", $"window.location.href = '{redirectUrl}'");

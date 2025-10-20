@@ -24,6 +24,16 @@
         color: rgba(255, 255, 255, 0.8);
     }
 
+.btnAddCategory {
+    background: rgba(76, 175, 80, 0.25);
+    border-color: rgba(76, 175, 80, 0.5);
+    color: white;
+    font-weight: 600;
+    box-shadow: 0 0 12px rgba(76, 175, 80, 0.3);
+    border-radius: 20px;
+    padding: 0.5rem 1rem;
+}
+
 /* Secciones de Categorías */
 .categories-section {
     margin-bottom: 40px;

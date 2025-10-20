@@ -40,7 +40,7 @@
             <!-- Categories Card -->
             <div class="glass-card animate-slide-up animate-delay-3" style="padding: 30px;">
                 <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 20px;">
-                    <span style="font-size: 32px;">📁</span>
+                    <span style="font-size: 32px;">🏷️</span>
                     <h2 style="color: white; margin: 0; font-size: 1.5rem;">Categorías</h2>
                 </div>
                 <p class="text-white" style="margin-bottom: 20px;">
@@ -75,7 +75,7 @@
             <div class="glass-card animate-slide-up animate-delay-4" style="padding: 30px;">
                 <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 20px;">
                     <span style="font-size: 32px;">💳</span>
-                    <h2 style="color: white; margin: 0; font-size: 1.5rem;">Transacciones</h2>
+                    <h2 style="color: white; margin: 0; font-size: 1.5rem;">Gastos e Ingresos</h2>
                 </div>
                 <p class="text-white" style="margin-bottom: 20px;">
                     Registra y visualiza cada movimiento de dinero
@@ -297,45 +297,45 @@
 </div>
 
 @code {
-    private bool hasChecked = false;
+    // private bool hasChecked = false;
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender && !hasChecked)
-        {
-            hasChecked = true;
+    // protected override async Task OnAfterRenderAsync(bool firstRender)
+    // {
+    //     if (firstRender && !hasChecked)
+    //     {
+    //         hasChecked = true;
 
-            Console.WriteLine("🏠 Home: OnAfterRenderAsync - firstRender");
-            Console.WriteLine($"🏠 Home: AuthService.IsInitialized = {AuthService.IsInitialized}");
-            Console.WriteLine($"🏠 Home: AuthService.IsAuthenticated = {AuthService.IsAuthenticated}");
+    //         Console.WriteLine("🏠 Home: OnAfterRenderAsync - firstRender");
+    //         Console.WriteLine($"🏠 Home: AuthService.IsInitialized = {AuthService.IsInitialized}");
+    //         Console.WriteLine($"🏠 Home: AuthService.IsAuthenticated = {AuthService.IsAuthenticated}");
 
-            // Esperar a que AuthService esté listo
-            if (!AuthService.IsInitialized)
-            {
-                await Task.Delay(500);
-                await AuthService.InitializeAsync();
-            }
-            else
-            {
-                await Task.Delay(200);
-            }
+    //         // Esperar a que AuthService esté listo
+    //         if (!AuthService.IsInitialized)
+    //         {
+    //             await Task.Delay(500);
+    //             await AuthService.InitializeAsync();
+    //         }
+    //         else
+    //         {
+    //             await Task.Delay(200);
+    //         }
 
-            Console.WriteLine($"🏠 Home: Después de espera - IsAuthenticated = {AuthService.IsAuthenticated}");
+    //         Console.WriteLine($"🏠 Home: Después de espera - IsAuthenticated = {AuthService.IsAuthenticated}");
 
-            // Si está autenticado, redirigir
-            if (AuthService.IsAuthenticated)
-            {
-                var redirectUrl = AuthService.IsAdmin ? "/admin" : "/dashboard";
-                Console.WriteLine($"🏠 Home: Redirigiendo a {redirectUrl}");
+    //         // Si está autenticado, redirigir
+    //         if (AuthService.IsAuthenticated)
+    //         {
+    //             var redirectUrl = AuthService.IsAdmin ? "/admin" : "/dashboard";
+    //             Console.WriteLine($"🏠 Home: Redirigiendo a {redirectUrl}");
 
-                await JSRuntime.InvokeVoidAsync("eval", $"window.location.href = '{redirectUrl}'");
-            }
-            else
-            {
-                Console.WriteLine("🏠 Home: Usuario NO autenticado, mostrando Home");
-            }
-        }
-    }
+    //             await JSRuntime.InvokeVoidAsync("eval", $"window.location.href = '{redirectUrl}'");
+    //         }
+    //         else
+    //         {
+    //             Console.WriteLine("🏠 Home: Usuario NO autenticado, mostrando Home");
+    //         }
+    //     }
+    // }
 }
     
 

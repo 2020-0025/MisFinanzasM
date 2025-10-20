@@ -18,7 +18,7 @@
     <div class="auth-card">
         <div class="auth-header">
             <h2>💰 Crear Cuenta</h2>
-            <p>Únete a MisFinanzas y gestiona tus finanzas</p>
+            <p class="text-white">Únete a MisFinanzas y gestiona tus finanzas</p>
         </div>
 
         @if (!string.IsNullOrEmpty(errorMessage))
@@ -74,7 +74,7 @@
                            id="password"
                            placeholder="Mínimo 6 caracteres" />
                 <ValidationMessage For="() => registerModel.Password" class="text-danger" />
-                <small class="form-text text-muted">
+                <small class="form-text text-warning">
                     Debe contener mayúsculas, minúsculas y números
                 </small>
             </div>
@@ -120,7 +120,7 @@
     {
         if (firstRender && AuthService.IsAuthenticated)
         {
-            NavigationManager.NavigateTo("/dashboard", forceLoad: true);
+            NavigationManager.NavigateTo("/profile", forceLoad: true);
         }
     }
 
@@ -199,7 +199,7 @@
                 await Task.Delay(1000);
 
                 // Redirigir
-                string redirectUrl = user.UserRole == "Admin" ? "/admin" : "/dashboard";
+                string redirectUrl = user.UserRole == "Admin" ? "/admin" : "/profile";
                 await JSRuntime.InvokeVoidAsync("eval", $"window.location.href = '{redirectUrl}'");
             }
             else
