@@ -1,5 +1,17 @@
-﻿body {
+﻿.btnLogin {
+    background: rgba(76, 175, 80, 0.25);
+    border-color: rgba(76, 175, 80, 0.5);
+    color: white;
+    font-weight: 300;
+    box-shadow: 0 0 12px rgba(76, 175, 80, 0.3);
+    border-radius: 20px;
+    padding: 0.5rem 1rem;
+    text-decoration:none;
 }
+
+    .btnLogin:hover {
+        transform: translateY(-2px);
+    }
 
 /*Formulario de cerrar sesion (OJO; UBICAR DONDE ESTA ESA CLASE) */
 .logout-form {

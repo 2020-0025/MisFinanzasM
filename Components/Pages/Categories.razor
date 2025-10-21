@@ -42,7 +42,7 @@
         {
             <div class="alert alert-success alert-dismissible fade show" role="alert">
                 @successMessage
-                <button type="button" class="btn-close" @onclick="() => successMessage = null"></button>
+                <button type="button" class="btn-close" @onclick="() => successMessage = null">❌</button>
             </div>
         }
 
@@ -50,7 +50,7 @@
         {
             <div class="alert alert-danger alert-dismissible fade show" role="alert">
                 @errorMessage
-                <button type="button" class="btn-close" @onclick="() => errorMessage = null"></button>
+                <button type="button" class="btn-close" @onclick="() => errorMessage = null">❌</button>
             </div>
         }
 
@@ -92,8 +92,8 @@
                     }
                     else
                     {
-                        <div class="col-12">
-                            <p class="text-white text-center">No hay categorías de gastos. Crea una para comenzar.</p>
+                        <div class="col-12 glass-card">
+                            <p class="text-warning text-center mt-1">No hay categorías de gastos. Crea una para comenzar.</p>
                         </div>
                     }
                 </div>
@@ -128,27 +128,15 @@
                     }
                     else
                     {
-                        <div class="col-12">
-                            <p class="text-white text-center">No hay categorías de ingresos. Crea una para comenzar.</p>
+                        <div class="col-12 glass-card">
+                            <p class="text-warning text-center mt-1">No hay categorías de ingresos. Crea una para comenzar.</p>
                         </div>
                     }
                 </div>
             </div>
 
-
-
-
-
-
-
-
-
-
-
-
         }
-
-        
+   
     }
 </div>
 
@@ -158,12 +146,12 @@
     <div class="modal-backdrop show"></div>
     <div class="modal show d-block" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content bg-dark text-white">
+            <div class="modal-content text-white">
                 <div class="modal-header border-secondary">
                     <h5 class="modal-title">
                         @(isEditing ? "✏️ Editar Categoría" : "➕ Nueva Categoría")
                     </h5>
-                    <button type="button" class="btn-close btn-close-white" @onclick="CloseModal"></button>
+                    <button type="button" class="btn-close" @onclick="CloseModal">❌</button>
                 </div>
                 <div class="modal-body">
                     <EditForm Model="formModel" OnValidSubmit="SaveCategory">
@@ -177,20 +165,20 @@
 
                         <div class="mb-3">
                             <label class="form-label">Tipo</label>
-                            <InputSelect @bind-Value="formModel.Type" class="form-select">
+                            <InputSelect @bind-Value="formModel.Type" class="form-select glass-card text-white">
                                 <option value="@TransactionType.Expense">📉 Gasto</option>
                                 <option value="@TransactionType.Income">📈 Ingreso</option>
                             </InputSelect>
                         </div>
 
                         <div class="mb-3">
-                             <label class="form-label">Icono</label>
+                             <label class="form-label"></label>
                               <IconSelector @bind-SelectedIcon="formModel.Icon" />
                               <ValidationMessage For="() => formModel.Icon" class="text-danger" />
                         </div>
 
                         <div class="d-grid gap-2">
-                            <button type="submit" class="btn btn-primary" disabled="@isSaving">
+                            <button type="submit" class="btnSaveEdit" disabled="@isSaving">
                                 @if (isSaving)
                                 {
                                     <span class="spinner-border spinner-border-sm me-2"></span>
@@ -201,7 +189,7 @@
                                     <span>Guardar</span>
                                 }
                             </button>
-                            <button type="button" class="btn btn-secondary" @onclick="CloseModal">Cancelar</button>
+                            <button type="button" class="btnCancel" @onclick="CloseModal">Cancelar</button>
                         </div>
                     </EditForm>
                 </div>
@@ -216,20 +204,20 @@
     <div class="modal-backdrop show"></div>
     <div class="modal show d-block" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content bg-dark text-white">
+            <div class="modal-content text-white">
                 <div class="modal-header border-secondary">
                     <h5 class="modal-title">⚠️ Confirmar Eliminación</h5>
-                    <button type="button" class="btn-close btn-close-white" @onclick="CancelDelete"></button>
+                    <button type="button" class="btn-close" @onclick="CancelDelete">❌</button>
                 </div>
                 <div class="modal-body">
-                    <p>¿Estás seguro de que deseas eliminar la categoría <strong>@categoryToDelete</strong>?</p>
+                    <p>¿Estás seguro de que deseas eliminar la categoría: <strong>@categoryToDelete</strong>?</p>
                     <p class="text-danger mb-0">
                         <small>Esta acción no se puede deshacer.</small>
                     </p>
                 </div>
                 <div class="modal-footer border-secondary">
-                    <button type="button" class="btn btn-secondary" @onclick="CancelDelete">Cancelar</button>
-                    <button type="button" class="btn btn-danger" @onclick="DeleteCategory">
+                    <button type="button" class="btnCancel" @onclick="CancelDelete">Cancelar</button>
+                    <button type="button" class="btnDelete" @onclick="DeleteCategory">
                         <i class="bi bi-trash"></i> Eliminar
                     </button>
                 </div>

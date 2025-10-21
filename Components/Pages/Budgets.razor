@@ -28,7 +28,7 @@
             <div class="d-flex justify-content-between align-items-center flex-wrap">
                 <div class="mb-3 mb-md-0">
                     <h1>💰 Presupuestos</h1>
-                    <p class="mb-0">Controla tus gastos por categoría</p>
+                    <p class="mb-0 text-white">Controla tus gastos por categoría</p>
                 </div>
                 <button class="btnAddBudgets" @onclick="OpenCreateModal">
                     <i class="bi bi-plus-circle"></i> Nuevo Presupuesto
@@ -79,13 +79,13 @@
             <div class="row">
                 <div class="col-md-4">
                     <div class="summary-item">
-                        <span class="summary-label">Presupuesto Total</span>
+                        <span class="summary-label text-white">Presupuesto Total</span>
                         <h3 class="text-primary">@totalBudget.ToString("C")</h3>
                     </div>
                 </div>
                 <div class="col-md-4">
                     <div class="summary-item">
-                        <span class="summary-label">Gastado Total</span>
+                        <span class="summary-label text-white">Gastado Total</span>
                         <h3 class="@(totalSpent > totalBudget ? "text-danger" : "text-warning")">
                             @totalSpent.ToString("C")
                         </h3>
@@ -93,7 +93,7 @@
                 </div>
                 <div class="col-md-4">
                     <div class="summary-item">
-                        <span class="summary-label">Disponible</span>
+                        <span class="summary-label text-white">Disponible</span>
                         <h3 class="@(totalAvailable >= 0 ? "text-success" : "text-danger")">
                             @totalAvailable.ToString("C")
                         </h3>
@@ -104,7 +104,7 @@
             <div class="progress mt-3" style="height: 30px; background-color:rgba(255, 255, 255, 0.05);">
                 <div class="progress-bar @GetProgressBarClass(totalPercentage)"
                      role="progressbar"
-                     style="width: @Math.Min(totalPercentage, 100)%"
+                     style="color:black; height:15px; width: @Math.Min(totalPercentage, 100)%"
                      aria-valuenow="@totalPercentage"
                      aria-valuemin="0"
                      aria-valuemax="100">
@@ -118,7 +118,7 @@
         {
             <div class="alert alert-success alert-dismissible fade show" role="alert">
                 @successMessage
-                <button type="button" class="btn-close" @onclick="() => successMessage = null"></button>
+                <button type="button" class="btn-close" @onclick="() => successMessage = null">❌</button>
             </div>
         }
 
@@ -126,7 +126,7 @@
         {
             <div class="alert alert-danger alert-dismissible fade show" role="alert">
                 @errorMessage
-                <button type="button" class="btn-close" @onclick="() => errorMessage = null"></button>
+                <button type="button" class="btn-close" @onclick="() => errorMessage = null">❌</button>
             </div>
         }
 
@@ -164,7 +164,7 @@
                                             <span class="category-icon">@budget.CategoryIcon</span>
                                             <div>
                                                 <h5 class="mb-0">@budget.CategoryTitle</h5>
-                                                <small class="text-muted">@budget.Name</small>
+                                                <small class="text-white">@budget.Name</small>
                                             </div>
                                         </div>
                                         <div class="budget-actions">
@@ -179,13 +179,13 @@
 
                                     <div class="budget-amounts">
                                         <div class="d-flex justify-content-between mb-2">
-                                            <span>Gastado: <strong>@budget.SpentAmount.ToString("C")</strong></span>
-                                            <span>Presupuesto: <strong>@budget.AssignedAmount.ToString("C")</strong></span>
+                                            <span class="text-white">Gastado: <strong>@budget.SpentAmount.ToString("C")</strong></span>
+                                            <span class="text-white">Presupuesto: <strong>@budget.AssignedAmount.ToString("C")</strong></span>
                                         </div>
                                         <div class="progress" style="height: 20px;">
                                             <div class="progress-bar @GetProgressBarClass(budget.UsedPercentage)"
                                                  role="progressbar"
-                                                 style="width: @Math.Min(budget.UsedPercentage, 100)%"
+                                                 style="color:black; height:13px; width: @Math.Min(budget.UsedPercentage, 100)%"
                                                  aria-valuenow="@budget.UsedPercentage"
                                                  aria-valuemin="0"
                                                  aria-valuemax="100">
@@ -201,7 +201,7 @@
                                     </div>
 
                                     <div class="budget-status mt-2">
-                                        <span class="badge @GetStatusBadgeClass(budget)">
+                                        <span class=" text-dark badge @GetStatusBadgeClass(budget)">
                                             @budget.StatusDisplay
                                         </span>
                                     </div>
@@ -221,30 +221,30 @@
     <div class="modal-backdrop show"></div>
     <div class="modal show d-block" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content bg-dark text-white">
+            <div class="modal-content text-white">
                 <div class="modal-header border-secondary">
                     <h5 class="modal-title">
                         @(isEditing ? "✏️ Editar Presupuesto" : "➕ Nuevo Presupuesto")
                     </h5>
-                    <button type="button" class="btn-close btn-close-white" @onclick="CloseModal"></button>
+                    <button type="button" class="btn-close" @onclick="CloseModal">❌</button>
                 </div>
                 <div class="modal-body">
                     <EditForm Model="formModel" OnValidSubmit="SaveBudget">
                         <DataAnnotationsValidator />
 
                         <div class="mb-3">
-                            <label class="form-label">Categoría</label>
-                            <select class="form-select" @bind="formModel.CategoryId" disabled="@isEditing">
+                            <label class="form-label">Categoría: </label>
+                             <select class="form-select" @bind="formModel.CategoryId" disabled="@isEditing">
                                 <option value="0">Selecciona una categoría</option>
                                 @foreach (var category in expenseCategories)
                                 {
                                     <option value="@category.CategoryId">@category.Icon @category.Title</option>
                                 }
-                            </select>
+                            </select> 
                             <ValidationMessage For="() => formModel.CategoryId" class="text-danger" />
                             @if (isEditing)
                             {
-                                <small class="form-text text-muted">No se puede cambiar la categoría</small>
+                                <small class="form-text text-warning">No se puede cambiar la categoría</small>
                             }
                         </div>
 
@@ -262,8 +262,8 @@
 
                         <div class="row">
                             <div class="col-md-6 mb-3">
-                                <label class="form-label">Mes</label>
-                                <select class="form-select" @bind="formModel.Month" disabled="@isEditing">
+                                <label class="form-label">Mes: </label>
+                                 <select class="form-select" @bind="formModel.Month" disabled="@isEditing">
                                     <option value="1">Enero</option>
                                     <option value="2">Febrero</option>
                                     <option value="3">Marzo</option>
@@ -276,30 +276,30 @@
                                     <option value="10">Octubre</option>
                                     <option value="11">Noviembre</option>
                                     <option value="12">Diciembre</option>
-                                </select>
+                                </select> 
                                 @if (isEditing)
                                 {
-                                    <small class="form-text text-muted">No se puede cambiar el mes</small>
+                                    <small class="form-text text-warning"> No se puede cambiar el mes</small>
                                 }
                             </div>
 
                             <div class="col-md-6 mb-3">
-                                <label class="form-label">Año</label>
-                                <select class="form-select" @bind="formModel.Year" disabled="@isEditing">
+                                <label class="form-label">Año: </label>
+                                 <select class="form-select" @bind="formModel.Year" disabled="@isEditing">
                                     @for (int year = DateTime.Now.Year - 1; year <= DateTime.Now.Year + 2; year++)
                                     {
                                         <option value="@year">@year</option>
                                     }
-                                </select>
+                                </select> 
                                 @if (isEditing)
                                 {
-                                    <small class="form-text text-muted">No se puede cambiar el año</small>
+                                    <small class="form-text text-warning"> No se puede cambiar el año</small>
                                 }
                             </div>
                         </div>
 
                         <div class="d-grid gap-2">
-                            <button type="submit" class="btn btn-primary" disabled="@isSaving">
+                            <button type="submit" class="btnSaveEdit" disabled="@isSaving">
                                 @if (isSaving)
                                 {
                                     <span class="spinner-border spinner-border-sm me-2"></span>
@@ -310,7 +310,7 @@
                                     <span>Guardar Presupuesto</span>
                                 }
                             </button>
-                            <button type="button" class="btn btn-secondary" @onclick="CloseModal">Cancelar</button>
+                            <button type="button" class="btnCancel" @onclick="CloseModal">Cancelar</button>
                         </div>
                     </EditForm>
                 </div>
@@ -325,10 +325,10 @@
     <div class="modal-backdrop show"></div>
     <div class="modal show d-block" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content bg-dark text-white">
+            <div class="modal-content text-white">
                 <div class="modal-header border-secondary">
                     <h5 class="modal-title">⚠️ Eliminar Presupuesto</h5>
-                    <button type="button" class="btn-close btn-close-white" @onclick="CloseDeleteModal"></button>
+                    <button type="button" class="btn-close" @onclick="CloseDeleteModal">❌</button>
                 </div>
                 <div class="modal-body">
                     <p>¿Estás seguro de que deseas eliminar el presupuesto de <strong>@budgetToDelete</strong>?</p>
@@ -337,8 +337,8 @@
                     </p>
                 </div>
                 <div class="modal-footer border-secondary">
-                    <button type="button" class="btn btn-secondary" @onclick="CloseDeleteModal">Cancelar</button>
-                    <button type="button" class="btn btn-danger" @onclick="DeleteBudget">
+                    <button type="button" class="btnCancel" @onclick="CloseDeleteModal">Cancelar</button>
+                    <button type="button" class="btnDelete" @onclick="DeleteBudget">
                         <i class="bi bi-trash"></i> Eliminar
                     </button>
                 </div>

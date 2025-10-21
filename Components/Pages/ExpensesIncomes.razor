@@ -29,14 +29,14 @@
         <div class="page-header">
             <div class="d-flex justify-content-between align-items-center flex-wrap">
                 <div class="mb-3 mb-md-0">
-                    <h1>💰 Gastos e Ingresos</h1>
-                    <p class="mb-0">Administra tus transacciones financieras</p>
+                    <h1>💸 Gastos e Ingresos</h1>
+                    <p class="mb-0 text-white">Registra tus Gastos e Ingresos</p>
                 </div>
                 <div class="d-flex gap-2">
-                    <button class="btn btn-danger" @onclick="() => OpenModal(TransactionType.Expense)">
+                    <button class="btnDelete" @onclick="() => OpenModal(TransactionType.Expense)">
                         <i class="bi bi-dash-circle"></i> Agregar Gasto
                     </button>
-                    <button class="btn btn-success" @onclick="() => OpenModal(TransactionType.Income)">
+                    <button class="btnSaveEdit" @onclick="() => OpenModal(TransactionType.Income)">
                         <i class="bi bi-plus-circle"></i> Agregar Ingreso
                     </button>
                 </div>
@@ -49,7 +49,7 @@
                 <div class="balance-card income">
                     <div class="balance-icon">📈</div>
                     <div class="balance-info">
-                        <p>Total Ingresos</p>
+                        <p class="text-success">Total Ingresos</p>
                         <h3>@totalIngresos.ToString("C")</h3>
                     </div>
                 </div>
@@ -58,7 +58,7 @@
                 <div class="balance-card expense">
                     <div class="balance-icon">📉</div>
                     <div class="balance-info">
-                        <p>Total Gastos</p>
+                        <p class="text-danger">Total Gastos</p>
                         <h3>@totalGastos.ToString("C")</h3>
                     </div>
                 </div>
@@ -67,7 +67,7 @@
                 <div class="balance-card balance">
                     <div class="balance-icon">💵</div>
                     <div class="balance-info">
-                        <p>Balance</p>
+                        <p class="text-info">Balance</p>
                         <h3>@balance.ToString("C")</h3>
                     </div>
                 </div>
@@ -79,7 +79,7 @@
         {
             <div class="alert alert-success alert-dismissible fade show" role="alert">
                 @successMessage
-                <button type="button" class="btn-close" @onclick="() => successMessage = null"></button>
+                <button type="button" class="btn-close" @onclick="() => successMessage = null">❌</button>
             </div>
         }
 
@@ -87,7 +87,7 @@
         {
             <div class="alert alert-danger alert-dismissible fade show" role="alert">
                 @errorMessage
-                <button type="button" class="btn-close" @onclick="() => errorMessage = null"></button>
+                <button type="button" class="btn-close" @onclick="() => errorMessage = null">❌</button>
             </div>
         }
 
@@ -175,12 +175,12 @@
     <div class="modal-backdrop show"></div>
     <div class="modal show d-block" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content bg-dark text-white">
+            <div class="modal-content text-white">
                 <div class="modal-header border-secondary">
                     <h5 class="modal-title">
                         @(isEditing ? "✏️ Editar" : (currentType == TransactionType.Income ? "📈 Agregar Ingreso" : "📉 Agregar Gasto"))
                     </h5>
-                    <button type="button" class="btn-close btn-close-white" @onclick="CloseModal"></button>
+                    <button type="button" class="btn-close" @onclick="CloseModal">❌</button>
                 </div>
                 <div class="modal-body">
                     <EditForm Model="formModel" OnValidSubmit="SaveTransaction">
@@ -188,7 +188,7 @@
 
                         <div class="mb-3">
                             <label class="form-label">Categoría</label>
-                            <InputSelect @bind-Value="formModel.CategoryId" class="form-select">
+                            <InputSelect @bind-Value="formModel.CategoryId" class="form-select glass-card text-white">
                                 <option value="0">Selecciona una categoría</option>
                                 @foreach (var category in availableCategories)
                                 {
@@ -216,7 +216,7 @@
                         </div>
 
                         <div class="d-grid gap-2">
-                            <button type="submit" class="btn btn-primary" disabled="@isSaving">
+                            <button type="submit" class="btnSaveEdit" disabled="@isSaving">
                                 @if (isSaving)
                                 {
                                     <span class="spinner-border spinner-border-sm me-2"></span>
@@ -227,7 +227,7 @@
                                     <span>Guardar</span>
                                 }
                             </button>
-                            <button type="button" class="btn btn-secondary" @onclick="CloseModal">Cancelar</button>
+                            <button type="button" class="btnCancel" @onclick="CloseModal">Cancelar</button>
                         </div>
                     </EditForm>
                 </div>
@@ -242,21 +242,21 @@
     <div class="modal-backdrop show"></div>
     <div class="modal show d-block" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content bg-dark text-white">
+            <div class="modal-content text-white">
                 <div class="modal-header border-secondary">
                     <h5 class="modal-title">⚠️ Confirmar Eliminación</h5>
-                    <button type="button" class="btn-close btn-close-white" @onclick="CancelDelete"></button>
+                    <button type="button" class="btn-close" @onclick="CancelDelete">❌</button>
                 </div>
                 <div class="modal-body">
-                    <p>¿Estás seguro de que deseas eliminar esta transacción?</p>
-                    <p class="text-muted"><strong>@transactionToDelete</strong></p>
+                    <p>¿Estás seguro de que deseas eliminar este registro?</p>
+                    <p class="text-white"><strong>@transactionToDelete</strong></p>
                     <p class="text-danger mb-0">
                         <small>Esta acción no se puede deshacer.</small>
                     </p>
                 </div>
                 <div class="modal-footer border-secondary">
-                    <button type="button" class="btn btn-secondary" @onclick="CancelDelete">Cancelar</button>
-                    <button type="button" class="btn btn-danger" @onclick="DeleteTransaction">
+                    <button type="button" class="btnCancel" @onclick="CancelDelete">Cancelar</button>
+                    <button type="button" class="btnDelete" @onclick="DeleteTransaction">
                         <i class="bi bi-trash"></i> Eliminar
                     </button>
                 </div>

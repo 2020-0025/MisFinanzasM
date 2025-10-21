@@ -60,19 +60,19 @@
         <!-- Filtros -->
         <div class="filters-card">
             <div class="btn-group" role="group">
-                <button class="btn @(currentFilter == GoalStatus.InProgress ? "btn-primary" : "btn-outline-primary")"
+                <button class="text-white btn @(currentFilter == GoalStatus.InProgress ? "" : "btn-outline-primary")"
                         @onclick="() => FilterGoals(GoalStatus.InProgress)">
                     🟢 En Progreso (@activeCount)
                 </button>
-                <button class="btn @(currentFilter == GoalStatus.Completed ? "btn-success" : "btn-outline-success")"
+                <button class="text-white btn @(currentFilter == GoalStatus.Completed ? "" : "btn-outline-success")"
                         @onclick="() => FilterGoals(GoalStatus.Completed)">
                     ✅ Completadas (@completedCount)
                 </button>
-                <button class="btn @(currentFilter == GoalStatus.Cancelled ? "btn-secondary" : "btn-outline-secondary")"
+                <button class="text-white btn @(currentFilter == GoalStatus.Cancelled ? "" : "btn-outline-secondary")"
                         @onclick="() => FilterGoals(GoalStatus.Cancelled)">
                     ❌ Canceladas (@cancelledCount)
                 </button>
-                <button class="btn @(currentFilter == null ? "btn-info" : "btn-outline-info")"
+                <button class="text-white btn @(currentFilter == null ? "" : "btn-outline-info")"
                         @onclick="() => FilterGoals(null)">
                     📋 Todas (@allGoals.Count)
                 </button>
@@ -84,7 +84,7 @@
         {
             <div class="alert alert-success alert-dismissible fade show" role="alert">
                 @successMessage
-                <button type="button" class="btn-close" @onclick="() => successMessage = null"></button>
+                <button type="button" class="btn-close" @onclick="() => successMessage = null">❌</button>
             </div>
         }
 
@@ -92,7 +92,7 @@
         {
             <div class="alert alert-danger alert-dismissible fade show" role="alert">
                 @errorMessage
-                <button type="button" class="btn-close" @onclick="() => errorMessage = null"></button>
+                <button type="button" class="btn-close" @onclick="() => errorMessage = null">❌</button>
             </div>
         }
 
@@ -129,7 +129,7 @@
                                     <div class="goal-icon">@goal.Icon</div>
                                     <div class="flex-grow-1">
                                         <h4>@goal.Title</h4>
-                                        <span class="badge bg-@GetStatusBadgeColor(goal.Status)">
+                                        <span class="text-dark badge bg-@GetStatusBadgeColor(goal.Status)">
                                             @goal.StatusDisplay
                                         </span>
                                     </div>
@@ -155,7 +155,7 @@
 
                             @if (!string.IsNullOrWhiteSpace(goal.Description))
                             {
-                                <p class="goal-description">@goal.Description</p>
+                                <p class="text-white goal-description">@goal.Description</p>
                             }
 
                             <div class="goal-progress">
@@ -177,11 +177,11 @@
                             <div class="goal-dates">
                                 <div class="row">
                                     <div class="col-6">
-                                        <small class="text-muted">Inicio:</small>
+                                        <small class="text-white">Inicio:</small>
                                         <p class="mb-0">@goal.StartDate.ToString("dd/MM/yyyy")</p>
                                     </div>
                                     <div class="col-6">
-                                        <small class="text-muted">Meta:</small>
+                                        <small class="text-white">Meta:</small>
                                         <p class="mb-0 @(goal.IsOverdue ? "text-danger" : "")">
                                             @goal.TargetDate.ToString("dd/MM/yyyy")
                                             @if (goal.Status == GoalStatus.InProgress)
@@ -213,58 +213,58 @@
     <div class="modal-backdrop show"></div>
     <div class="modal show d-block" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered modal-lg">
-            <div class="modal-content bg-dark text-white">
+            <div class="modal-content text-white">
                 <div class="modal-header border-secondary">
                     <h5 class="modal-title">
                         @(isEditing ? "✏️ Editar Meta" : "🎯 Nueva Meta")
                     </h5>
-                    <button type="button" class="btn-close btn-close-white" @onclick="CloseModal"></button>
+                    <button type="button" class="btn-close" @onclick="CloseModal">❌</button>
                 </div>
                 <div class="modal-body">
                     <EditForm Model="formModel" OnValidSubmit="SaveGoal">
                         <DataAnnotationsValidator />
 
                         <div class="row">
-                            <div class="col-md-8 mb-3">
-                                <label class="form-label">Nombre de la Meta</label>
+                            <div class="col-md-7 mb-0">
+                                <label class="form-label text-white">Nombre de la Meta</label>
                                 <InputText @bind-Value="formModel.Name" class="form-control" placeholder="Ej: Fondo de emergencia" />
                                 <ValidationMessage For="() => formModel.Name" class="text-danger" />
                             </div>
 
-                            <div class="col-md-4 mb-3">
-                                <label class="form-label">Icono</label>
+                            <div class="col-md-4 mb-0">
+                                @* <label class="form-label">Icono</label> *@
                                 <IconSelector @bind-SelectedIcon="formModel.Icon" />
                                 <ValidationMessage For="() => formModel.Icon" class="text-danger" />
                             </div>
                         </div>
 
-                        <div class="mb-3">
-                            <label class="form-label">Descripción (Opcional)</label>
+                        <div class="mb-1 mt-0">
+                            <label class="form-label text-white">Descripción (Opcional)</label>
                             <InputTextArea @bind-Value="formModel.Description" class="form-control" rows="2" placeholder="Describe tu meta..." />
                         </div>
 
                         <div class="row">
                             <div class="col-md-4 mb-3">
-                                <label class="form-label">Monto Objetivo</label>
+                                <label class="form-label text-white">Monto Objetivo</label>
                                 <InputNumber @bind-Value="formModel.TargetAmount" class="form-control" placeholder="0.00" />
                                 <ValidationMessage For="() => formModel.TargetAmount" class="text-danger" />
                             </div>
 
                             <div class="col-md-4 mb-3">
-                                <label class="form-label">Fecha Inicio</label>
+                                <label class="form-label text-white">Fecha Inicio</label>
                                 <InputDate @bind-Value="formModel.StartDate" class="form-control" />
                                 <ValidationMessage For="() => formModel.StartDate" class="text-danger" />
                             </div>
 
                             <div class="col-md-4 mb-3">
-                                <label class="form-label">Fecha Meta</label>
+                                <label class="form-label text-white">Fecha Meta</label>
                                 <InputDate @bind-Value="formModel.TargetDate" class="form-control" />
                                 <ValidationMessage For="() => formModel.TargetDate" class="text-danger" />
                             </div>
                         </div>
 
                         <div class="d-grid gap-2">
-                            <button type="submit" class="btn btn-primary" disabled="@isSaving">
+                            <button type="submit" class="btnSaveEdit" disabled="@isSaving">
                                 @if (isSaving)
                                 {
                                     <span class="spinner-border spinner-border-sm me-2"></span>
@@ -275,7 +275,7 @@
                                     <span>Guardar Meta</span>
                                 }
                             </button>
-                            <button type="button" class="btn btn-secondary" @onclick="CloseModal">Cancelar</button>
+                            <button type="button" class="btnCancel" @onclick="CloseModal">Cancelar</button>
                         </div>
                     </EditForm>
                 </div>
@@ -290,20 +290,20 @@
     <div class="modal-backdrop show"></div>
     <div class="modal show d-block" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content bg-dark text-white">
+            <div class="modal-content text-white">
                 <div class="modal-header border-secondary">
                     <h5 class="modal-title">💰 Agregar Progreso</h5>
-                    <button type="button" class="btn-close btn-close-white" @onclick="CloseProgressModal"></button>
+                    <button type="button" class="btn-close" @onclick="CloseProgressModal">❌</button>
                 </div>
                 <div class="modal-body">
                     @if (selectedGoal != null)
                     {
                         <div class="mb-3">
                             <h6>@selectedGoal.Icon @selectedGoal.Title</h6>
-                            <p class="text-muted mb-0">
+                            <p class="text-info mb-0">
                                 Actual: @selectedGoal.CurrentAmount.ToString("C") / @selectedGoal.TargetAmount.ToString("C")
                             </p>
-                            <p class="text-muted">
+                            <p class="text-warning">
                                 Faltante: @selectedGoal.RemainingAmount.ToString("C")
                             </p>
                         </div>
@@ -316,16 +316,16 @@
                             <DataAnnotationsValidator />
 
                             <div class="mb-3">
-                                <label class="form-label">Monto a Agregar</label>
+                                <label class="form-label text-white">Monto a Agregar</label>
                                 <InputNumber @bind-Value="progressModel.Amount" class="form-control" placeholder="0.00" />
                                 <ValidationMessage For="() => progressModel.Amount" class="text-danger" />
-                                <small class="form-text text-muted">
+                                <small class="form-text text-danger">
                                     Máximo: @Math.Min(availableBalance, selectedGoal.RemainingAmount).ToString("C")
                                 </small>
                             </div>
 
                             <div class="d-grid gap-2">
-                                <button type="submit" class="btn btn-success" disabled="@isSaving">
+                                <button type="submit" class="btnSaveEdit" disabled="@isSaving">
                                     @if (isSaving)
                                     {
                                         <span class="spinner-border spinner-border-sm me-2"></span>
@@ -336,7 +336,7 @@
                                         <span>Agregar Progreso</span>
                                     }
                                 </button>
-                                <button type="button" class="btn btn-secondary" @onclick="CloseProgressModal">Cancelar</button>
+                                <button type="button" class="btnCancel" @onclick="CloseProgressModal">Cancelar</button>
                             </div>
                         </EditForm>
                     }
@@ -352,20 +352,20 @@
     <div class="modal-backdrop show"></div>
     <div class="modal show d-block" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content bg-dark text-white">
+            <div class="modal-content text-white">
                 <div class="modal-header border-secondary">
                     <h5 class="modal-title">⚠️ Cancelar Meta</h5>
-                    <button type="button" class="btn-close btn-close-white" @onclick="CloseCancelModal"></button>
+                    <button type="button" class="btn-close" @onclick="CloseCancelModal">❌</button>
                 </div>
                 <div class="modal-body">
                     <p>¿Estás seguro de que deseas cancelar la meta <strong>@goalToCancel</strong>?</p>
-                    <p class="text-muted mb-0">
+                    <p class="text-white mb-0">
                         El progreso actual se mantendrá, pero la meta quedará marcada como cancelada.
                     </p>
                 </div>
                 <div class="modal-footer border-secondary">
-                    <button type="button" class="btn btn-secondary" @onclick="CloseCancelModal">No, mantener activa</button>
-                    <button type="button" class="btn btn-warning" @onclick="CancelGoal">
+                    <button type="button" class="btnCancel" @onclick="CloseCancelModal">No, mantener activa</button>
+                    <button type="button" class="btnDelete" @onclick="CancelGoal">
                         Sí, cancelar meta
                     </button>
                 </div>
@@ -380,10 +380,10 @@
     <div class="modal-backdrop show"></div>
     <div class="modal show d-block" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content bg-dark text-white">
+            <div class="modal-content text-white">
                 <div class="modal-header border-secondary">
                     <h5 class="modal-title">⚠️ Eliminar Meta</h5>
-                    <button type="button" class="btn-close btn-close-white" @onclick="CloseDeleteModal"></button>
+                    <button type="button" class="btn-close" @onclick="CloseDeleteModal">❌</button>
                 </div>
                 <div class="modal-body">
                     <p>¿Estás seguro de que deseas eliminar la meta <strong>@goalToDelete</strong>?</p>
@@ -392,8 +392,8 @@
                     </p>
                 </div>
                 <div class="modal-footer border-secondary">
-                    <button type="button" class="btn btn-secondary" @onclick="CloseDeleteModal">Cancelar</button>
-                    <button type="button" class="btn btn-danger" @onclick="DeleteGoal">
+                    <button type="button" class="btnCancel" @onclick="CloseDeleteModal">Cancelar</button>
+                    <button type="button" class="btnDelete" @onclick="DeleteGoal">
                         <i class="bi bi-trash"></i> Eliminar
                     </button>
                 </div>

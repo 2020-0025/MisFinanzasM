@@ -85,7 +85,6 @@
 }
 
     .transactions-card .card-header {
-        background: rgba(255, 255, 255, 0.05);
         border-bottom: 1px solid rgba(255, 255, 255, 0.2);
         padding: 20px 30px;
     }
@@ -111,7 +110,7 @@
 }
 
     .table-dark thead th {
-        background: rgba(255, 255, 255, 0.05);
+        background: transparent;
         border-color: rgba(255, 255, 255, 0.1);
         color: white;
         font-weight: 600;
@@ -125,13 +124,14 @@
     }
 
         .table-dark tbody tr:hover {
-            background: rgba(255, 255, 255, 0.05);
         }
 
     .table-dark tbody td {
         padding: 15px;
         vertical-align: middle;
         border-color: rgba(255, 255, 255, 0.1);
+        background: transparent;
+      
     }
 
 /* Alertas */
@@ -158,9 +158,14 @@
 
 .modal-content {
     background: rgba(255, 255, 255, 0.05);
-    backdrop-filter: blur(10px);
+    backdrop-filter: blur(20px);
     border: 1px solid rgba(255, 255, 255, 0.2);
     border-radius: 15px;
+    margin-top:20px;
+    /* 1. Define un límite de altura */
+    max-height: 475px;
+    /* 2. Muestra el scroll vertical SI es necesario */
+    overflow-y: auto;
 }
 
     .modal-content .form-control,
@@ -190,6 +195,54 @@
     .modal-content .form-select option {
         background: #212529;
         color: white;
+    }
+
+.btnSaveEdit {
+    background: rgba(76, 175, 80, 0.25);
+    border-color: rgba(76, 175, 80, 0.5);
+    color: white;
+    font-weight: 600;
+    box-shadow: 0 0 12px rgba(76, 175, 80, 0.3);
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+}
+
+    .btnSaveEdit:hover {
+        transform: translateY(-2px);
+    }
+
+.btnCancel {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+    padding: 10px 13px;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-block;
+    cursor: pointer;
+}
+
+    .btnCancel:hover {
+        transform: translateY(-2px);
+    }
+
+.btnDelete {
+    background: rgba(244, 67, 54, 0.15);
+    color: white;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    padding: 10px 13px;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-block;
+    cursor: pointer;
+}
+
+    .btnDelete:hover {
+        transform: translateY(-2px);
     }
 
 /* Responsive */
@@ -225,5 +278,12 @@
 
     .table-responsive {
         font-size: 0.85rem;
+    }
+
+    .modal-content {
+        /* 1. Define un límite de altura */
+        max-height: 350px;
+        /* 2. Muestra el scroll vertical SI es necesario */
+        overflow-y: auto;
     }
 }

@@ -1,61 +1,38 @@
-﻿// ===== CONFIGURACIÓN GLOBAL DE CHART.JS =====
-if (typeof Chart !== 'undefined') {
-    Chart.defaults.color = 'rgba(255, 255, 255, 0.8)';
-    Chart.defaults.borderColor = 'rgba(255, 255, 255, 0.1)';
-    Chart.defaults.font.family = "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif";
-}
+﻿// Helper para crear gráficos con Chart.js
 
-// Variables globales solo si no existen
-window.lineChartInstance = window.lineChartInstance || null;
-window.budgetChartInstance = window.budgetChartInstance || null;
+window.chartHelpers = {
+    // Crear gráfico de barras (Bar Chart)
+    createBarChart: function (canvasId, labels, incomeData, expenseData) {
+        const ctx = document.getElementById(canvasId);
+        if (!ctx) return null;
 
-// ===== GRÁFICO DE LÍNEAS: GASTOS VS INGRESOS =====
-window.renderLineChart = function (labels, incomeData, expenseData) {
-    const ctx = document.getElementById('lineChart');
-    if (!ctx) {
-        console.error('Canvas lineChart not found');
-        return;
-    }
+        // Destruir gráfico anterior si existe
+        if (ctx.chart) {
+            ctx.chart.destroy();
+        }
 
-    // Destruir instancia anterior
-    if (window.lineChartInstance) {
-        window.lineChartInstance.destroy();
-        window.lineChartInstance = null;
-    }
-
-    try {
-        window.lineChartInstance = new Chart(ctx, {
-            type: 'line',
+        const chart = new Chart(ctx, {
+            type: 'bar',
             data: {
                 labels: labels,
                 datasets: [
                     {
                         label: 'Ingresos',
                         data: incomeData,
-                        borderColor: '#4CAF50',
-                        backgroundColor: 'rgba(76, 175, 80, 0.1)',
-                        borderWidth: 3,
-                        tension: 0.4,
-                        fill: true,
-                        pointBackgroundColor: '#4CAF50',
-                        pointBorderColor: '#fff',
-                        pointBorderWidth: 2,
-                        pointRadius: 4,
-                        pointHoverRadius: 6
+                        backgroundColor: 'rgba(16, 185, 129, 0.8)',
+                        borderColor: 'rgba(16, 185, 129, 1)',
+                        borderWidth: 2,
+                        borderRadius: 8,
+                        borderSkipped: false,
                     },
                     {
                         label: 'Gastos',
                         data: expenseData,
-                        borderColor: '#F44336',
-                        backgroundColor: 'rgba(244, 67, 54, 0.1)',
-                        borderWidth: 3,
-                        tension: 0.4,
-                        fill: true,
-                        pointBackgroundColor: '#F44336',
-                        pointBorderColor: '#fff',
-                        pointBorderWidth: 2,
-                        pointRadius: 4,
-                        pointHoverRadius: 6
+                        backgroundColor: 'rgba(239, 68, 68, 0.8)',
+                        borderColor: 'rgba(239, 68, 68, 1)',
+                        borderWidth: 2,
+                        borderRadius: 8,
+                        borderSkipped: false,
                     }
                 ]
             },
@@ -63,41 +40,42 @@ window.renderLineChart = function (labels, incomeData, expenseData) {
                 responsive: true,
                 maintainAspectRatio: false,
                 interaction: {
+                    intersect: false,
                     mode: 'index',
-                    intersect: false
                 },
                 plugins: {
                     legend: {
                         display: true,
                         position: 'top',
                         labels: {
-                            color: 'rgba(255, 255, 255, 0.8)',
                             padding: 15,
                             font: {
                                 size: 12,
-                                weight: '500'
+                                family: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif"
                             },
-                            usePointStyle: true
+                            usePointStyle: true,
+                            pointStyle: 'circle',
+                            color: '#fff'
                         }
                     },
                     tooltip: {
                         backgroundColor: 'rgba(0, 0, 0, 0.8)',
-                        titleColor: '#fff',
-                        bodyColor: '#fff',
-                        borderColor: 'rgba(255, 255, 255, 0.2)',
-                        borderWidth: 1,
                         padding: 12,
-                        displayColors: true,
+                        cornerRadius: 8,
+                        titleFont: {
+                            size: 14,
+                            weight: 'bold'
+                        },
+                        bodyFont: {
+                            size: 13
+                        },
                         callbacks: {
                             label: function (context) {
                                 let label = context.dataset.label || '';
                                 if (label) {
                                     label += ': ';
                                 }
-                                label += new Intl.NumberFormat('es-DO', {
-                                    style: 'currency',
-                                    currency: 'DOP'
-                                }).format(context.parsed.y);
+                                label += 'RD$' + context.parsed.y.toLocaleString('es-DO');
                                 return label;
                             }
                         }
@@ -111,48 +89,57 @@ window.renderLineChart = function (labels, incomeData, expenseData) {
                             drawBorder: false
                         },
                         ticks: {
-                            color: 'rgba(255, 255, 255, 0.6)',
                             callback: function (value) {
-                                return new Intl.NumberFormat('es-DO', {
-                                    style: 'currency',
-                                    currency: 'DOP',
-                                    minimumFractionDigits: 0
-                                }).format(value);
-                            }
+                                return 'RD$' + value.toLocaleString('es-DO');
+                            },
+                            font: {
+                                size: 11
+                            },
+                            color: '#fff'
                         }
                     },
                     x: {
                         grid: {
-                            display: false
+                            display: false,
+                            drawBorder: false
                         },
                         ticks: {
-                            color: 'rgba(255, 255, 255, 0.6)'
+                            font: {
+                                size: 11
+                            },
+                            color: '#fff'
                         }
+                    }
+                },
+                animation: {
+                    duration: 1500,
+                    easing: 'easeInOutQuart',
+                    delay: (context) => {
+                        let delay = 0;
+                        if (context.type === 'data' && context.mode === 'default') {
+                            delay = context.dataIndex * 100 + context.datasetIndex * 50;
+                        }
+                        return delay;
                     }
                 }
             }
         });
-    } catch (error) {
-        console.error('Error creating line chart:', error);
-    }
-};
 
-// ===== GRÁFICO DE DONUT: PRESUPUESTOS =====
-window.renderBudgetChart = function (labels, values, colors) {
-    const ctx = document.getElementById('budgetChart');
-    if (!ctx) {
-        console.error('Canvas budgetChart not found');
-        return;
-    }
+        ctx.chart = chart;
+        return chart;
+    },
 
-    // Destruir instancia anterior
-    if (window.budgetChartInstance) {
-        window.budgetChartInstance.destroy();
-        window.budgetChartInstance = null;
-    }
+    // Crear gráfico de dona para presupuestos (Doughnut)
+    createBudgetChart: function (canvasId, labels, values, colors) {
+        const ctx = document.getElementById(canvasId);
+        if (!ctx) return null;
 
-    try {
-        window.budgetChartInstance = new Chart(ctx, {
+        // Destruir gráfico anterior si existe
+        if (ctx.chart) {
+            ctx.chart.destroy();
+        }
+
+        const chart = new Chart(ctx, {
             type: 'doughnut',
             data: {
                 labels: labels,
@@ -162,7 +149,8 @@ window.renderBudgetChart = function (labels, values, colors) {
                     borderColor: 'rgba(255, 255, 255, 0.1)',
                     borderWidth: 2,
                     hoverBorderColor: '#fff',
-                    hoverBorderWidth: 3
+                    hoverBorderWidth: 3,
+                    hoverOffset: 10
                 }]
             },
             options: {
@@ -180,23 +168,40 @@ window.renderBudgetChart = function (labels, values, colors) {
                         borderColor: 'rgba(255, 255, 255, 0.2)',
                         borderWidth: 1,
                         padding: 12,
+                        cornerRadius: 8,
                         callbacks: {
                             label: function (context) {
                                 let label = context.label || '';
                                 if (label) {
                                     label += ': ';
                                 }
-                                label += context.parsed.toFixed(0) + '%';
+                                label += context.parsed.toFixed(0) + '% usado';
                                 return label;
                             }
                         }
                     }
+                },
+                animation: {
+                    animateRotate: true,
+                    animateScale: true,
+                    duration: 1500,
+                    easing: 'easeInOutQuart'
                 }
             }
         });
-    } catch (error) {
-        console.error('Error creating budget chart:', error);
+
+        ctx.chart = chart;
+        return chart;
+    },
+
+    // Destruir gráfico
+    destroyChart: function (canvasId) {
+        const ctx = document.getElementById(canvasId);
+        if (ctx && ctx.chart) {
+            ctx.chart.destroy();
+            ctx.chart = null;
+        }
     }
 };
 
-console.log('✅ Dashboard charts script loaded');
+console.log('✅ Dashboard charts helpers loaded');

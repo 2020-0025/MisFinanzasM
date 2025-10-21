@@ -15,9 +15,9 @@
 <PageTitle>Iniciar Sesión - MisFinanzas</PageTitle>
 
 <div class="auth-container">
-    <div class="auth-card">
+    <div class="auth-card animate-slide-up">
         <div class="auth-header">
-            <h2>💰 Iniciar Sesión</h2>
+            <h2>🔑 Iniciar Sesión</h2>
             <p class="text-white">Accede a tu cuenta de MisFinanzas</p>
         </div>
 
@@ -57,16 +57,16 @@
                 <ValidationMessage For="() => loginModel.Password" class="text-danger" />
             </div>
 
-            <div class="form-check mb-3">
+            @* <div class="form-check mb-3">
                 <InputCheckbox @bind-Value="loginModel.RememberMe"
                                class="form-check-input"
                                id="rememberMe" />
                 <label class="form-check-label" for="rememberMe">
                     Recordarme
                 </label>
-            </div>
+            </div> *@
 
-            <button type="submit" class="btn btn-primary w-100 mb-3" disabled="@isLoading">
+            <button type="submit" class="btnLogin w-100 mb-3" disabled="@isLoading">
                 @if (isLoading)
                 {
                     <span class="spinner-border spinner-border-sm me-2"></span>
@@ -80,9 +80,9 @@
         </EditForm>
 
         <div class="auth-footer">
-            <p class="mb-2">
+            @* <p class="mb-2">
                 <a href="/forgot-password">¿Olvidaste tu contraseña?</a>
-            </p>
+            </p> *@
             <p>
                 ¿No tienes cuenta? <a href="/register">Regístrate aquí</a>
             </p>

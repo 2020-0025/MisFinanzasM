@@ -23,7 +23,7 @@
         <div class="header-icon">👤</div>
         <div>
             <h1>Mi Perfil</h1>
-            <p>Gestiona tu información personal</p>
+            <p class="text-white">Gestiona tu información personal</p>
         </div>
     </div>
 
@@ -96,15 +96,15 @@
                     else
                     {
                         <div class="info-row">
-                            <span class="info-label">Nombre de Usuario:</span>
+                            <span class="info-label text-white">Nombre de Usuario:</span>
                             <span class="info-value">@_userDto.UserName</span>
                         </div>
                         <div class="info-row">
-                            <span class="info-label">Correo Electrónico:</span>
+                            <span class="info-label text-white">Correo Electrónico:</span>
                             <span class="info-value">@_userDto.Email</span>
                         </div>
                         <div class="info-row">
-                            <span class="info-label">Rol:</span>
+                            <span class="info-label text-white">Rol:</span>
                             <span class="badge">@(_userDto.UserRole == "Admin" ? "Administrador" : "Usuario")</span>
                         </div>
 

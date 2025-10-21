@@ -15,9 +15,9 @@
 <PageTitle>Registrarse - MisFinanzas</PageTitle>
 
 <div class="auth-container">
-    <div class="auth-card">
+    <div class="auth-card animate-slide-up">
         <div class="auth-header">
-            <h2>💰 Crear Cuenta</h2>
+            <h2>🔑 Crear Cuenta</h2>
             <p class="text-white">Únete a MisFinanzas y gestiona tus finanzas</p>
         </div>
 
@@ -89,7 +89,7 @@
                 <ValidationMessage For="() => registerModel.ConfirmPassword" class="text-danger" />
             </div>
 
-            <button type="submit" class="btn btn-primary w-100 mb-3" disabled="@isLoading">
+            <button type="submit" class="btnLogin w-100 mb-3" disabled="@isLoading">
                 @if (isLoading)
                 {
                     <span class="spinner-border spinner-border-sm me-2"></span>

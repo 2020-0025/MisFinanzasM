@@ -82,6 +82,8 @@
     .profile-card:hover {
         transform: translateY(-4px);
         box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+        border-color: rgba(128, 0, 128, 0.5);
+        box-shadow: 0 12px 40px rgba(128, 0, 128, 0.5);
     }
 
 .danger-card {
@@ -149,7 +151,7 @@
 /* ===== BADGE ===== */
 .badge {
     padding: 0.4rem 0.85rem;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: rgba(128, 0, 128, 0.5);
     color: white;
     border-radius: 8px;
     font-size: 0.875rem;
@@ -230,7 +232,7 @@
 }
 
 .btn-primary {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: rgba(128, 0, 128, 0.5);
     color: white;
     box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
 }
@@ -256,9 +258,10 @@
     }
 
 .btn-danger {
-    background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%);
+    background: rgba(244, 67, 54, 0.15);
     color: white;
     box-shadow: 0 4px 12px rgba(244, 67, 54, 0.3);
+    border: 1px solid rgba(244, 67, 54, 0.3);
 }
 
     .btn-danger:hover {

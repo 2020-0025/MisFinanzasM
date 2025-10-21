@@ -26,13 +26,13 @@
             <div class="d-flex justify-content-between align-items-center">
                 <div>
                     <h1>👨‍💼 Panel de Administración</h1>
-                    <p class="mb-0">Gestiona usuarios y visualiza estadísticas del sistema</p>
+                    <p class="mb-0 text-white">Gestiona usuarios y visualiza estadísticas del sistema</p>
                 </div>
-                <div>
+                @* <div>
                     <a href="/logout" class="btn btn-danger">
                         <i class="bi bi-box-arrow-right"></i> Cerrar Sesión
                     </a>
-                </div>
+                </div> *@
             </div>
         </div>
 
@@ -43,7 +43,7 @@
                     <div class="stats-icon">👥</div>
                     <div class="stats-info">
                         <h3>@totalUsers</h3>
-                        <p>Total de Usuarios</p>
+                        <p class="text-white">Total de Usuarios</p>
                     </div>
                 </div>
             </div>
@@ -52,7 +52,7 @@
                     <div class="stats-icon">✅</div>
                     <div class="stats-info">
                         <h3>@activeUsers</h3>
-                        <p>Usuarios Activos</p>
+                        <p class="text-white">Usuarios Activos</p>
                     </div>
                 </div>
             </div>
@@ -61,7 +61,7 @@
                     <div class="stats-icon">⛔</div>
                     <div class="stats-info">
                         <h3>@inactiveUsers</h3>
-                        <p>Usuarios Inactivos</p>
+                        <p class="text-white">Usuarios Inactivos</p>
                     </div>
                 </div>
             </div>
@@ -72,7 +72,7 @@
         {
             <div class="alert alert-success alert-dismissible fade show" role="alert">
                 @successMessage
-                <button type="button" class="btn-close" @onclick="() => successMessage = null"></button>
+                <button type="button" class="btn-close" @onclick="() => successMessage = null">❌</button>
             </div>
         }
 
@@ -80,7 +80,7 @@
         {
             <div class="alert alert-danger alert-dismissible fade show" role="alert">
                 @errorMessage
-                <button type="button" class="btn-close" @onclick="() => errorMessage = null"></button>
+                <button type="button" class="btn-close" @onclick="() => errorMessage = null">❌</button>
             </div>
         }
 
@@ -164,7 +164,7 @@
                                             }
                                             else
                                             {
-                                                <span class="text-muted">
+                                                <span class="text-info">
                                                     <small>Protegido</small>
                                                 </span>
                                             }
@@ -186,10 +186,10 @@
     <div class="modal-backdrop show"></div>
     <div class="modal show d-block" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content bg-dark text-white">
+            <div class="modal-content text-white">
                 <div class="modal-header border-secondary">
                     <h5 class="modal-title">⚠️ Confirmar Eliminación</h5>
-                    <button type="button" class="btn-close btn-close-white" @onclick="CancelDelete"></button>
+                    <button type="button" class="btn-close" @onclick="CancelDelete">❌</button>
                 </div>
                 <div class="modal-body">
                     <p>¿Estás seguro de que deseas eliminar al usuario <strong>@userToDelete</strong>?</p>
@@ -198,8 +198,8 @@
                     </p>
                 </div>
                 <div class="modal-footer border-secondary">
-                    <button type="button" class="btn btn-secondary" @onclick="CancelDelete">Cancelar</button>
-                    <button type="button" class="btn btn-danger" @onclick="DeleteUser">
+                    <button type="button" class="btnCancel" @onclick="CancelDelete">Cancelar</button>
+                    <button type="button" class="btnDelete" @onclick="DeleteUser">
                         <i class="bi bi-trash"></i> Eliminar
                     </button>
                 </div>

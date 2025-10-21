@@ -3,15 +3,14 @@
 @using MisFinanzas.Domain.Entities
 @using MisFinanzas.Domain.Enums
 @using MisFinanzas.Infrastructure.Services
- @using MisFinanzas.Services
+@using MisFinanzas.Services
 @inject CategoryService CategoryService
 @inject ExpenseIncomeService ExpenseIncomeService
 @inject FinancialGoalService FinancialGoalService
-@inject BudgetService BudgetService 
-@inject NavigationManager Navigation 
+@inject BudgetService BudgetService
+@inject NavigationManager Navigation
 @inject IJSRuntime JSRuntime
 @using Microsoft.JSInterop
-
 
 <PageTitle>Dashboard - Mis Finanzas</PageTitle>
 
@@ -19,274 +18,377 @@
     @if (!isAuthorized)
     {
         <!-- Verificando autorización -->
-        <div class="loading-overlay">
-            <div class="spinner-border"></div>
-            <p>Verificando permisos...</p>
+        <div class="glass-card text-center py-5 animate-slide-up">
+            <div class="spinner-border text-success" role="status" style="width: 3rem; height: 3rem;">
+                <span class="visually-hidden">Verificando permisos...</span>
+            </div>
+            <p class="text-white-50 mt-3 mb-0">Verificando permisos...</p>
         </div>
     }
-    else if (_isLoading)
+    else if (isLoading)
     {
-        <!-- Cargando datos del dashboard -->
-        <div class="loading-overlay">
-            <div class="spinner-border"></div>
-            <p>Cargando dashboard...</p>
+        <div class="glass-card text-center py-5 animate-slide-up">
+            <div class="spinner-border text-success" role="status" style="width: 3rem; height: 3rem;">
+                <span class="visually-hidden">Cargando...</span>
+            </div>
+            <p class="text-white-50 mt-3 mb-0">Cargando tus datos financieros...</p>
         </div>
     }
     else
     {
-        <!-- CONTENIDO DEL DASHBOARD -->
-        <!-- Tarjetas de Resumen Superior -->
-        <div class="summary-cards">
-            <div class="summary-card balance-card">
-                <div class="card-icon">💵</div>
-                <div class="card-content">
-                    <h3>Balance Actual</h3>
-                    <p class="card-value @(_balance >= 0 ? "positive" : "negative")">
-                        @_balance.ToString("C")
-                    </p>
-                    <small>@DateTime.Now.ToString("MMMM yyyy")</small>
+        <!-- Header con efecto glass -->
+        <div class="glass-card dashboard-header animate-slide-up">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+                <div>
+                    <h1 class="h3 mb-1 text-white fw-bold">
+                        <span style="font-size: 32px;">📊</span>
+                        <strong>Dashboard</strong>
+                    </h1>
+                    <p class="text-white mb-0">Resumen de tus finanzas</p>
                 </div>
-            </div>
-
-            <div class="summary-card income-card">
-                <div class="card-icon">📈</div>
-                <div class="card-content">
-                    <h3>Ingresos del Mes</h3>
-                    <p class="card-value positive">@_totalIncome.ToString("C")</p>
-                    <small>@_incomeCount transacciones</small>
-                </div>
-            </div>
-
-            <div class="summary-card expense-card">
-                <div class="card-icon">📉</div>
-                <div class="card-content">
-                    <h3>Gastos del Mes</h3>
-                    <p class="card-value negative">@_totalExpenses.ToString("C")</p>
-                    <small>@_expenseCount transacciones</small>
-                </div>
-            </div>
-
-            <div class="summary-card goals-card">
-                <div class="card-icon">🎯</div>
-                <div class="card-content">
-                    <h3>Metas Activas</h3>
-                    <p class="card-value">@_activeGoalsCount</p>
-                    <small>@_completedGoalsCount completadas</small>
+                <div class="glass-badge">
+                    <span style="font-size: 17px;">📅</span>
+                    <span class="text-white">Últimos @selectedDays días</span>
                 </div>
             </div>
         </div>
 
-        <!-- Fila Principal: Gráfico de Líneas + Metas -->
-        <div class="main-row">
-            <!-- Gráfico de Gastos vs Ingresos -->
-            <div class="chart-card line-chart-card">
-                <div class="card-header">
-                    <h2>📊 Gastos vs Ingresos</h2>
-                    <div class="period-selector">
-                        <button class="period-btn @(_selectedPeriod == 7 ? "active" : "")"
-                                @onclick="() => ChangePeriod(7)">
-                            7 días
-                        </button>
-                        <button class="period-btn @(_selectedPeriod == 30 ? "active" : "")"
-                                @onclick="() => ChangePeriod(30)">
-                            30 días
-                        </button>
-                        <button class="period-btn @(_selectedPeriod == 90 ? "active" : "")"
-                                @onclick="() => ChangePeriod(90)">
-                            90 días
-                        </button>
+        <!-- Summary Cards -->
+        <div class="row g-4 mb-4">
+            <!-- Balance Card -->
+            <div class="col-xl-3 col-md-6">
+                <div class="glass-card stat-card animate-slide-up h-100">
+                    <div class="stat-card-body">
+                        <div class="stat-icon balance-icon">
+                            <span style="font-size: 32px;">💰</span>
+                        </div>
+                        <div class="stat-content">
+                            <p class="stat-label text-white">Balance</p>
+                            <h2 class="stat-value">@balance.ToString("C0")</h2>
+                            <small class="stat-subtitle text-white">
+                                <span style="font-size: 15px;">📅</span>@selectedDays días
+                            </small>
+                        </div>
+                    </div>
+                    <div class="stat-footer text-white">
+                        <span style="font-size: 17px;">💲</span>
+                        Balance actual
                     </div>
                 </div>
-                <div class="card-body">
-                    <canvas id="lineChart"></canvas>
+            </div>
+
+            <!-- Income Card -->
+            <div class="col-xl-3 col-md-6">
+                <div class="glass-card stat-card animate-slide-up h-100" style="animation-delay: 0.1s;">
+                    <div class="stat-card-body">
+                        <div class="stat-icon income-icon">
+                            <span style="font-size: 32px;">📈</span>
+                        </div>
+                        <div class="stat-content">
+                            <p class="stat-label text-white">Ingresos</p>
+                            <h2 class="stat-value text-info">@totalIncome.ToString("C0")</h2>
+                            <small class="stat-subtitle text-white">
+                                <span style="font-size: 15px;">🔼</span>Entradas
+                            </small>
+                        </div>
+                    </div>
+                    <div class="stat-footer text-white">
+                        <span style="font-size: 17px;">💵</span>
+                        Total recibido
+                    </div>
                 </div>
             </div>
 
-            <!-- Widget de Metas Activas -->
-            <div class="widget-card goals-widget">
-                <div class="card-header">
-                    <h2>🎯 Metas Activas</h2>
-                    <a href="/goals" class="view-all-link">Ver todas →</a>
-                </div>
-                <div class="card-body">
-                    @if (_topGoals.Any())
-                    {
-                        @foreach (var goal in _topGoals)
-                        {
-                            var percentage = goal.TargetAmount > 0 ? (goal.CurrentAmount / goal.TargetAmount) * 100 : 0;
-                            var daysRemaining = (goal.TargetDate - DateTime.Now).Days;
-
-                            <div class="goal-item">
-                                <div class="goal-header">
-                                    <span class="goal-name">@goal.Title</span>
-                                    <span class="goal-percentage">@percentage.ToString("F0")%</span>
-                                </div>
-                                <div class="progress-bar-container">
-                                    <div class="progress-bar-fill" style="width: @percentage%"></div>
-                                </div>
-                                <div class="goal-footer">
-                                    <span>@goal.CurrentAmount.ToString("C") / @goal.TargetAmount.ToString("C")</span>
-                                    @if (!goal.IsCompleted)
-                                    {
-                                        <span class="days-remaining">@daysRemaining días</span>
-                                    }
-                                </div>
-                            </div>
-                        }
-                    }
-                    else
-                    {
-                        <div class="empty-state">
-                            <p>No tienes metas activas</p>
-                            <a href="/goals" class="btn-create">Crear Meta</a>
+            <!-- Expense Card -->
+            <div class="col-xl-3 col-md-6">
+                <div class="glass-card stat-card animate-slide-up h-100" style="animation-delay: 0.2s;">
+                    <div class="stat-card-body">
+                        <div class="stat-icon expense-icon">
+                            <span style="font-size: 32px;">📉</span>
                         </div>
-                    }
+                        <div class="stat-content">
+                            <p class="stat-label text-white">Gastos</p>
+                            <h2 class="stat-value text-danger">@totalExpense.ToString("C0")</h2>
+                            <small class="stat-subtitle text-danger">
+                                <span style="font-size: 15px;">🔽</span>Salidas
+                            </small>
+                        </div>
+                    </div>
+                    <div class="stat-footer text-white">
+                        <span style="font-size: 17px;">🛒</span>
+                        Total gastado
+                    </div>
+                </div>
+            </div>
+
+            <!-- Goals Card -->
+            <div class="col-xl-3 col-md-6">
+                <div class="glass-card stat-card animate-slide-up h-100" style="animation-delay: 0.3s;">
+                    <div class="stat-card-body">
+                        <div class="stat-icon goals-icon">
+                            <span style="font-size: 32px;">🎯</span>
+                        </div>
+                        <div class="stat-content">
+                            <p class="stat-label text-white">Metas</p>
+                            <h2 class="stat-value text-info">@completedGoalsCount/@totalGoalsCount</h2>
+                            <small class="stat-subtitle text-info">
+                                <span style="font-size: 15px;">🚩</span>Completadas
+                            </small>
+                        </div>
+                    </div>
+                    <div class="stat-footer text-white">
+                        @if (totalGoalsCount > 0)
+                        {
+                            var percentage = (completedGoalsCount * 100.0 / totalGoalsCount).ToString("F0");
+                            <span>
+                                <span style="font-size: 17px;">🏆</span>
+                                @percentage% progreso
+                            </span>
+                        }
+                        else
+                        {
+                            <span>
+                                <span style="font-size: 17px;">🚀</span>
+                                Crea una meta
+                            </span>
+                        }
+                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- Fila Secundaria: Presupuestos + Alertas -->
-        <div class="secondary-row">
-            <!-- Gráfico de Presupuestos -->
-            <div class="chart-card donut-chart-card">
-                <div class="card-header">
-                    <h2>🎂 Presupuestos por Categoría</h2>
-                </div>
-                <div class="card-body">
-                    @if (_budgetData.Any())
-                    {
-                        <canvas id="budgetChart"></canvas>
-                        <div class="budget-legend">
-                            @foreach (var item in _budgetData)
-                            {
-                                <div class="legend-item @GetBudgetStatusClass(item.PercentageUsed)">
-                                    <span class="legend-color"></span>
-                                    <span class="legend-label">@item.CategoryName</span>
-                                    <span class="legend-value">@item.PercentageUsed.ToString("F0")%</span>
-                                </div>
-                            }
+        <!-- Main Charts Row -->
+        <div class="row g-4 mb-4">
+            <!-- Bar Chart -->
+            <div class="col-lg-8">
+                <div class="glass-card h-100 animate-slide-up" style="animation-delay: 0.4s;">
+                    <div class="card-header-glass">
+                        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+                            <h5 class="mb-0 text-white fw-semibold">
+                                <span style="font-size: 20px;">📊</span>
+                                Ingresos vs Gastos
+                            </h5>
+                            <div class="btn-group btn-group-sm" role="group">
+                                <button type="button"
+                                        class="glass-btn text-white @(selectedDays == 7 ? "active" : "")"
+                                        @onclick="() => ChangePeriod(7)">
+                                    7 días
+                                </button>
+                                <button type="button"
+                                        class="glass-btn text-white @(selectedDays == 30 ? "active" : "")"
+                                        @onclick="() => ChangePeriod(30)">
+                                    30 días
+                                </button>
+                            </div>
                         </div>
-                    }
-                    else
-                    {
-                        <div class="empty-state">
-                            <p>No tienes presupuestos activos</p>
-                            <a href="/budgets" class="btn-create">Crear Presupuesto</a>
-                        </div>
-                    }
-                </div>
-            </div>
-
-            <!-- Widget de Alertas -->
-            <div class="widget-card alerts-widget">
-                <div class="card-header">
-                    <h2>⚠️ Alertas</h2>
-                </div>
-                <div class="card-body">
-                    @if (_alerts.Any())
-                    {
-                        @foreach (var alert in _alerts)
+                    </div>
+                    <div class="card-body-glass">
+                        @if (chartData.Any())
                         {
-                            <div class="alert-item @alert.Type">
-                                <div class="alert-icon">@alert.Icon</div>
-                                <div class="alert-content">
-                                    <strong>@alert.Title</strong>
-                                    <p>@alert.Message</p>
-                                </div>
+                            <div style="height: 350px; position: relative;">
+                                <canvas id="barChart"></canvas>
                             </div>
                         }
-                    }
-                    else
-                    {
-                        <div class="empty-state success">
-                            <span style="font-size: 3rem;">✅</span>
-                            <p>¡Todo bajo control!</p>
-                            <small>No hay alertas en este momento</small>
-                        </div>
-                    }
+                        else
+                        {
+                            <div class="empty-state">
+                                <i class="bi bi-graph-up"></i>
+                                <p class="text-white">No hay transacciones en los últimos @selectedDays días</p>
+                            </div>
+                        }
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Últimas Transacciones -->
-        <div class="transactions-section">
-            <div class="card-header">
-                <h2>💳 Últimas Transacciones</h2>
-                <a href="/expenses-incomes" class="view-all-link">Ver todas →</a>
-            </div>
-            <div class="transactions-list">
-                @if (_recentTransactions.Any())
-                {
-                    var groupedTransactions = _recentTransactions
-                    .GroupBy(t => t.Date.Date)
-                    .OrderByDescending(g => g.Key)
-                    .Take(3);
-
-                    @foreach (var group in groupedTransactions)
-                    {
-                        <div class="transaction-group">
-                            <div class="group-date">
-                                📅 @GetDateLabel(group.Key)
-                            </div>
-                            @foreach (var transaction in group.Take(5))
+            <!-- Right Column: Goals -->
+            <div class="col-lg-4">
+                <div class="glass-card h-100 animate-slide-up" style="animation-delay: 0.5s;">
+                    <div class="card-header-glass">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0 text-white fw-semibold">
+                                <span style="font-size: 20px;">🎯</span>
+                                Metas Activas
+                            </h5>
+                            <a href="/goals" class="glass-link-small">Ver todas →</a>
+                        </div>
+                    </div>
+                    <div class="card-body-glass">
+                        @if (topGoals.Any())
+                        {
+                            @foreach (var goal in topGoals)
                             {
-                                var category = _categories.FirstOrDefault(c => c.CategoryId == transaction.CategoryId);
-                                <div class="transaction-item">
-                                    <span class="transaction-icon">@(category?.Icon ?? "💰")</span>
-                                    <div class="transaction-details">
-                                        <strong>@transaction.Description</strong>
-                                        <small>@(category?.Title ?? "Sin categoría")</small>
+                                var percentage = goal.TargetAmount > 0 ? (goal.CurrentAmount / goal.TargetAmount) * 100 : 0;
+                                var daysRemaining = (goal.TargetDate - DateTime.Now).Days;
+
+                                <div class="goal-item">
+                                    <div class="goal-header">
+                                        <span class="goal-name">@goal.Title</span>
+                                        <span class="goal-percentage">@percentage.ToString("F0")%</span>
                                     </div>
-                                    <span class="transaction-amount @(transaction.Type == TransactionType.Income ? "positive" : "negative")">
-                                        @(transaction.Type == TransactionType.Income ? "+" : "-")@transaction.Amount.ToString("C")
-                                    </span>
+                                    <div class="progress-bar-container">
+                                        <div class="progress-bar-fill" style="width: @percentage%"></div>
+                                    </div>
+                                    <div class="goal-footer">
+                                        <span class="text-info">@goal.CurrentAmount.ToString("C0") / @goal.TargetAmount.ToString("C0")</span>
+                                        @if (goal.Status != MisFinanzas.Domain.Enums.GoalStatus.Completed)
+                                        {
+                                            <span class="days-remaining text-white">@daysRemaining días</span>
+                                        }
+                                    </div>
                                 </div>
                             }
-                        </div>
-                    }
-                }
-                else
-                {
-                    <div class="empty-state">
-                        <p>No hay transacciones registradas</p>
-                        <a href="/expenses-incomes" class="btn-create">Registrar Transacción</a>
+                        }
+                        else
+                        {
+                            <div class="empty-state-small">
+                                <p class="text-white">No tienes metas activas</p>
+                                <a href="/goals" class="glass-button-small">Crear Meta</a>
+                            </div>
+                        }
                     </div>
-                }
+                </div>
             </div>
         </div>
 
-        <!-- Resumen Comparativo -->
-        <div class="comparison-section">
-            <div class="card-header">
-                <h2>📊 Resumen Comparativo</h2>
-            </div>
-            <div class="comparison-content">
-                <div class="comparison-header">
-                    <span>@DateTime.Now.ToString("MMMM yyyy")</span>
-                    <span>vs</span>
-                    <span>@DateTime.Now.AddMonths(-1).ToString("MMMM yyyy")</span>
+        <!-- Secondary Row: Budgets + Alerts -->
+        <div class="row g-4 mb-4">
+            <!-- Budget Doughnut Chart -->
+            <div class="col-lg-6">
+                <div class="glass-card animate-slide-up" style="animation-delay: 0.6s;">
+                    <div class="card-header-glass">
+                        <h5 class="mb-0 text-white fw-semibold">
+                            <span style="font-size: 20px;">💰</span>
+                            Gastos por Categoria
+                        </h5>
+                    </div>
+                    <div class="card-body-glass">
+                        @if (budgetData.Any())
+                        {
+                            <div style="height: 250px; position: relative; margin-bottom: 1rem;">
+                                <canvas id="budgetChart"></canvas>
+                            </div>
+                            <div class="budget-legend">
+                                @foreach (var item in budgetData)
+                                {
+                                    <div class="legend-item @GetBudgetStatusClass(item.PercentageUsed)">
+                                        <span class="legend-color"></span>
+                                        <span class="legend-label">@item.CategoryName</span>
+                                        <span class="legend-value">@item.PercentageUsed.ToString("F0")%</span>
+                                    </div>
+                                }
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="empty-state-small">
+                                <p class="text-white-50">No tienes presupuestos activos</p>
+                            </div>
+                        }
+                    </div>
                 </div>
-                <div class="comparison-items">
-                    <div class="comparison-item">
-                        <span class="comparison-label">Ingresos:</span>
-                        <span class="comparison-current">@_totalIncome.ToString("C")</span>
-                        <span class="comparison-change @(_incomeChange >= 0 ? "positive" : "negative")">
-                            @(_incomeChange >= 0 ? "↗️" : "↘️") @Math.Abs(_incomeChange).ToString("F0")%
-                        </span>
+            </div>
+
+            <!-- Alerts Widget -->
+            <div class="col-lg-6">
+                <div class="glass-card animate-slide-up" style="animation-delay: 0.7s;">
+                    <div class="card-header-glass">
+                        <h5 class="mb-0 text-white fw-semibold">
+                            <span style="font-size: 20px;">⚠️</span>
+                            % Usado de los Presupuestos
+                        </h5>
                     </div>
-                    <div class="comparison-item">
-                        <span class="comparison-label">Gastos:</span>
-                        <span class="comparison-current">@_totalExpenses.ToString("C")</span>
-                        <span class="comparison-change @(_expenseChange <= 0 ? "positive" : "negative")">
-                            @(_expenseChange <= 0 ? "↘️" : "↗️") @Math.Abs(_expenseChange).ToString("F0")%
-                        </span>
+                    <div class="card-body-glass">
+                        @if (alerts.Any())
+                        {
+                            @foreach (var alert in alerts)
+                            {
+                                <div class="alert-item @alert.Type">
+                                    <div class="alert-icon">@alert.Icon</div>
+                                    <div class="alert-content">
+                                        <strong>@alert.Title</strong>
+                                        <p>@alert.Message</p>
+                                    </div>
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <div class="empty-state-small success">
+                                <span style="font-size: 2rem;">✅</span>
+                                <p class="text-white">¡Todo bajo control!</p>
+                                <small class="text-white-50">No hay alertas</small>
+                            </div>
+                        }
                     </div>
-                    <div class="comparison-item">
-                        <span class="comparison-label">Balance:</span>
-                        <span class="comparison-current">@_balance.ToString("C")</span>
-                        <span class="comparison-change @(_balanceChange >= 0 ? "positive" : "negative")">
-                            @(_balanceChange >= 0 ? "↗️" : "↘️") @Math.Abs(_balanceChange).ToString("F0")%
-                        </span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Transactions -->
+        <div class="row g-4">
+            <div class="col-12">
+                <div class="glass-card" style="animation-delay: 0.7s;">
+                    <div class="card-header-glass">
+                        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+                            <h5 class="mb-0 text-white fw-semibold">
+                                <span style="font-size: 32px;">💳</span>
+                                Historial
+                            </h5>
+                            <a href="/expenses-incomes" class="glass-link">
+                                Ver todas <i class="bi bi-arrow-right ms-1"></i>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="card-body-glass">
+                        @if (recentTransactions.Any())
+                        {
+                            <div class="table-responsive">
+                                <table class="table-glass mb-0">
+                                    <thead>
+                                        <tr>
+                                            <th class="text-white">Categoría</th>
+                                            <th class="text-white">Monto</th>
+                                            <th class="text-white">Descripción</th>
+                                            <th class="text-white">Fecha</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var transaction in recentTransactions.Take(5))
+                                        {
+                                            <tr class="transaction-row">
+                                                <td>
+                                                    <div class="d-flex align-items-center gap-2">
+                                                        <span style="font-size: 1.5rem;">@transaction.CategoryIcon</span>
+                                                        <span class="text-white fw-semibold">@transaction.CategoryTitle</span>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <span class="fw-bold @(transaction.Type == TransactionType.Income ? "text-success" : "text-danger")">
+                                                        @(transaction.Type == TransactionType.Income ? "+" : "-")@transaction.Amount.ToString("C0")
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <span class="text-white">@transaction.Description</span>
+                                                </td>
+                                                <td>
+                                                    <small class="text-white">@transaction.Date.ToString("dd/MM/yyyy")</small>
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="empty-state">
+                                <i class="bi bi-receipt"></i>
+                                <p class="mb-3 text-white">No Hay Registros recientes</p>
+                                <a href="/expenses-incomes" class="glass-button">
+                                    Registrar Gasto/Ingreso
+                                </a>
+                            </div>
+                        }
                     </div>
                 </div>
             </div>
@@ -297,35 +399,29 @@
 @code {
     // ===== VARIABLES DE ESTADO =====
     private bool isAuthorized = false;
-    private bool _isLoading = true;
+    private bool isLoading = true;
     private string? currentUserId;
-    private int _selectedPeriod = 30;
+    private int selectedDays = 7;
 
     // Datos principales
-    private List<Category> _categories = new();
-    private List<ExpenseIncome> _allTransactions = new();
-    private List<ExpenseIncome> _recentTransactions = new();
-    private List<Budget> _budgets = new();
-    private List<FinancialGoal> _goals = new();
-    private List<FinancialGoal> _topGoals = new();
+    private List<MisFinanzas.Domain.DTOs.CategoryDto> categories = new();
+    private List<MisFinanzas.Domain.DTOs.ExpenseIncomeDto> allTransactions = new();
+    private List<MisFinanzas.Domain.DTOs.ExpenseIncomeDto> recentTransactions = new();
+    private List<MisFinanzas.Domain.DTOs.BudgetDto> budgets = new();
+    private List<MisFinanzas.Domain.DTOs.FinancialGoalDto> allGoals = new();
+    private List<MisFinanzas.Domain.DTOs.FinancialGoalDto> topGoals = new();
 
     // Resúmenes
-    private decimal _balance = 0;
-    private decimal _totalIncome = 0;
-    private decimal _totalExpenses = 0;
-    private int _incomeCount = 0;
-    private int _expenseCount = 0;
-    private int _activeGoalsCount = 0;
-    private int _completedGoalsCount = 0;
-
-    // Comparativas
-    private decimal _incomeChange = 0;
-    private decimal _expenseChange = 0;
-    private decimal _balanceChange = 0;
+    private decimal balance = 0;
+    private decimal totalIncome = 0;
+    private decimal totalExpense = 0;
+    private int totalGoalsCount = 0;
+    private int completedGoalsCount = 0;
 
     // Datos para gráficos
-    private List<BudgetData> _budgetData = new();
-    private List<AlertItem> _alerts = new();
+    private Dictionary<string, DayData> chartData = new();
+    private List<BudgetData> budgetData = new();
+    private List<AlertItem> alerts = new();
 
     // ===== CICLO DE VIDA DEL COMPONENTE =====
 
@@ -374,94 +470,62 @@
     {
         try
         {
-            _isLoading = true;
+            isLoading = true;
             Console.WriteLine("📊 Dashboard: Iniciando carga de datos...");
 
             if (string.IsNullOrEmpty(currentUserId))
             {
                 Console.WriteLine("❌ Dashboard: UserId es null o vacío");
-                _isLoading = false;
+                isLoading = false;
                 return;
             }
 
-            // Cargar datos en paralelo
-            var categoriesTask = CategoryService.GetAllByUserAsync(currentUserId);
-            var transactionsTask = ExpenseIncomeService.GetAllByUserAsync(currentUserId);
-            var budgetsTask = BudgetService.GetAllByUserAsync(currentUserId);
-            var goalsTask = FinancialGoalService.GetAllByUserAsync(currentUserId);
+            var endDate = DateTime.Now;
+            var startDate = endDate.AddDays(-selectedDays);
 
-            await Task.WhenAll(categoriesTask, transactionsTask, budgetsTask, goalsTask);
+            // Cargar datos básicos del período seleccionado
+            var periodTransactions = await ExpenseIncomeService.GetByUserAndDateRangeAsync(currentUserId, startDate, endDate);
 
-            // Convertir DTOs a entidades
-            var categoryDtos = await categoriesTask;
-            _categories = categoryDtos.Select(dto => new Category
-            {
-                CategoryId = dto.CategoryId,
-                UserId = dto.UserId ?? "",
-                Title = dto.Title ?? "",
-                Icon = dto.Icon ?? "📁",
-                Type = dto.Type
-            }).ToList();
+            totalIncome = periodTransactions
+                .Where(t => t.Type == TransactionType.Income)
+                .Sum(t => t.Amount);
 
-            Console.WriteLine($"✅ Categorías cargadas: {_categories.Count}");
+            totalExpense = periodTransactions
+                .Where(t => t.Type == TransactionType.Expense)
+                .Sum(t => t.Amount);
 
-            var transactionDtos = await transactionsTask;
-            _allTransactions = transactionDtos.Select(dto => new ExpenseIncome
-            {
-                Id = dto.Id,
-                UserId = dto.UserId ?? "",
-                CategoryId = dto.CategoryId,
-                Amount = dto.Amount,
-                Date = dto.Date,
-                Description = dto.Description ?? "",
-                Type = dto.Type
-            }).OrderByDescending(t => t.Date).ToList();
+            balance = totalIncome - totalExpense;
 
-            Console.WriteLine($"✅ Transacciones cargadas: {_allTransactions.Count}");
+            // Cargar transacciones recientes
+            recentTransactions = await ExpenseIncomeService.GetRecentTransactionsAsync(currentUserId, 10);
 
-            var budgetDtos = await budgetsTask;
-            _budgets = budgetDtos.Select(dto => new Budget
-            {
-                Id = dto.Id,
-                UserId = dto.UserId ?? "",
-                Name = dto.Name ?? "",
-                AssignedAmount = dto.AssignedAmount,
-                SpentAmount = dto.SpentAmount,
-                Month = dto.Month,
-                Year = dto.Year,
-                CategoryId = dto.CategoryId,
-                IsActive = dto.IsActive
-            }).ToList();
+            // Cargar categorías
+            categories = await CategoryService.GetAllByUserAsync(currentUserId);
+            Console.WriteLine($"✅ Categorías cargadas: {categories.Count}");
 
-            Console.WriteLine($"✅ Presupuestos cargados: {_budgets.Count}");
+            // Cargar todas las transacciones para gráficos
+            allTransactions = await ExpenseIncomeService.GetAllByUserAsync(currentUserId);
+            Console.WriteLine($"✅ Transacciones cargadas: {allTransactions.Count}");
 
-            var goalDtos = await goalsTask;
-            _goals = goalDtos.Select(dto => new FinancialGoal
-            {
-                GoalId = dto.GoalId,
-                UserId = dto.UserId ?? "",
-                Title = dto.Title ?? "",
-                Description = dto.Description,
-                TargetAmount = dto.TargetAmount,
-                CurrentAmount = dto.CurrentAmount,
-                StartDate = dto.StartDate,
-                TargetDate = dto.TargetDate,
-                Status = dto.Status,
-                Icon = dto.Icon ?? "🎯",
-                CompletedAt = dto.CompletedAt
-            }).ToList();
+            // Cargar datos de metas
+            allGoals = await FinancialGoalService.GetAllByUserAsync(currentUserId);
+            totalGoalsCount = allGoals.Count;
+            completedGoalsCount = await FinancialGoalService.GetCompletedGoalsCountAsync(currentUserId);
+            Console.WriteLine($"✅ Metas cargadas: {allGoals.Count}");
 
-            Console.WriteLine($"✅ Metas cargadas: {_goals.Count}");
+            // Preparar top metas activas
+            PrepareTopGoals();
 
-            // Calcular datos
-            CalculateCurrentMonthData();
-            CalculateComparatives();
-            PrepareGoalsWidget();
-            PrepareBudgetData();
+            // Calcular datos del gráfico de barras
+            await CalculateChartData();
+
+            // Preparar datos de presupuestos
+            await PrepareBudgetData();
+
+            // Generar alertas
             GenerateAlerts();
-            PrepareRecentTransactions();
 
-            _isLoading = false;
+            isLoading = false;
             StateHasChanged();
 
             // Renderizar gráficos después de actualizar UI
@@ -472,120 +536,117 @@
         {
             Console.WriteLine($"❌ ERROR en LoadDashboardData: {ex.Message}");
             Console.WriteLine($"   Stack: {ex.StackTrace}");
-            _isLoading = false;
+            isLoading = false;
         }
     }
 
-    // ===== CÁLCULOS =====
-
-    private void CalculateCurrentMonthData()
+    private async Task ChangePeriod(int days)
     {
-        var now = DateTime.Now;
-        var startOfMonth = new DateTime(now.Year, now.Month, 1);
-        var endOfMonth = startOfMonth.AddMonths(1).AddDays(-1);
-
-        var monthTransactions = _allTransactions
-            .Where(t => t.Date >= startOfMonth && t.Date <= endOfMonth)
-            .ToList();
-
-        var incomes = monthTransactions.Where(t => t.Type == TransactionType.Income).ToList();
-        var expenses = monthTransactions.Where(t => t.Type == TransactionType.Expense).ToList();
-
-        _totalIncome = incomes.Sum(t => t.Amount);
-        _totalExpenses = expenses.Sum(t => t.Amount);
-        _balance = _totalIncome - _totalExpenses;
-
-        _incomeCount = incomes.Count;
-        _expenseCount = expenses.Count;
-
-        _activeGoalsCount = _goals.Count(g => !g.IsCompleted);
-        _completedGoalsCount = _goals.Count(g => g.IsCompleted);
+        selectedDays = days;
+        await LoadDashboardData();
+        await RenderCharts();
     }
 
-    private void CalculateComparatives()
+    private async Task CalculateChartData()
     {
-        var now = DateTime.Now;
-        var lastMonth = now.AddMonths(-1);
-        var startOfLastMonth = new DateTime(lastMonth.Year, lastMonth.Month, 1);
-        var endOfLastMonth = startOfLastMonth.AddMonths(1).AddDays(-1);
+        var endDate = DateTime.Now.Date;
+        var startDate = endDate.AddDays(-(selectedDays - 1));
 
-        var lastMonthTransactions = _allTransactions
-            .Where(t => t.Date >= startOfLastMonth && t.Date <= endOfLastMonth)
+        var transactions = allTransactions
+            .Where(t => t.Date.Date >= startDate && t.Date.Date <= endDate)
             .ToList();
 
-        var lastMonthIncome = lastMonthTransactions
-            .Where(t => t.Type == TransactionType.Income)
-            .Sum(t => t.Amount);
+        chartData.Clear();
 
-        var lastMonthExpenses = lastMonthTransactions
-            .Where(t => t.Type == TransactionType.Expense)
-            .Sum(t => t.Amount);
-
-        var lastMonthBalance = lastMonthIncome - lastMonthExpenses;
-
-        _incomeChange = lastMonthIncome > 0
-            ? ((_totalIncome - lastMonthIncome) / lastMonthIncome) * 100
-            : 0;
-
-        _expenseChange = lastMonthExpenses > 0
-            ? ((_totalExpenses - lastMonthExpenses) / lastMonthExpenses) * 100
-            : 0;
-
-        _balanceChange = lastMonthBalance != 0
-            ? ((_balance - lastMonthBalance) / Math.Abs(lastMonthBalance)) * 100
-            : 0;
-    }
-
-    private void PrepareGoalsWidget()
-    {
-        _topGoals = _goals
-            .Where(g => !g.IsCompleted)
-            .OrderByDescending(g => g.TargetAmount > 0 ? (g.CurrentAmount / g.TargetAmount) : 0)
-            .Take(5)
-            .ToList();
-    }
-
-    private void PrepareBudgetData()
-    {
-        var now = DateTime.Now;
-        var startOfMonth = new DateTime(now.Year, now.Month, 1);
-        var endOfMonth = startOfMonth.AddMonths(1).AddDays(-1);
-
-        _budgetData = new List<BudgetData>();
-
-        foreach (var budget in _budgets)
+        if (selectedDays == 7)
         {
-            var category = _categories.FirstOrDefault(c => c.CategoryId == budget.CategoryId);
-            if (category == null) continue;
-
-            var spent = _allTransactions
-                .Where(t => t.CategoryId == budget.CategoryId
-                    && t.Type == TransactionType.Expense
-                    && t.Date >= startOfMonth
-                    && t.Date <= endOfMonth)
-                .Sum(t => t.Amount);
-
-            var percentage = budget.AssignedAmount > 0 ? (spent / budget.AssignedAmount) * 100 : 0;
-
-            _budgetData.Add(new BudgetData
+            for (int i = 0; i < selectedDays; i++)
             {
-                CategoryName = category.Title,
-                CategoryIcon = category.Icon,
+                var date = startDate.AddDays(i);
+                var dayLabel = date.ToString("ddd dd");
+
+                var dayTransactions = transactions.Where(t => t.Date.Date == date).ToList();
+
+                var income = dayTransactions
+                    .Where(t => t.Type == TransactionType.Income)
+                    .Sum(t => t.Amount);
+
+                var expense = dayTransactions
+                    .Where(t => t.Type == TransactionType.Expense)
+                    .Sum(t => t.Amount);
+
+                chartData[dayLabel] = new DayData { Income = income, Expense = expense };
+            }
+        }
+        else
+        {
+            int weekNumber = 1;
+            for (int i = 0; i < selectedDays; i += 7)
+            {
+                var weekStart = startDate.AddDays(i);
+                var weekEnd = weekStart.AddDays(6);
+                if (weekEnd > endDate) weekEnd = endDate;
+
+                var weekLabel = $"Sem {weekNumber}";
+
+                var weekTransactions = transactions
+                    .Where(t => t.Date.Date >= weekStart && t.Date.Date <= weekEnd)
+                    .ToList();
+
+                var income = weekTransactions
+                    .Where(t => t.Type == TransactionType.Income)
+                    .Sum(t => t.Amount);
+
+                var expense = weekTransactions
+                    .Where(t => t.Type == TransactionType.Expense)
+                    .Sum(t => t.Amount);
+
+                chartData[weekLabel] = new DayData { Income = income, Expense = expense };
+                weekNumber++;
+            }
+        }
+    }
+
+    private async Task PrepareBudgetData()
+    {
+        var now = DateTime.Now;
+        budgetData.Clear();
+
+        // Usar el método correcto del servicio que ya calcula SpentAmount dinámicamente
+        budgets = await BudgetService.GetByUserAndPeriodAsync(currentUserId!, now.Month, now.Year);
+
+        foreach (var budget in budgets)
+        {
+            var percentage = budget.AssignedAmount > 0 ? (budget.SpentAmount / budget.AssignedAmount) * 100 : 0;
+
+            budgetData.Add(new BudgetData
+            {
+                CategoryName = budget.CategoryTitle ?? "Sin categoría",
+                CategoryIcon = budget.CategoryIcon ?? "📁",
                 BudgetAmount = budget.AssignedAmount,
-                SpentAmount = spent,
+                SpentAmount = budget.SpentAmount,
                 PercentageUsed = percentage
             });
         }
     }
 
+    private void PrepareTopGoals()
+    {
+        topGoals = allGoals
+            .Where(g => g.Status != MisFinanzas.Domain.Enums.GoalStatus.Completed)
+            .OrderByDescending(g => g.TargetAmount > 0 ? (g.CurrentAmount / g.TargetAmount) : 0)
+            .Take(5)
+            .ToList();
+    }
+
     private void GenerateAlerts()
     {
-        _alerts = new List<AlertItem>();
+        alerts = new List<AlertItem>();
 
-        var exceededBudgets = _budgetData.Where(b => b.PercentageUsed >= 100).ToList();
+        var exceededBudgets = budgetData.Where(b => b.PercentageUsed >= 100).ToList();
         foreach (var budget in exceededBudgets)
         {
-            _alerts.Add(new AlertItem
+            alerts.Add(new AlertItem
             {
                 Type = "danger",
                 Icon = "🔴",
@@ -594,10 +655,10 @@
             });
         }
 
-        var warningBudgets = _budgetData.Where(b => b.PercentageUsed >= 80 && b.PercentageUsed < 100).ToList();
+        var warningBudgets = budgetData.Where(b => b.PercentageUsed >= 80 && b.PercentageUsed < 100).ToList();
         foreach (var budget in warningBudgets)
         {
-            _alerts.Add(new AlertItem
+            alerts.Add(new AlertItem
             {
                 Type = "warning",
                 Icon = "🟡",
@@ -606,8 +667,9 @@
             });
         }
 
-        var urgentGoals = _goals
-            .Where(g => !g.IsCompleted
+        // Alertas de metas próximas a vencer
+        var urgentGoals = allGoals
+            .Where(g => g.Status != MisFinanzas.Domain.Enums.GoalStatus.Completed
                 && (g.TargetDate - DateTime.Now).Days <= 30
                 && (g.TargetDate - DateTime.Now).Days > 0)
             .ToList();
@@ -615,7 +677,7 @@
         foreach (var goal in urgentGoals)
         {
             var daysLeft = (goal.TargetDate - DateTime.Now).Days;
-            _alerts.Add(new AlertItem
+            alerts.Add(new AlertItem
             {
                 Type = "info",
                 Icon = "🎯",
@@ -624,31 +686,7 @@
             });
         }
 
-        if (_expenseChange > 15)
-        {
-            _alerts.Add(new AlertItem
-            {
-                Type = "warning",
-                Icon = "📊",
-                Title = "Aumento en gastos",
-                Message = $"Gastas {_expenseChange:F0}% más que el mes pasado"
-            });
-        }
-
-        _alerts = _alerts.Take(5).ToList();
-    }
-
-    private void PrepareRecentTransactions()
-    {
-        _recentTransactions = _allTransactions.Take(20).ToList();
-    }
-
-    // ===== GRÁFICOS =====
-
-    private async Task ChangePeriod(int days)
-    {
-        _selectedPeriod = days;
-        await RenderCharts();
+        alerts = alerts.Take(5).ToList();
     }
 
     private async Task RenderCharts()
@@ -656,65 +694,40 @@
         try
         {
             var chartExists = await JSRuntime.InvokeAsync<bool>("eval",
-                "typeof Chart !== 'undefined'",
-                TimeSpan.FromSeconds(2));
+                "typeof chartHelpers !== 'undefined'");
 
             if (!chartExists)
             {
-                Console.WriteLine("⚠️ Chart.js no está disponible aún");
+                Console.WriteLine("⚠️ chartHelpers no está disponible aún");
                 return;
             }
 
-            Console.WriteLine("🎨 Renderizando gráficos...");
-
-            var endDate = DateTime.Now;
-            var startDate = endDate.AddDays(-_selectedPeriod);
-
-            var periodTransactions = _allTransactions
-                .Where(t => t.Date >= startDate && t.Date <= endDate)
-                .OrderBy(t => t.Date)
-                .ToList();
-
-            var groupedByDay = periodTransactions
-                .GroupBy(t => t.Date.Date)
-                .Select(g => new
-                {
-                    Date = g.Key,
-                    Income = g.Where(t => t.Type == TransactionType.Income).Sum(t => t.Amount),
-                    Expense = g.Where(t => t.Type == TransactionType.Expense).Sum(t => t.Amount)
-                })
-                .OrderBy(x => x.Date)
-                .ToList();
-
-            var labels = groupedByDay.Select(x => x.Date.ToString("dd/MM")).ToArray();
-            var incomeData = groupedByDay.Select(x => x.Income).ToArray();
-            var expenseData = groupedByDay.Select(x => x.Expense).ToArray();
-
-            await JSRuntime.InvokeVoidAsync("renderLineChart", labels, incomeData, expenseData);
-
-            if (_budgetData.Any())
+            // Gráfico de barras (ingresos vs gastos)
+            if (chartData.Any())
             {
-                var budgetLabels = _budgetData.Select(b => b.CategoryName).ToArray();
-                var budgetValues = _budgetData.Select(b => b.PercentageUsed).ToArray();
-                var budgetColors = _budgetData.Select(b => GetBudgetColor(b.PercentageUsed)).ToArray();
+                var labels = chartData.Keys.ToArray();
+                var incomeData = chartData.Values.Select(d => (double)d.Income).ToArray();
+                var expenseData = chartData.Values.Select(d => (double)d.Expense).ToArray();
 
-                await JSRuntime.InvokeVoidAsync("renderBudgetChart", budgetLabels, budgetValues, budgetColors);
+                await JSRuntime.InvokeVoidAsync("chartHelpers.createBarChart",
+                    "barChart", labels, incomeData, expenseData);
+            }
+
+            // Gráfico de presupuestos
+            if (budgetData.Any())
+            {
+                var labels = budgetData.Select(b => b.CategoryName).ToArray();
+                var values = budgetData.Select(b => b.PercentageUsed).ToArray();
+                var colors = budgetData.Select(b => GetBudgetColor(b.PercentageUsed)).ToArray();
+
+                await JSRuntime.InvokeVoidAsync("chartHelpers.createBudgetChart",
+                    "budgetChart", labels, values, colors);
             }
         }
         catch (Exception ex)
         {
             Console.WriteLine($"❌ Error rendering charts: {ex.Message}");
         }
-    }
-
-    private string GetDateLabel(DateTime date)
-    {
-        var today = DateTime.Now.Date;
-        var yesterday = today.AddDays(-1);
-
-        if (date == today) return "Hoy";
-        if (date == yesterday) return "Ayer";
-        return date.ToString("dd/MM/yyyy");
     }
 
     private string GetBudgetStatusClass(decimal percentage)
@@ -731,7 +744,23 @@
         return "#4CAF50";
     }
 
+    public async ValueTask DisposeAsync()
+    {
+        try
+        {
+            await JSRuntime.InvokeVoidAsync("chartHelpers.destroyChart", "barChart");
+            await JSRuntime.InvokeVoidAsync("chartHelpers.destroyChart", "budgetChart");
+        }
+        catch { }
+    }
+
     // ===== CLASES AUXILIARES =====
+
+    private class DayData
+    {
+        public decimal Income { get; set; }
+        public decimal Expense { get; set; }
+    }
 
     public class BudgetData
     {
