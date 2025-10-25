@@ -34,10 +34,10 @@
                 </div>
                 <div class="d-flex gap-2">
                     <button class="btnDelete" @onclick="() => OpenModal(TransactionType.Expense)">
-                        <i class="bi bi-dash-circle"></i> Agregar Gasto
+                        <span style="font-size: 17px;">➕</span> Agregar Gasto
                     </button>
                     <button class="btnSaveEdit" @onclick="() => OpenModal(TransactionType.Income)">
-                        <i class="bi bi-plus-circle"></i> Agregar Ingreso
+                        <span style="font-size: 17px;">➕</span> Agregar Ingreso
                     </button>
                 </div>
             </div>
@@ -108,7 +108,7 @@
                 {
                     <div class="text-center py-5">
                         <p class="text-white">No hay registros</p>
-                        <p class="text-muted">Comienza agregando un gasto o ingreso</p>
+                        <p class="text-white">Comienza agregando un gasto o ingreso</p>
                     </div>
                 }
                 else
@@ -151,10 +151,10 @@
                                         <td>
                                             <div class="btn-group btn-group-sm">
                                                 <button class="btn btn-warning" @onclick="() => EditTransaction(item)">
-                                                    <i class="bi bi-pencil"></i>
+                                                    <span style="font-size: 13px;">📝</span>
                                                 </button>
                                                 <button class="btn btn-danger" @onclick="() => ConfirmDelete(item.Id, item.Description ?? item.CategoryTitle)">
-                                                    <i class="bi bi-trash"></i>
+                                                    <span style="font-size: 13px;">🗑️</span>
                                                 </button>
                                             </div>
                                         </td>
@@ -257,7 +257,7 @@
                 <div class="modal-footer border-secondary">
                     <button type="button" class="btnCancel" @onclick="CancelDelete">Cancelar</button>
                     <button type="button" class="btnDelete" @onclick="DeleteTransaction">
-                        <i class="bi bi-trash"></i> Eliminar
+                        <span style="font-size: 13px;">🗑️</span> Eliminar
                     </button>
                 </div>
             </div>

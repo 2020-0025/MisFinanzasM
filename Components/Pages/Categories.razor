@@ -32,7 +32,7 @@
                     <p class="mb-0 text-white">Organiza tus gastos e ingresos</p>
                 </div>
                 <button class="btnAddCategory" @onclick="OpenModal">
-                    <i class="bi bi-plus-circle"></i> Nueva Categoría
+                    <span style="font-size: 17px;">➕</span> Nueva Categoría
                 </button>
             </div>
         </div>
@@ -80,10 +80,10 @@
                                     </div>
                                     <div class="category-actions">
                                         <button class="btn btn-sm btn-warning" @onclick="() => EditCategory(category)">
-                                            <i class="bi bi-pencil"></i>
+                                            <span style="font-size: 13px;">📝</span>
                                         </button>
                                         <button class="btn btn-sm btn-danger" @onclick="() => ConfirmDelete(category.CategoryId, category.Title)">
-                                            <i class="bi bi-trash"></i>
+                                            <span style="font-size: 13px;">🗑️</span>
                                         </button>
                                     </div>
                                 </div>
@@ -116,10 +116,10 @@
                                     </div>
                                     <div class="category-actions">
                                         <button class="btn btn-sm btn-warning" @onclick="() => EditCategory(category)">
-                                            <i class="bi bi-pencil"></i>
+                                            <span style="font-size: 13px;">📝</span>
                                         </button>
                                         <button class="btn btn-sm btn-danger" @onclick="() => ConfirmDelete(category.CategoryId, category.Title)">
-                                            <i class="bi bi-trash"></i>
+                                            <span style="font-size: 13px;">🗑️</span>
                                         </button>
                                     </div>
                                 </div>
@@ -218,7 +218,7 @@
                 <div class="modal-footer border-secondary">
                     <button type="button" class="btnCancel" @onclick="CancelDelete">Cancelar</button>
                     <button type="button" class="btnDelete" @onclick="DeleteCategory">
-                        <i class="bi bi-trash"></i> Eliminar
+                        <span style="font-size: 13px;">🗑️</span> Eliminar
                     </button>
                 </div>
             </div>

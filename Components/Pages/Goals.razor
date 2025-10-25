@@ -33,7 +33,7 @@
                     <p class="mb-0 text-white">Define y alcanza tus objetivos</p>
                 </div>
                 <button class="btnAddGoals" @onclick="OpenCreateModal">
-                    <i class="bi bi-plus-circle"></i> Nueva Meta
+                    <span style="font-size: 17px;">➕</span> Nueva Meta
                 </button>
             </div>
         </div>
@@ -113,7 +113,7 @@
                     <div class="text-center py-5">
                         <p class="text-white">No hay metas @(currentFilter.HasValue? currentFilter.Value.ToString().ToLower() + "s" : "")</p>
                         <button class="btnAddGoals mt-3" @onclick="OpenCreateModal">
-                            <i class="bi bi-plus-circle"></i> Crear Primera Meta
+                            <span style="font-size: 17px;">➕</span> Crear Primera Meta
                         </button>
                     </div>
                 </div>
@@ -129,7 +129,7 @@
                                     <div class="goal-icon">@goal.Icon</div>
                                     <div class="flex-grow-1">
                                         <h4>@goal.Title</h4>
-                                        <span class="text-dark badge bg-@GetStatusBadgeColor(goal.Status)">
+                                        <span class="text-white badge bg-@GetStatusBadgeColor(goal.Status)">
                                             @goal.StatusDisplay
                                         </span>
                                     </div>
@@ -137,17 +137,17 @@
                                         @if (goal.Status == GoalStatus.InProgress)
                                         {
                                             <button class="btn btn-sm btn-success" @onclick="() => OpenProgressModal(goal)" title="Agregar progreso">
-                                                <i class="bi bi-plus-circle"></i>
+                                                <span style="font-size: 13px;">➕</span>
                                             </button>
                                             <button class="btn btn-sm btn-warning" @onclick="() => OpenEditModal(goal)" title="Editar">
-                                                <i class="bi bi-pencil"></i>
+                                                <span style="font-size: 13px;">📝</span>
                                             </button>
                                             <button class="btn btn-sm btn-secondary" @onclick="() => ConfirmCancel(goal.GoalId, goal.Title)" title="Cancelar">
-                                                <i class="bi bi-x-circle"></i>
+                                                <span style="font-size: 13px;">❌</span>
                                             </button>
                                         }
                                         <button class="btn btn-sm btn-danger" @onclick="() => ConfirmDelete(goal.GoalId, goal.Title)" title="Eliminar">
-                                            <i class="bi bi-trash"></i>
+                                            <span style="font-size: 13px;">🗑️</span>
                                         </button>
                                     </div>
                                 </div>
@@ -394,7 +394,7 @@
                 <div class="modal-footer border-secondary">
                     <button type="button" class="btnCancel" @onclick="CloseDeleteModal">Cancelar</button>
                     <button type="button" class="btnDelete" @onclick="DeleteGoal">
-                        <i class="bi bi-trash"></i> Eliminar
+                        <span style="font-size: 13px;">🗑️</span> Eliminar
                     </button>
                 </div>
             </div>

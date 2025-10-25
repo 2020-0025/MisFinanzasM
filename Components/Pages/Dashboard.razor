@@ -200,8 +200,48 @@
                 </div>
             </div>
 
-            <!-- Right Column: Goals -->
+            <!-- Budget Doughnut Chart -->
             <div class="col-lg-4">
+                <div class="glass-card animate-slide-up" style="animation-delay: 0.6s;">
+                    <div class="card-header-glass">
+                        <h5 class="mb-0 text-white fw-semibold">
+                            <span style="font-size: 20px;">💰</span>
+                            Gastos por Categoria
+                        </h5>
+                    </div>
+                    <div class="card-body-glass">
+                        @if (budgetData.Any())
+                        {
+                            <div style="height: 250px; position: relative; margin-bottom: 1rem;">
+                                <canvas id="budgetChart"></canvas>
+                            </div>
+                            <div class="budget-legend">
+                                @foreach (var item in budgetData)
+                                {
+                                    <div class="legend-item @GetBudgetStatusClass(item.PercentageUsed)">
+                                        <span class="legend-color"></span>
+                                        <span class="legend-label">@item.CategoryName</span>
+                                        <span class="legend-value">@item.PercentageUsed.ToString("F0")%</span>
+                                    </div>
+                                }
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="empty-state-small">
+                                <p class="text-white">No tienes presupuestos activos</p>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Secondary Row: Goals + Alerts -->
+        <div class="row g-4 mb-4">
+            <!--  Goals -->
+            <div class="col-lg-6">
                 <div class="glass-card h-100 animate-slide-up" style="animation-delay: 0.5s;">
                     <div class="card-header-glass">
                         <div class="d-flex justify-content-between align-items-center">
@@ -248,53 +288,13 @@
                     </div>
                 </div>
             </div>
-        </div>
-
-        <!-- Secondary Row: Budgets + Alerts -->
-        <div class="row g-4 mb-4">
-            <!-- Budget Doughnut Chart -->
-            <div class="col-lg-6">
-                <div class="glass-card animate-slide-up" style="animation-delay: 0.6s;">
-                    <div class="card-header-glass">
-                        <h5 class="mb-0 text-white fw-semibold">
-                            <span style="font-size: 20px;">💰</span>
-                            Gastos por Categoria
-                        </h5>
-                    </div>
-                    <div class="card-body-glass">
-                        @if (budgetData.Any())
-                        {
-                            <div style="height: 250px; position: relative; margin-bottom: 1rem;">
-                                <canvas id="budgetChart"></canvas>
-                            </div>
-                            <div class="budget-legend">
-                                @foreach (var item in budgetData)
-                                {
-                                    <div class="legend-item @GetBudgetStatusClass(item.PercentageUsed)">
-                                        <span class="legend-color"></span>
-                                        <span class="legend-label">@item.CategoryName</span>
-                                        <span class="legend-value">@item.PercentageUsed.ToString("F0")%</span>
-                                    </div>
-                                }
-                            </div>
-                        }
-                        else
-                        {
-                            <div class="empty-state-small">
-                                <p class="text-white-50">No tienes presupuestos activos</p>
-                            </div>
-                        }
-                    </div>
-                </div>
-            </div>
-
             <!-- Alerts Widget -->
             <div class="col-lg-6">
                 <div class="glass-card animate-slide-up" style="animation-delay: 0.7s;">
                     <div class="card-header-glass">
                         <h5 class="mb-0 text-white fw-semibold">
                             <span style="font-size: 20px;">⚠️</span>
-                            % Usado de los Presupuestos
+                            Control Presupuestos
                         </h5>
                     </div>
                     <div class="card-body-glass">
@@ -306,7 +306,7 @@
                                     <div class="alert-icon">@alert.Icon</div>
                                     <div class="alert-content">
                                         <strong>@alert.Title</strong>
-                                        <p>@alert.Message</p>
+                                        <p class="text-white">@alert.Message</p>
                                     </div>
                                 </div>
                             }
@@ -316,7 +316,7 @@
                             <div class="empty-state-small success">
                                 <span style="font-size: 2rem;">✅</span>
                                 <p class="text-white">¡Todo bajo control!</p>
-                                <small class="text-white-50">No hay alertas</small>
+                                <small class="text-white">No hay alertas</small>
                             </div>
                         }
                     </div>
@@ -327,7 +327,7 @@
         <!-- Recent Transactions -->
         <div class="row g-4">
             <div class="col-12">
-                <div class="glass-card" style="animation-delay: 0.7s;">
+                <div class="glass-card">
                     <div class="card-header-glass">
                         <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
                             <h5 class="mb-0 text-white fw-semibold">

@@ -234,9 +234,9 @@
     backdrop-filter: blur(20px);
     border: 1px solid rgba(255, 255, 255, 0.2);
     border-radius: 15px;
-    margin-top: 23px;
+    margin-top: 40px;
     /* 1. Define un límite de altura */
-    max-height: 700px;
+    max-height: 600px;
     /* 2. Muestra el scroll vertical SI es necesario */
     overflow-y: auto;
 }

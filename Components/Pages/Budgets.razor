@@ -31,7 +31,7 @@
                     <p class="mb-0 text-white">Controla tus gastos por categoría</p>
                 </div>
                 <button class="btnAddBudgets" @onclick="OpenCreateModal">
-                    <i class="bi bi-plus-circle"></i> Nuevo Presupuesto
+                    <span style="font-size: 17px;">➕</span> Nuevo Presupuesto
                 </button>
             </div>
         </div>
@@ -148,7 +148,7 @@
                     <div class="text-center py-5">
                         <p class="text-white">No hay presupuestos configurados para este periodo</p>
                         <button class="btnAddBudgets mt-3" @onclick="OpenCreateModal">
-                            <i class="bi bi-plus-circle"></i> Crear Primer Presupuesto
+                            <span style="font-size: 17px;">➕</span> Crear Primer Presupuesto
                         </button>
                     </div>
                 }
@@ -169,10 +169,10 @@
                                         </div>
                                         <div class="budget-actions">
                                             <button class="btn btn-sm btn-warning" @onclick="() => EditBudget(budget)">
-                                                <i class="bi bi-pencil"></i>
+                                                <span style="font-size: 13px;">📝</span>
                                             </button>
                                             <button class="btn btn-sm btn-danger" @onclick="() => ConfirmDelete(budget.Id, budget.CategoryTitle)">
-                                                <i class="bi bi-trash"></i>
+                                                <span style="font-size: 13px;">🗑️</span>
                                             </button>
                                         </div>
                                     </div>
@@ -201,7 +201,7 @@
                                     </div>
 
                                     <div class="budget-status mt-2">
-                                        <span class=" text-dark badge @GetStatusBadgeClass(budget)">
+                                        <span class=" text-white badge @GetStatusBadgeClass(budget)">
                                             @budget.StatusDisplay
                                         </span>
                                     </div>
@@ -339,7 +339,7 @@
                 <div class="modal-footer border-secondary">
                     <button type="button" class="btnCancel" @onclick="CloseDeleteModal">Cancelar</button>
                     <button type="button" class="btnDelete" @onclick="DeleteBudget">
-                        <i class="bi bi-trash"></i> Eliminar
+                        <span style="font-size: 13px;">🗑️</span> Eliminar
                     </button>
                 </div>
             </div>
