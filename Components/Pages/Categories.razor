@@ -161,6 +161,10 @@
                             <label class="form-label">Nombre</label>
                             <InputText @bind-Value="formModel.Title" class="form-control" placeholder="Ej: Alimentación" />
                             <ValidationMessage For="() => formModel.Title" class="text-danger" />
+                            @if (!string.IsNullOrEmpty(titleValidationError))
+                            {
+                                <div class="text-danger small mt-1">@titleValidationError</div>
+                            }
                         </div>
 
                         <div class="mb-3">
@@ -175,6 +179,10 @@
                              <label class="form-label"></label>
                               <IconSelector @bind-SelectedIcon="formModel.Icon" />
                               <ValidationMessage For="() => formModel.Icon" class="text-danger" />
+                            @if (!string.IsNullOrEmpty(iconValidationError))
+                            {
+                                <div class="text-danger small mt-1">@iconValidationError</div>
+                            }
                         </div>
 
                         <div class="d-grid gap-2">
@@ -283,6 +291,8 @@
     private string? categoryToDelete;
     private int relatedTransactionsCount = 0;
     private bool confirmDeleteWithTransactions = false;
+    private string? titleValidationError;
+    private string? iconValidationError;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -388,6 +398,38 @@
                 return;
             }
 
+            // Limpiar errores previos
+            titleValidationError = null;
+            iconValidationError = null;
+
+            // Validar nombre duplicado
+            var nameExists = await CategoryService.ExistsCategoryWithNameAsync(
+                formModel.Title.Trim(),
+                formModel.Type,
+                currentUserId!,
+                isEditing ? formModel.CategoryId : null
+            );
+
+            if (nameExists)
+            {
+                titleValidationError = $"Ya existe una categoría de {(formModel.Type == TransactionType.Expense ? "gastos" : "ingresos")} con este nombre";
+                return;
+            }
+
+            // Validar icono duplicado
+            var iconExists = await CategoryService.ExistsCategoryWithIconAsync(
+                formModel.Icon.Trim(),
+                formModel.Type,
+                currentUserId!,
+                isEditing ? formModel.CategoryId : null
+            );
+
+            if (iconExists)
+            {
+                iconValidationError = $"Ya existe una categoría de {(formModel.Type == TransactionType.Expense ? "gastos" : "ingresos")} con este icono";
+                return;
+            }
+
             var dto = new CategoryDto
             {
                 CategoryId = formModel.CategoryId,
@@ -442,6 +484,8 @@
         showModal = false;
         formModel = new();
         isEditing = false;
+        titleValidationError = null;
+        iconValidationError = null;
     }
 
     private async Task ConfirmDelete(int id, string title)

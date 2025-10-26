@@ -11,6 +11,12 @@ namespace MisFinanzas.Infrastructure.Interfaces
         Task<CategoryDto> CreateAsync(CategoryDto dto, string userId);
         Task<bool> UpdateAsync(int id, CategoryDto dto, string userId);
         Task<bool> DeleteAsync(int id, string userId);
+        // Obtiene la cantidad de transacciones relacionadas a una categoría
         Task<int> GetRelatedTransactionsCountAsync(int categoryId, string userId);
+
+        // Verifica si ya existe una categoría con ese nombre
+        Task<bool> ExistsCategoryWithNameAsync(string title, TransactionType type, string userId, int? excludeCategoryId = null);
+        // Verifica si ya existe una categoría con ese ícono
+        Task<bool> ExistsCategoryWithIconAsync(string icon, TransactionType type, string userId, int? excludeCategoryId = null);
     }
 }

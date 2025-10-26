@@ -119,5 +119,35 @@ namespace MisFinanzas.Infrastructure.Services
             return await _context.ExpensesIncomes
                 .CountAsync(ei => ei.CategoryId == categoryId && ei.UserId == userId);
         }
+
+        public async Task<bool> ExistsCategoryWithNameAsync(string title, TransactionType type, string userId, int? excludeCategoryId = null)
+        {
+            var query = _context.Categories
+                .Where(c => c.UserId == userId
+                    && c.Type == type
+                    && c.Title.ToLower() == title.ToLower());
+
+            if (excludeCategoryId.HasValue)
+            {
+                query = query.Where(c => c.CategoryId != excludeCategoryId.Value);
+            }
+
+            return await query.AnyAsync();
+        }
+
+        public async Task<bool> ExistsCategoryWithIconAsync(string icon, TransactionType type, string userId, int? excludeCategoryId = null)
+        {
+            var query = _context.Categories
+                .Where(c => c.UserId == userId
+                    && c.Type == type
+                    && c.Icon == icon);
+
+            if (excludeCategoryId.HasValue)
+            {
+                query = query.Where(c => c.CategoryId != excludeCategoryId.Value);
+            }
+
+            return await query.AnyAsync();
+        }
     }
 }
