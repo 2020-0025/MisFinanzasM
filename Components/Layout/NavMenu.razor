@@ -13,11 +13,12 @@
         <div class="navbar-user">
             @if (_isAuthenticated)
             {
-                <button @onclick="Logout" class="btn-logout" title="Cerrar Sesión">
+                <button @onclick="Logout" class="btn-logout text-white" title="Cerrar Sesión">
                     <span style="font-size: 15px;">🔐</span>
+                    Cerrar Sesion
                 </button>
                 <a href="@(_isAdmin ? "/admin" : "/profile")" class="user-info">
-                    <span style="font-size: 17px;">🧑‍💼</span>
+                    <span style="font-size: 15px;">🧑‍💼</span>
                     <span class="user-name">@_userName</span>
                 </a>
             }
@@ -72,11 +73,12 @@
         <div class="navbar-mobile">
             @if (_isAuthenticated)
             {
-                <button @onclick="Logout" class="btn-logout-mobile" title="Cerrar Sesión">
+                <button @onclick="Logout" class="btn-logout-mobile text-white" title="Cerrar Sesión">
                     <span style="font-size: 15px;">🔐</span>
+                    Cerrar Sesion
                 </button>
                 <a href="@(_isAdmin ? "/admin" : "/profile")" class="user-info-mobile">
-                    <span style="font-size: 17px;">🧑‍💼</span>
+                    <span style="font-size: 15px;">🧑‍💼</span>
                     <span class="user-name">@_userName</span>
                 </a>
             }
@@ -155,7 +157,7 @@
         gap: 0.5rem;
         flex: 1;
         justify-content: center;
-        margin-left: 16rem;
+        margin-left: 6.5rem;
     }
 
     .nav-link-horizontal {
@@ -212,6 +214,7 @@
         color: white;
         text-decoration: none;
         transition: all 0.3s ease;
+        height: 40px;
     }
 
         .user-info:hover {
@@ -231,7 +234,8 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        width: 40px;
+        gap: 0.5rem;
+        width: 180px;
         height: 40px;
         background: rgba(244, 67, 54, 0.15);
         border: 1px solid rgba(244, 67, 54, 0.3);
@@ -286,7 +290,8 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        width: 44px;
+        gap: 0.5rem;
+        width: 180px;
         height: 44px;
         background: rgba(244, 67, 54, 0.15);
         border: 1px solid rgba(244, 67, 54, 0.3);

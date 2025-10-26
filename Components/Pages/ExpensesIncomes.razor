@@ -150,10 +150,10 @@
                                         </td>
                                         <td>
                                             <div class="btn-group btn-group-sm">
-                                                <button class="btn btn-warning" @onclick="() => EditTransaction(item)">
+                                                <button class="btn btn-warning" style="background-color:rgba(255, 193, 7, 0.25);" @onclick="() => EditTransaction(item)">
                                                     <span style="font-size: 13px;">📝</span>
                                                 </button>
-                                                <button class="btn btn-danger" @onclick="() => ConfirmDelete(item.Id, item.Description ?? item.CategoryTitle)">
+                                                <button class="btn btn-danger" style="background-color:rgba(244, 67, 54, 0.25);" @onclick="() => ConfirmDelete(item.Id, item.Description ?? item.CategoryTitle)">
                                                     <span style="font-size: 13px;">🗑️</span>
                                                 </button>
                                             </div>

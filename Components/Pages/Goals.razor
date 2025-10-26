@@ -111,10 +111,10 @@
             {
                 <div class="col-12">
                     <div class="text-center py-5">
-                        <p class="text-white">No hay metas @(currentFilter.HasValue? currentFilter.Value.ToString().ToLower() + "s" : "")</p>
-                        <button class="btnAddGoals mt-3" @onclick="OpenCreateModal">
-                            <span style="font-size: 17px;">➕</span> Crear Primera Meta
-                        </button>
+                        <p class="text-white" style="font-size:30px;"> <strong>Vacio.</strong></p>
+                      @*   <button class="btnAddGoals mt-3" @onclick="OpenCreateModal">
+                            <span style="font-size: 17px;">➕</span> Crear Una Meta
+                        </button> *@
                     </div>
                 </div>
             }
@@ -129,26 +129,27 @@
                                     <div class="goal-icon">@goal.Icon</div>
                                     <div class="flex-grow-1">
                                         <h4>@goal.Title</h4>
-                                        <span class="text-white badge bg-@GetStatusBadgeColor(goal.Status)">
+                                        <span class="text-white badge @GetStatusBadgeColor(goal.Status)">
                                             @goal.StatusDisplay
                                         </span>
                                     </div>
                                     <div class="goal-actions">
                                         @if (goal.Status == GoalStatus.InProgress)
                                         {
-                                            <button class="btn btn-sm btn-success" @onclick="() => OpenProgressModal(goal)" title="Agregar progreso">
+                                            <button class="btn btn-sm btn-success" style="background-color:rgba(76, 175, 80, 0.25);" @onclick="() => OpenProgressModal(goal)" title="Agregar progreso">
                                                 <span style="font-size: 13px;">➕</span>
                                             </button>
-                                            <button class="btn btn-sm btn-warning" @onclick="() => OpenEditModal(goal)" title="Editar">
+                                            <button class="btn btn-sm btn-warning" style="background-color:rgba(255, 193, 7, 0.25);" @onclick="() => OpenEditModal(goal)" title="Editar">
                                                 <span style="font-size: 13px;">📝</span>
                                             </button>
-                                            <button class="btn btn-sm btn-secondary" @onclick="() => ConfirmCancel(goal.GoalId, goal.Title)" title="Cancelar">
+                                            <button class="btn btn-sm btn-secondary" style="background-color:rgba(158, 158, 158, 0.25);" @onclick="() => ConfirmCancel(goal.GoalId, goal.Title)" title="Cancelar">
                                                 <span style="font-size: 13px;">❌</span>
                                             </button>
+                                            <button class="btn btn-sm btn-danger" style="background-color:rgba(244, 67, 54, 0.25);" @onclick="() => ConfirmDelete(goal.GoalId, goal.Title)" title="Eliminar">
+                                                <span style="font-size: 13px;">🗑️</span>
+                                            </button>
                                         }
-                                        <button class="btn btn-sm btn-danger" @onclick="() => ConfirmDelete(goal.GoalId, goal.Title)" title="Eliminar">
-                                            <span style="font-size: 13px;">🗑️</span>
-                                        </button>
+                                       
                                     </div>
                                 </div>
                             </div>
@@ -804,9 +805,9 @@
 
     private string GetStatusBadgeColor(GoalStatus status) => status switch
     {
-        GoalStatus.InProgress => "success",
-        GoalStatus.Completed => "primary",
-        GoalStatus.Cancelled => "secondary",
+        GoalStatus.InProgress => "bg-success-custom",
+        GoalStatus.Completed => "bg-info-custom",
+        GoalStatus.Cancelled => "bg-danger-custom",
         _ => "secondary"
     };
 

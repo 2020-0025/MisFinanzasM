@@ -104,7 +104,7 @@
             <div class="progress mt-3" style="height: 30px; background-color:rgba(255, 255, 255, 0.05);">
                 <div class="progress-bar @GetProgressBarClass(totalPercentage)"
                      role="progressbar"
-                     style="color:black; height:15px; width: @Math.Min(totalPercentage, 100)%"
+                     style="color:white; height:15px; width: @Math.Min(totalPercentage, 100)%"
                      aria-valuenow="@totalPercentage"
                      aria-valuemin="0"
                      aria-valuemax="100">
@@ -168,10 +168,10 @@
                                             </div>
                                         </div>
                                         <div class="budget-actions">
-                                            <button class="btn btn-sm btn-warning" @onclick="() => EditBudget(budget)">
+                                            <button class="btn btn-sm btn-warning" style="background-color:rgba(255, 193, 7, 0.25);" @onclick="() => EditBudget(budget)">
                                                 <span style="font-size: 13px;">📝</span>
                                             </button>
-                                            <button class="btn btn-sm btn-danger" @onclick="() => ConfirmDelete(budget.Id, budget.CategoryTitle)">
+                                            <button class="btn btn-sm btn-danger" style="background-color:rgba(244, 67, 54, 0.25);" @onclick="() => ConfirmDelete(budget.Id, budget.CategoryTitle)">
                                                 <span style="font-size: 13px;">🗑️</span>
                                             </button>
                                         </div>
@@ -185,7 +185,7 @@
                                         <div class="progress" style="height: 20px;">
                                             <div class="progress-bar @GetProgressBarClass(budget.UsedPercentage)"
                                                  role="progressbar"
-                                                 style="color:black; height:13px; width: @Math.Min(budget.UsedPercentage, 100)%"
+                                                 style="color:white; height:13px; width: @Math.Min(budget.UsedPercentage, 100)%"
                                                  aria-valuenow="@budget.UsedPercentage"
                                                  aria-valuemin="0"
                                                  aria-valuemax="100">
@@ -193,7 +193,7 @@
                                             </div>
                                         </div>
                                         <div class="mt-2 text-end">
-                                            <small class="@(budget.IsOverBudget ? "text-danger" : "text-success")">
+                                            <small class="@(budget.IsOverBudget ? "text-white" : "text-white")">
                                                 @(budget.IsOverBudget ? "Excedido por " : "Disponible: ")
                                                 <strong>@budget.AvailableAmount.ToString("C")</strong>
                                             </small>
@@ -607,17 +607,17 @@
     // Helpers para estilos
     private string GetProgressBarClass(decimal percentage) => percentage switch
     {
-        >= 100 => "bg-danger",
-        >= 80 => "bg-warning",
-        >= 50 => "bg-info",
-        _ => "bg-success"
+        >= 100 => "bg-danger-custom",
+        >= 80 => "bg-warning-custom",
+        >= 50 => "bg-info-custom",
+        _ => "bg-success-custom"
     };
 
     private string GetStatusBadgeClass(BudgetDto budget)
     {
-        if (budget.IsOverBudget) return "bg-danger";
-        if (budget.IsNearLimit) return "bg-warning";
-        return "bg-success";
+        if (budget.IsOverBudget) return "bg-danger-custom";
+        if (budget.IsNearLimit) return "bg-warning-custom";
+        return "bg-success-custom";
     }
 
     // Modelo de formulario
