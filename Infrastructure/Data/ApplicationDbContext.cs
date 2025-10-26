@@ -111,7 +111,7 @@ namespace MisFinanzas.Infrastructure.Data
                 entity.HasOne(ei => ei.Category)
                     .WithMany(c => c.ExpensesIncomes)
                     .HasForeignKey(ei => ei.CategoryId)
-                    .OnDelete(DeleteBehavior.Restrict);
+                    .OnDelete(DeleteBehavior.Cascade);
 
                 // Índices
                 entity.HasIndex(ei => ei.UserId);

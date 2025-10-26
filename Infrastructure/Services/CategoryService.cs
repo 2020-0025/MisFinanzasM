@@ -113,5 +113,11 @@ namespace MisFinanzas.Infrastructure.Services
             await _context.SaveChangesAsync();
             return true;
         }
+
+        public async Task<int> GetRelatedTransactionsCountAsync(int categoryId, string userId)
+        {
+            return await _context.ExpensesIncomes
+                .CountAsync(ei => ei.CategoryId == categoryId && ei.UserId == userId);
+        }
     }
 }

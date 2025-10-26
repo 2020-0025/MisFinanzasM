@@ -11,5 +11,6 @@ namespace MisFinanzas.Infrastructure.Interfaces
         Task<CategoryDto> CreateAsync(CategoryDto dto, string userId);
         Task<bool> UpdateAsync(int id, CategoryDto dto, string userId);
         Task<bool> DeleteAsync(int id, string userId);
+        Task<int> GetRelatedTransactionsCountAsync(int categoryId, string userId);
     }
 }
