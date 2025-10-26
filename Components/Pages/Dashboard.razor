@@ -160,7 +160,7 @@
         <!-- Main Charts Row -->
         <div class="row g-4 mb-4">
             <!-- Bar Chart -->
-            <div class="col-lg-8">
+            <div class="col-lg-6">
                 <div class="glass-card h-100 animate-slide-up" style="animation-delay: 0.4s;">
                     <div class="card-header-glass">
                         <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
@@ -199,14 +199,13 @@
                     </div>
                 </div>
             </div>
-
             <!-- Budget Doughnut Chart -->
-            <div class="col-lg-4">
+            <div class="col-lg-3">
                 <div class="glass-card animate-slide-up" style="animation-delay: 0.6s;">
                     <div class="card-header-glass">
                         <h5 class="mb-0 text-white fw-semibold">
                             <span style="font-size: 20px;">💰</span>
-                            Gastos por Categoria
+                            Prep. Gastado por Categoria
                         </h5>
                     </div>
                     <div class="card-body-glass">
@@ -230,6 +229,31 @@
                         {
                             <div class="empty-state-small">
                                 <p class="text-white">No tienes presupuestos activos</p>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+            <!-- Expenses Distribution Doughnut Chart -->
+            <div class="col-lg-3">
+                <div class="glass-card animate-slide-up" style="animation-delay: 0.8s;">
+                    <div class="card-header-glass">
+                        <h5 class="mb-0 text-white fw-semibold">
+                            <span style="font-size: 20px;">🧾</span>
+                            Gastos por Categorias
+                        </h5>
+                    </div>
+                    <div class="card-body-glass">
+                        @if (expensesByCategoryData.Any())
+                        {
+                            <div style="height: 350px; position: relative; margin-bottom:1rem;">
+                                <canvas id="expensesChart"></canvas>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="empty-state-small">
+                                <p class="text-white">No hay gastos en el período seleccionado</p>
                             </div>
                         }
                     </div>
@@ -421,6 +445,7 @@
     // Datos para gráficos
     private Dictionary<string, DayData> chartData = new();
     private List<BudgetData> budgetData = new();
+    private List<CategoryExpenseData> expensesByCategoryData = new();
     private List<AlertItem> alerts = new();
 
     // ===== CICLO DE VIDA DEL COMPONENTE =====
@@ -521,6 +546,9 @@
 
             // Preparar datos de presupuestos
             await PrepareBudgetData();
+
+            // Preparar datos de gastos por categoría
+            await PrepareExpensesByCategoryData();
 
             // Generar alertas
             GenerateAlerts();
@@ -630,6 +658,60 @@
         }
     }
 
+    private async Task PrepareExpensesByCategoryData()
+    {
+        expensesByCategoryData.Clear();
+
+        // Obtener gastos del período seleccionado
+        var endDate = DateTime.Now;
+        var startDate = endDate.AddDays(-selectedDays);
+
+        var periodTransactions = await ExpenseIncomeService.GetByUserAndDateRangeAsync(currentUserId!, startDate, endDate);
+
+        // Filtrar solo gastos
+        var expenses = periodTransactions
+            .Where(t => t.Type == TransactionType.Expense)
+            .ToList();
+
+        if (!expenses.Any())
+            return;
+
+        // Agrupar por categoría
+        var groupedByCategory = expenses
+            .GroupBy(e => new { e.CategoryId, e.CategoryTitle, e.CategoryIcon })
+            .Select(g => new
+            {
+                CategoryId = g.Key.CategoryId,
+                CategoryName = g.Key.CategoryTitle ?? "Sin categoría",
+                CategoryIcon = g.Key.CategoryIcon ?? "📁",
+                TotalExpense = g.Sum(e => e.Amount)
+            })
+            .OrderByDescending(x => x.TotalExpense)
+            .ToList();
+
+        // Colores predefinidos para las categorías
+        var colors = new[]
+        {
+            "#f44336", "#e91e63", "#9c27b0", "#673ab7",
+            "#3f51b5", "#2196f3", "#03a9f4", "#00bcd4",
+            "#009688", "#4caf50", "#8bc34a", "#cddc39",
+            "#ffeb3b", "#ffc107", "#ff9800", "#ff5722"
+        };
+
+        int colorIndex = 0;
+        foreach (var item in groupedByCategory)
+        {
+            expensesByCategoryData.Add(new CategoryExpenseData
+            {
+                CategoryName = item.CategoryName,
+                CategoryIcon = item.CategoryIcon,
+                TotalExpense = item.TotalExpense,
+                Color = colors[colorIndex % colors.Length]
+            });
+            colorIndex++;
+        }
+    }
+
     private void PrepareTopGoals()
     {
         topGoals = allGoals
@@ -723,6 +805,17 @@
                 await JSRuntime.InvokeVoidAsync("chartHelpers.createBudgetChart",
                     "budgetChart", labels, values, colors);
             }
+
+            // Gráfico de distribución de gastos por categoría
+            if (expensesByCategoryData.Any())
+            {
+                var labels = expensesByCategoryData.Select(e => e.CategoryName).ToArray();
+                var values = expensesByCategoryData.Select(e => (double)e.TotalExpense).ToArray();
+                var colors = expensesByCategoryData.Select(e => e.Color).ToArray();
+
+                await JSRuntime.InvokeVoidAsync("chartHelpers.createDoughnutChart",
+                    "expensesChart", labels, values, colors);
+            }
         }
         catch (Exception ex)
         {
@@ -750,6 +843,7 @@
         {
             await JSRuntime.InvokeVoidAsync("chartHelpers.destroyChart", "barChart");
             await JSRuntime.InvokeVoidAsync("chartHelpers.destroyChart", "budgetChart");
+            await JSRuntime.InvokeVoidAsync("chartHelpers.destroyChart", "expensesChart");
         }
         catch { }
     }
@@ -769,6 +863,14 @@
         public decimal BudgetAmount { get; set; }
         public decimal SpentAmount { get; set; }
         public decimal PercentageUsed { get; set; }
+    }
+
+    public class CategoryExpenseData
+    {
+        public string CategoryName { get; set; } = "";
+        public string CategoryIcon { get; set; } = "";
+        public decimal TotalExpense { get; set; }
+        public string Color { get; set; } = "";
     }
 
     public class AlertItem

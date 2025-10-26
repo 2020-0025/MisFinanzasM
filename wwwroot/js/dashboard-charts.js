@@ -129,6 +129,85 @@ window.chartHelpers = {
         return chart;
     },
 
+    // Crear gráfico de dona para distribución de gastos (Doughnut)
+    createDoughnutChart: function (canvasId, labels, data, backgroundColors) {
+        const ctx = document.getElementById(canvasId);
+        if (!ctx) return null;
+
+        // Destruir gráfico anterior si existe
+        if (ctx.chart) {
+            ctx.chart.destroy();
+        }
+
+        const chart = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: labels,
+                datasets: [{
+                    data: data,
+                    backgroundColor: backgroundColors,
+                    borderWidth: 0,
+                    hoverOffset: 15
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '70%',
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'bottom',
+                        labels: {
+                            padding: 15,
+                            font: {
+                                size: 12,
+                                family: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif"
+                            },
+                            usePointStyle: true,
+                            pointStyle: 'circle',
+                            color: '#fff'
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                        padding: 12,
+                        cornerRadius: 8,
+                        titleFont: {
+                            size: 14,
+                            weight: 'bold'
+                        },
+                        bodyFont: {
+                            size: 13
+                        },
+                        callbacks: {
+                            label: function (context) {
+                                let label = context.label || '';
+                                if (label) {
+                                    label += ': ';
+                                }
+                                const value = context.parsed;
+                                const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                const percentage = ((value / total) * 100).toFixed(1);
+                                label += 'RD$' + value.toLocaleString('es-DO') + ' (' + percentage + '%)';
+                                return label;
+                            }
+                        }
+                    }
+                },
+                animation: {
+                    animateRotate: true,
+                    animateScale: true,
+                    duration: 1500,
+                    easing: 'easeInOutQuart'
+                }
+            }
+        });
+
+        ctx.chart = chart;
+        return chart;
+    },
+
     // Crear gráfico de dona para presupuestos (Doughnut)
     createBudgetChart: function (canvasId, labels, values, colors) {
         const ctx = document.getElementById(canvasId);
