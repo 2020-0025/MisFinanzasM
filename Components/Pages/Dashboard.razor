@@ -64,15 +64,32 @@
                         </div>
                         <div class="stat-content">
                             <p class="stat-label text-white">Balance</p>
-                            <h2 class="stat-value">@balance.ToString("C0")</h2>
-                            <small class="stat-subtitle text-white">
-                                <span style="font-size: 15px;">📅</span>@selectedDays días
+                            <h2 class="stat-value @(balance >= 0 ? "text-info" : "text-danger")">
+                                @if (balance >= 0)
+                                {
+                                    <text>@balance.ToString("C0")</text>
+                                }
+                                else
+                                {
+                                    <text>-@Math.Abs(balance).ToString("C0")</text>
+                                }
+                            </h2>
+                            <small class="stat-subtitle @(balance >= 0 ? "text-info" : "text-danger")">
+                                <span style="font-size: 15px;">@(balance >= 0 ? "✅" : "⚠️")</span>
+                                @(balance >= 0 ? "Superávit" : "Déficit")
                             </small>
                         </div>
                     </div>
                     <div class="stat-footer text-white">
                         <span style="font-size: 17px;">💲</span>
-                        Balance actual
+                        @if (balance >= 0)
+                        {
+                            <text>Situación positiva</text>
+                        }
+                        else
+                        {
+                            <text>Gastos exceden ingresos</text>
+                        }
                     </div>
                 </div>
             </div>

@@ -302,6 +302,20 @@
         transform: translateY(-2px);
     }
 
+.btnWithdraw {
+    background: rgba(255, 193, 7, 0.25);
+    border-color: rgba(255, 193, 7, 0.5);
+    color: white;
+    font-weight: 600;
+    box-shadow: 0 0 12px rgba(76, 175, 80, 0.3);
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+}
+
+    .btnWithdraw:hover {
+        transform: translateY(-2px);
+    }
+
 .btnCancel {
     background: rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(10px);
