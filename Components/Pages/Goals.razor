@@ -148,10 +148,18 @@
                                             <button class="btn btn-sm btn-secondary" style="background-color: rgba(33, 150, 243, 0.25);" @onclick="() => ConfirmCancel(goal.GoalId, goal.Title)" title="Cancelar">
                                                 <span style="font-size: 13px;">❌</span>
                                             </button>
-                                            <button class="btn btn-sm btn-danger" style="background-color:rgba(244, 67, 54, 0.25);" @onclick="() => ConfirmDelete(goal.GoalId, goal.Title)" title="Eliminar">
-                                                <span style="font-size: 13px;">🗑️</span>
+                                            
+                                        }
+                                        else if (goal.Status == GoalStatus.Completed)
+                                        {
+                                            <button class="btn btn-sm btn-warning" style="background-color:rgba(158, 158, 158, 0.25);" @onclick="() => OpenWithdrawModal(goal)" title="Retirar dinero">
+                                                <span style="font-size: 13px;">➖</span>
                                             </button>
                                         }
+                                        <!-- Eliminar está disponible para todas las metas -->
+                                        <button class="btn btn-sm btn-danger" style="background-color:rgba(244, 67, 54, 0.25);" @onclick="() => ConfirmDelete(goal.GoalId, goal.Title)" title="Eliminar">
+                                            <span style="font-size: 13px;">🗑️</span>
+                                        </button>
                                        
                                     </div>
                                 </div>
@@ -199,8 +207,8 @@
 
                             @if (goal.Status == GoalStatus.Completed && goal.CompletedAt.HasValue)
                             {
-                                <div class="goal-completed">
-                                    <i class="bi bi-check-circle-fill"></i> Completada el @goal.CompletedAt.Value.ToString("dd/MM/yyyy")
+                                <div class="goal-completed text-white">
+                                    <span style="font-size: 13px;">✅</span> Completada el @goal.CompletedAt.Value.ToString("dd/MM/yyyy")
                                 </div>
                             }
                         </div>
