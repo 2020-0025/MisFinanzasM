@@ -178,6 +178,20 @@ namespace MisFinanzas.Infrastructure.Services
             return true;
         }
 
+        public async Task<bool> ReactivateGoalAsync(int goalId, string userId)
+        {
+            var goal = await _context.FinancialGoals
+                .FirstOrDefaultAsync(g => g.GoalId == goalId && g.UserId == userId);
+
+            if (goal == null || goal.Status != GoalStatus.Cancelled)
+                return false;
+
+            goal.Status = GoalStatus.InProgress;
+
+            await _context.SaveChangesAsync();
+            return true;
+        }
+
         public async Task<int> GetCompletedGoalsCountAsync(string userId)
         {
             return await _context.FinancialGoals
@@ -202,6 +216,34 @@ namespace MisFinanzas.Infrastructure.Services
         {
             return await _context.FinancialGoals
                 .CountAsync(g => g.UserId == userId && g.Status == GoalStatus.InProgress);
+        }
+
+        public async Task<bool> ExistsGoalWithNameAsync(string title, string userId, int? excludeGoalId = null)
+        {
+            var query = _context.FinancialGoals
+                .Where(g => g.UserId == userId
+                    && g.Title.ToLower() == title.ToLower());
+
+            if (excludeGoalId.HasValue)
+            {
+                query = query.Where(g => g.GoalId != excludeGoalId.Value);
+            }
+
+            return await query.AnyAsync();
+        }
+
+        public async Task<bool> ExistsGoalWithIconAsync(string icon, string userId, int? excludeGoalId = null)
+        {
+            var query = _context.FinancialGoals
+                .Where(g => g.UserId == userId
+                    && g.Icon == icon);
+
+            if (excludeGoalId.HasValue)
+            {
+                query = query.Where(g => g.GoalId != excludeGoalId.Value);
+            }
+
+            return await query.AnyAsync();
         }
         private static FinancialGoalDto MapToDto(FinancialGoal goal)
         {

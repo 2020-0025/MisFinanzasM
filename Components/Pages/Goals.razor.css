@@ -114,12 +114,10 @@
 
     .goal-card.completed {
         border-left-color: #28a745;
-        opacity: 0.8;
     }
 
     .goal-card.cancelled {
         border-left-color: #6c757d;
-        opacity: 0.6;
     }
 
 .goal-header {

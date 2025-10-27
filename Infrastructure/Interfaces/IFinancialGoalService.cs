@@ -16,6 +16,7 @@ namespace MisFinanzas.Infrastructure.Interfaces
         Task<(bool Success, string? Error)> WithdrawAmountAsync(int goalId, decimal amount, string userId);
         Task<bool> CompleteGoalAsync(int goalId, string userId);
         Task<bool> CancelGoalAsync(int goalId, string userId);
+        Task<bool> ReactivateGoalAsync(int goalId, string userId);
 
         // Estadísticas
         Task<int> GetCompletedGoalsCountAsync(string userId);
@@ -23,5 +24,9 @@ namespace MisFinanzas.Infrastructure.Interfaces
         // Para Dashboard
         Task<List<FinancialGoalDto>> GetTopGoalsByProgressAsync(string userId, int count);
         Task<int> GetActiveGoalsCountAsync(string userId);
+
+        // Validaciones
+        Task<bool> ExistsGoalWithNameAsync(string title, string userId, int? excludeGoalId = null);
+        Task<bool> ExistsGoalWithIconAsync(string icon, string userId, int? excludeGoalId = null);
     }
 }

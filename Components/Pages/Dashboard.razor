@@ -12,7 +12,7 @@
 @inject IJSRuntime JSRuntime
 @using Microsoft.JSInterop
 
-<PageTitle>Dashboard - Mis Finanzas</PageTitle>
+<PageTitle>Panel de Control - Mis Finanzas</PageTitle>
 
 <div class="dashboard-container">
     @if (!isAuthorized)
@@ -42,7 +42,7 @@
                 <div>
                     <h1 class="h3 mb-1 text-white fw-bold">
                         <span style="font-size: 32px;">📊</span>
-                        <strong>Dashboard</strong>
+                        <strong>Panel de Control</strong>
                     </h1>
                     <p class="text-white mb-0">Resumen de tus finanzas</p>
                 </div>
@@ -126,7 +126,7 @@
                         <div class="stat-content">
                             <p class="stat-label text-white">Gastos</p>
                             <h2 class="stat-value text-danger">@totalExpense.ToString("C0")</h2>
-                            <small class="stat-subtitle text-danger">
+                            <small class="stat-subtitle text-white">
                                 <span style="font-size: 15px;">🔽</span>Salidas
                             </small>
                         </div>
@@ -177,7 +177,7 @@
         <!-- Main Charts Row -->
         <div class="row g-4 mb-4">
             <!-- Bar Chart -->
-            <div class="col-lg-6">
+            <div class="col-lg-12">
                 <div class="glass-card h-100 animate-slide-up" style="animation-delay: 0.4s;">
                     <div class="card-header-glass">
                         <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
@@ -216,13 +216,38 @@
                     </div>
                 </div>
             </div>
+            <!-- Expenses Distribution Doughnut Chart -->
+            <div class="col-lg-6">
+                <div class="glass-card animate-slide-up" style="animation-delay: 0.8s;">
+                    <div class="card-header-glass">
+                        <h5 class="mb-0 text-white fw-semibold">
+                            <span style="font-size: 20px;">🧾</span>
+                            Gastos por Categorias
+                        </h5>
+                    </div>
+                    <div class="card-body-glass">
+                        @if (expensesByCategoryData.Any())
+                        {
+                            <div style="height: 350px; position: relative; margin-bottom:1rem;">
+                                <canvas id="expensesChart"></canvas>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="empty-state-small">
+                                <p class="text-white">No hay gastos en el período seleccionado</p>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
             <!-- Budget Doughnut Chart -->
-            <div class="col-lg-3">
+            <div class="col-lg-6">
                 <div class="glass-card animate-slide-up" style="animation-delay: 0.6s;">
                     <div class="card-header-glass">
                         <h5 class="mb-0 text-white fw-semibold">
                             <span style="font-size: 20px;">💰</span>
-                            Prep. Gastado por Categoria
+                            % Presupuesto Gastado
                         </h5>
                     </div>
                     <div class="card-body-glass">
@@ -251,35 +276,9 @@
                     </div>
                 </div>
             </div>
-            <!-- Expenses Distribution Doughnut Chart -->
-            <div class="col-lg-3">
-                <div class="glass-card animate-slide-up" style="animation-delay: 0.8s;">
-                    <div class="card-header-glass">
-                        <h5 class="mb-0 text-white fw-semibold">
-                            <span style="font-size: 20px;">🧾</span>
-                            Gastos por Categorias
-                        </h5>
-                    </div>
-                    <div class="card-body-glass">
-                        @if (expensesByCategoryData.Any())
-                        {
-                            <div style="height: 350px; position: relative; margin-bottom:1rem;">
-                                <canvas id="expensesChart"></canvas>
-                            </div>
-                        }
-                        else
-                        {
-                            <div class="empty-state-small">
-                                <p class="text-white">No hay gastos en el período seleccionado</p>
-                            </div>
-                        }
-                    </div>
-                </div>
-            </div>
-
         </div>
 
-        <!-- Secondary Row: Goals + Alerts -->
+        <!-- Goals + Alerts -->
         <div class="row g-4 mb-4">
             <!--  Goals -->
             <div class="col-lg-6">
@@ -335,7 +334,7 @@
                     <div class="card-header-glass">
                         <h5 class="mb-0 text-white fw-semibold">
                             <span style="font-size: 20px;">⚠️</span>
-                            Control Presupuestos
+                            Alertas de Presupuestos
                         </h5>
                     </div>
                     <div class="card-body-glass">

@@ -156,6 +156,12 @@
                                                 <span style="font-size: 13px;">➖</span>
                                             </button>
                                         }
+                                        else if (goal.Status == GoalStatus.Cancelled)
+                                        {
+                                            <button class="btn btn-sm btn-success" style="background-color:rgba(76, 175, 80, 0.25);" @onclick="() => ConfirmReactivate(goal.GoalId, goal.Title)" title="Reactivar meta">
+                                                <span style="font-size: 13px;">🔄</span>
+                                            </button>
+                                        }
                                         <!-- Eliminar está disponible para todas las metas -->
                                         <button class="btn btn-sm btn-danger" style="background-color:rgba(244, 67, 54, 0.25);" @onclick="() => ConfirmDelete(goal.GoalId, goal.Title)" title="Eliminar">
                                             <span style="font-size: 13px;">🗑️</span>
@@ -241,12 +247,20 @@
                                 <label class="form-label text-white">Nombre de la Meta</label>
                                 <InputText @bind-Value="formModel.Name" class="form-control" placeholder="Ej: Fondo de emergencia" />
                                 <ValidationMessage For="() => formModel.Name" class="text-danger" />
+                                @if (!string.IsNullOrEmpty(nameValidationError))
+                                {
+                                    <div class="text-danger small mt-1">@nameValidationError</div>
+                                }
                             </div>
 
                             <div class="col-md-4 mb-0">
                                 @* <label class="form-label">Icono</label> *@
                                 <IconSelector @bind-SelectedIcon="formModel.Icon" />
                                 <ValidationMessage For="() => formModel.Icon" class="text-danger" />
+                                @if (!string.IsNullOrEmpty(iconValidationError))
+                                {
+                                    <div class="text-danger small mt-1">@iconValidationError</div>
+                                }
                             </div>
                         </div>
 
@@ -445,6 +459,34 @@
     </div>
 }
 
+<!-- Modal Confirmar Reactivación -->
+@if (showReactivateModal)
+{
+    <div class="modal-backdrop show"></div>
+    <div class="modal show d-block" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content text-white">
+                <div class="modal-header border-secondary">
+                    <h5 class="modal-title">🔄 Reactivar Meta</h5>
+                    <button type="button" class="btn-close" @onclick="CloseReactivateModal">❌</button>
+                </div>
+                <div class="modal-body">
+                    <p>¿Estás seguro de que deseas reactivar la meta <strong>@goalToReactivate</strong>?</p>
+                    <p class="text-info mb-0">
+                        La meta volverá a estar "En Progreso" y podrás seguir trabajando en ella.
+                    </p>
+                </div>
+                <div class="modal-footer border-secondary">
+                    <button type="button" class="btnCancel" @onclick="CloseReactivateModal">Cancelar</button>
+                    <button type="button" class="btnSaveEdit" @onclick="ReactivateGoal">
+                        <span style="font-size: 13px;">🔄</span> Reactivar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
 <!-- Modal Confirmar Eliminación -->
 @if (showDeleteModal)
 {
@@ -499,6 +541,8 @@
     // Mensajes
     private string? successMessage;
     private string? errorMessage;
+    private string? nameValidationError;
+    private string? iconValidationError;
 
     // Modal Crear/Editar
     private bool showModal = false;
@@ -520,6 +564,11 @@
     private bool showCancelModal = false;
     private int goalIdToCancel;
     private string? goalToCancel;
+
+    // Modal Reactivar
+    private bool showReactivateModal = false;
+    private int goalIdToReactivate;
+    private string? goalToReactivate;
 
     // Modal Eliminar
     private bool showDeleteModal = false;
@@ -669,6 +718,36 @@
                 return;
             }
 
+            // Limpiar errores previos
+            nameValidationError = null;
+            iconValidationError = null;
+
+            // Validar nombre duplicado
+            var nameExists = await GoalService.ExistsGoalWithNameAsync(
+                formModel.Name.Trim(),
+                currentUserId!,
+                isEditing ? formModel.GoalId : null
+            );
+
+            if (nameExists)
+            {
+                nameValidationError = "Ya existe una meta con este nombre";
+                return;
+            }
+
+            // Validar icono duplicado
+            var iconExists = await GoalService.ExistsGoalWithIconAsync(
+                formModel.Icon.Trim(),
+                currentUserId!,
+                isEditing ? formModel.GoalId : null
+            );
+
+            if (iconExists)
+            {
+                iconValidationError = "Ya existe una meta con este icono";
+                return;
+            }
+
             var dto = new FinancialGoalDto
             {
                 GoalId = formModel.GoalId,
@@ -727,6 +806,8 @@
         showModal = false;
         formModel = new();
         isEditing = false;
+        nameValidationError = null;
+        iconValidationError = null;
     }
 
     private void OpenProgressModal(FinancialGoalDto goal)
@@ -928,6 +1009,43 @@
         showDeleteModal = false;
         goalIdToDelete = 0;
         goalToDelete = null;
+    }
+
+    private void ConfirmReactivate(int goalId, string name)
+    {
+        goalIdToReactivate = goalId;
+        goalToReactivate = name;
+        showReactivateModal = true;
+    }
+
+    private async Task ReactivateGoal()
+    {
+        try
+        {
+            var result = await GoalService.ReactivateGoalAsync(goalIdToReactivate, currentUserId!);
+
+            if (result)
+            {
+                successMessage = $"Meta '{goalToReactivate}' reactivada correctamente";
+                CloseReactivateModal();
+                await LoadData();
+            }
+            else
+            {
+                errorMessage = "No se pudo reactivar la meta";
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Error: {ex.Message}";
+        }
+    }
+
+    private void CloseReactivateModal()
+    {
+        showReactivateModal = false;
+        goalIdToReactivate = 0;
+        goalToReactivate = null;
     }
 
     // Helpers para estilos
