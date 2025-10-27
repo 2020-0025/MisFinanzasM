@@ -48,10 +48,31 @@ namespace MisFinanzas.Infrastructure.Security
                 return defaultHasher.VerifyHashedPassword(user, hashedPassword, providedPassword);
             }
 
-            //  Modo académico: comparación directa de texto plano
-            return hashedPassword == providedPassword
-                ? PasswordVerificationResult.Success
-                : PasswordVerificationResult.Failed;
+            // Modo académico: puede manejar AMBOS formatos
+            // 1. Intentar comparación directa (texto plano legacy)
+            if (hashedPassword == providedPassword)
+            {
+                return PasswordVerificationResult.Success;
+            }
+
+            // 2. Si no coincide, intentar verificar como hash
+            //    (para permitir transición desde hash a texto plano)
+            try
+            {
+                var defaultHasher = new PasswordHasher<ApplicationUser>();
+                var result = defaultHasher.VerifyHashedPassword(user, hashedPassword, providedPassword);
+
+                if (result == PasswordVerificationResult.Success)
+                {
+                    return PasswordVerificationResult.Success;
+                }
+            }
+            catch
+            {
+                // No es un hash válido, continuar
+            }
+
+            return PasswordVerificationResult.Failed;
         }
     }
 }

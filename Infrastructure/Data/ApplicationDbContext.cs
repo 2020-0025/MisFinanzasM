@@ -274,7 +274,9 @@ namespace MisFinanzas.Infrastructure.Data
                     Email = "admin@misfinanzas.com",
                     NormalizedEmail = "ADMIN@MISFINANZAS.COM",
                     EmailConfirmed = true,
-                    PasswordHash = "Admin123", // ⚠️ Texto plano (con custom hasher)
+                    // Hash de la contraseña "Admin123"
+                    // Funciona en ambos modos gracias al PlainTextPasswordHasher mejorado
+                    PasswordHash = "AQAAAAIAAYagAAAAEFtEOmQZoktPuyAmR2lQn+NXQ7SqGeemT34tl3d2FFIltnPO6o587scWhKK3G9PmSw==",
                     SecurityStamp = Guid.NewGuid().ToString(),
                     FullName = "Administrador del Sistema",
                     UserRole = "Admin",
