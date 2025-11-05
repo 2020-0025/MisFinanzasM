@@ -77,9 +77,9 @@
         <!-- Mensajes -->
         @if (!string.IsNullOrEmpty(successMessage))
         {
-            <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <div class="alert alert-success alert-dismissible fade show @(_isMessageFading ? "message-fade-out" : "")" role="alert">
                 @successMessage
-                <button type="button" class="btn-close" @onclick="() => successMessage = null">❌</button>
+                <button type="button" class="btn-close" @onclick="() => { successMessage = null; _isMessageFading = false; }">❌</button>
             </div>
         }
 
@@ -114,7 +114,7 @@
                 else
                 {
                     <div class="table-responsive">
-                        <table class="table table-dark table-hover">
+                        <table class="table table-dark">
                             <thead>
                                 <tr class="text-white">
                                     <th>Fecha</th>
@@ -196,12 +196,20 @@
                                 }
                             </InputSelect>
                             <ValidationMessage For="() => formModel.CategoryId" class="text-danger" />
+                            @if (!string.IsNullOrEmpty(categoryValidationError))
+                            {
+                                <div class="text-danger small mt-1">@categoryValidationError</div>
+                            }
                         </div>
 
                         <div class="mb-3">
                             <label class="form-label">Monto</label>
                             <InputNumber @bind-Value="formModel.Amount" class="form-control" placeholder="0.00" />
                             <ValidationMessage For="() => formModel.Amount" class="text-danger" />
+                            @if (!string.IsNullOrEmpty(amountValidationError))
+                            {
+                                <div class="text-danger small mt-1">@amountValidationError</div>
+                            }
                         </div>
 
                         <div class="mb-3">
@@ -283,6 +291,10 @@
     // Mensajes
     private string? successMessage;
     private string? errorMessage;
+    private string? categoryValidationError;
+    private string? amountValidationError;
+    private System.Threading.Timer? _successMessageTimer;
+    private bool _isMessageFading = false;
 
     // Modal
     private bool showModal = false;
@@ -406,18 +418,19 @@
     {
         try
         {
-            isSaving = true;
-            errorMessage = null;
+            // Limpiar errores previos
+            categoryValidationError = null;
+            amountValidationError = null;
 
             if (formModel.CategoryId == 0)
             {
-                errorMessage = "Debes seleccionar una categoría";
+                categoryValidationError = "Debes seleccionar una categoría";
                 return;
             }
 
             if (formModel.Amount <= 0)
             {
-                errorMessage = "El monto debe ser mayor a cero";
+                amountValidationError = "El monto debe ser mayor a cero";
                 return;
             }
 
@@ -437,7 +450,7 @@
 
                 if (result)
                 {
-                    successMessage = "Transacción actualizada correctamente";
+                    ShowSuccessMessage("Transacción actualizada correctamente");
                     CloseModal();
                     await LoadData();
                 }
@@ -452,12 +465,11 @@
 
                 if (created != null)
                 {
-                    successMessage = $"{(formModel.Type == TransactionType.Income ? "Ingreso" : "Gasto")} agregado correctamente";
+                    ShowSuccessMessage($"{(formModel.Type == TransactionType.Income ? "Ingreso" : "Gasto")} agregado correctamente");
                     CloseModal();
                     await LoadData();
 
                     // TODO: Descontar de presupuesto si es gasto
-                    // Lo implementaremos en una siguiente iteración
                 }
                 else
                 {
@@ -480,6 +492,8 @@
         showModal = false;
         formModel = new();
         isEditing = false;
+        categoryValidationError = null;
+        amountValidationError = null;
     }
 
     private void ConfirmDelete(int id, string? description)
@@ -504,7 +518,7 @@
 
             if (result)
             {
-                successMessage = "Transacción eliminada correctamente";
+                ShowSuccessMessage("Transacción eliminada correctamente");
                 showDeleteModal = false;
                 transactionIdToDelete = 0;
                 transactionToDelete = null;
@@ -538,5 +552,37 @@
         public string? Description { get; set; }
 
         public TransactionType Type { get; set; }
+    }
+
+    private void ShowSuccessMessage(string message)
+    {
+        successMessage = message;
+        _isMessageFading = false;
+        StateHasChanged();
+
+        // Cancelar timer anterior si existe
+        _successMessageTimer?.Dispose();
+
+        // Crear nuevo timer que inicia el fade-out después de 3 segundos
+        _successMessageTimer = new System.Threading.Timer(_ =>
+        {
+            InvokeAsync(() =>
+            {
+                // Activar animación de fade-out
+                _isMessageFading = true;
+                StateHasChanged();
+
+                // Esperar a que termine la animación (500ms) y luego limpiar
+                Task.Delay(500).ContinueWith(_ =>
+                {
+                    InvokeAsync(() =>
+                    {
+                        successMessage = null;
+                        _isMessageFading = false;
+                        StateHasChanged();
+                    });
+                });
+            });
+        }, null, 3000, Timeout.Infinite);
     }
 }

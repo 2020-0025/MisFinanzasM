@@ -43,7 +43,7 @@
             <div class="d-flex justify-content-between align-items-center">
                 <div>
                     <h5 class="text-white">💵 Balance Disponible</h5>
-                    <h3 class="@(availableBalance >= 0 ? "text-success" : "text-danger")">
+                    <h3 class="@(availableBalance >= 0 ? "text-info" : "text-danger")">
                         @availableBalance.ToString("C")
                     </h3>
                     <small class="text-white">
@@ -82,9 +82,9 @@
         <!-- Mensajes -->
         @if (!string.IsNullOrEmpty(successMessage))
         {
-            <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <div class="alert alert-success alert-dismissible fade show @(_isMessageFading ? "message-fade-out" : "")" role="alert">
                 @successMessage
-                <button type="button" class="btn-close" @onclick="() => successMessage = null">❌</button>
+                <button type="button" class="btn-close" @onclick="() => { successMessage = null; _isMessageFading = false; }">❌</button>
             </div>
         }
 
@@ -543,6 +543,9 @@
     private string? errorMessage;
     private string? nameValidationError;
     private string? iconValidationError;
+    private System.Threading.Timer? _successMessageTimer;
+    private bool _isMessageFading = false;
+
 
     // Modal Crear/Editar
     private bool showModal = false;
@@ -766,7 +769,7 @@
 
                 if (result)
                 {
-                    successMessage = "Meta actualizada correctamente";
+                    ShowSuccessMessage("Meta actualizada correctamente");
                     CloseModal();
                     await LoadData();
                 }
@@ -781,7 +784,7 @@
 
                 if (created.Success && created.Goal != null)
                 {
-                    successMessage = "Meta creada correctamente";
+                    ShowSuccessMessage("Meta creada correctamente");
                     CloseModal();
                     await LoadData();
                 }
@@ -851,7 +854,7 @@
 
             if (result.Success)
             {
-                successMessage = $"Progreso agregado correctamente. ¡Sigue así!";
+                ShowSuccessMessage($"Progreso agregado correctamente. ¡Sigue así!");
                 CloseProgressModal();
                 await LoadData();
             }
@@ -911,7 +914,7 @@
 
             if (result.Success)
             {
-                successMessage = $"Se retiraron {withdrawModel.Amount:C} de la meta '{selectedGoalForWithdraw.Title}'";
+                ShowSuccessMessage($"Se retiraron {withdrawModel.Amount:C} de la meta '{selectedGoalForWithdraw.Title}'");
                 CloseWithdrawModal();
                 await LoadData();
             }
@@ -952,7 +955,7 @@
 
             if (result)
             {
-                successMessage = $"Meta '{goalToCancel}' cancelada";
+                ShowSuccessMessage($"Meta '{goalToCancel}' cancelada");
                 CloseCancelModal();
                 await LoadData();
             }
@@ -989,7 +992,7 @@
 
             if (result)
             {
-                successMessage = $"Meta '{goalToDelete}' eliminada correctamente";
+                ShowSuccessMessage($"Meta '{goalToDelete}' eliminada correctamente");
                 CloseDeleteModal();
                 await LoadData();
             }
@@ -1026,7 +1029,7 @@
 
             if (result)
             {
-                successMessage = $"Meta '{goalToReactivate}' reactivada correctamente";
+                ShowSuccessMessage($"Meta '{goalToReactivate}' reactivada correctamente");
                 CloseReactivateModal();
                 await LoadData();
             }
@@ -1110,5 +1113,37 @@
         [Required(ErrorMessage = "El monto es requerido")]
         [Range(0.01, double.MaxValue, ErrorMessage = "El monto debe ser mayor a cero")]
         public decimal Amount { get; set; }
+    }
+
+    private void ShowSuccessMessage(string message)
+    {
+        successMessage = message;
+        _isMessageFading = false;
+        StateHasChanged();
+
+        // Cancelar timer anterior si existe
+        _successMessageTimer?.Dispose();
+
+        // Crear nuevo timer que inicia el fade-out después de 3 segundos
+        _successMessageTimer = new System.Threading.Timer(_ =>
+        {
+            InvokeAsync(() =>
+            {
+                // Activar animación de fade-out
+                _isMessageFading = true;
+                StateHasChanged();
+
+                // Esperar a que termine la animación (500ms) y luego limpiar
+                Task.Delay(500).ContinueWith(_ =>
+                {
+                    InvokeAsync(() =>
+                    {
+                        successMessage = null;
+                        _isMessageFading = false;
+                        StateHasChanged();
+                    });
+                });
+            });
+        }, null, 3000, Timeout.Infinite);
     }
 }

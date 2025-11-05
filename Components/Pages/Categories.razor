@@ -40,9 +40,9 @@
         <!-- Mensajes -->
         @if (!string.IsNullOrEmpty(successMessage))
         {
-            <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <div class="alert alert-success alert-dismissible fade show @(_isMessageFading ? "message-fade-out" : "")" role="alert">
                 @successMessage
-                <button type="button" class="btn-close" @onclick="() => successMessage = null">❌</button>
+                <button type="button" class="btn-close" @onclick="() => { successMessage = null; _isMessageFading = false; }">❌</button>
             </div>
         }
 
@@ -278,6 +278,8 @@
     // Mensajes
     private string? successMessage;
     private string? errorMessage;
+    private System.Threading.Timer? _successMessageTimer;
+    private bool _isMessageFading = false;
 
     // Modal
     private bool showModal = false;
@@ -444,7 +446,7 @@
 
                 if (result)
                 {
-                    successMessage = "Categoría actualizada correctamente";
+                    ShowSuccessMessage("Categoría actualizada correctamente");
                     CloseModal();
                     await LoadData();
                 }
@@ -459,7 +461,7 @@
 
                 if (created != null)
                 {
-                    successMessage = "Categoría creada correctamente";
+                    ShowSuccessMessage("Categoría creada correctamente");
                     CloseModal();
                     await LoadData();
                 }
@@ -526,11 +528,11 @@
             {
                 if (relatedTransactionsCount > 0)
                 {
-                    successMessage = $"Categoría '{categoryToDelete}' y {relatedTransactionsCount} transacción(es) relacionada(s) eliminadas correctamente";
+                    ShowSuccessMessage($"Categoría '{categoryToDelete}' y {relatedTransactionsCount} transacción(es) relacionada(s) eliminadas correctamente");
                 }
                 else
                 {
-                    successMessage = $"Categoría '{categoryToDelete}' eliminada correctamente";
+                    ShowSuccessMessage($"Categoría '{categoryToDelete}' eliminada correctamente");
                 }
 
                 showDeleteModal = false;
@@ -564,5 +566,37 @@
         public string Icon { get; set; } = "📁";
 
         public TransactionType Type { get; set; } = TransactionType.Expense;
+    }
+
+    private void ShowSuccessMessage(string message)
+    {
+        successMessage = message;
+        _isMessageFading = false;
+        StateHasChanged();
+
+        // Cancelar timer anterior si existe
+        _successMessageTimer?.Dispose();
+
+        // Crear nuevo timer que inicia el fade-out después de 3 segundos
+        _successMessageTimer = new System.Threading.Timer(_ =>
+        {
+            InvokeAsync(() =>
+            {
+                // Activar animación de fade-out
+                _isMessageFading = true;
+                StateHasChanged();
+
+                // Esperar a que termine la animación (500ms) y luego limpiar
+                Task.Delay(500).ContinueWith(_ =>
+                {
+                    InvokeAsync(() =>
+                    {
+                        successMessage = null;
+                        _isMessageFading = false;
+                        StateHasChanged();
+                    });
+                });
+            });
+        }, null, 3000, Timeout.Infinite);
     }
 }

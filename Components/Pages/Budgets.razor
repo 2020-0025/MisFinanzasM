@@ -116,9 +116,9 @@
         <!-- Mensajes -->
         @if (!string.IsNullOrEmpty(successMessage))
         {
-            <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <div class="alert alert-success alert-dismissible fade show @(_isMessageFading ? "message-fade-out" : "")" role="alert">
                 @successMessage
-                <button type="button" class="btn-close" @onclick="() => successMessage = null">❌</button>
+                <button type="button" class="btn-close" @onclick="() => { successMessage = null; _isMessageFading = false; }">❌</button>
             </div>
         }
 
@@ -369,6 +369,8 @@
     // Mensajes
     private string? successMessage;
     private string? errorMessage;
+    private System.Threading.Timer? _successMessageTimer;
+    private bool _isMessageFading = false;
 
     // Modal Crear/Editar
     private bool showModal = false;
@@ -525,7 +527,7 @@
 
                 if (result)
                 {
-                    successMessage = "Presupuesto actualizado correctamente";
+                    ShowSuccessMessage("Presupuesto actualizado correctamente");
                     CloseModal();
                     await LoadData();
                 }
@@ -540,7 +542,7 @@
 
                 if (created.Success && created.Budget != null)
                 {
-                    successMessage = "Presupuesto creado correctamente";
+                    ShowSuccessMessage("Presupuesto creado correctamente");
                     CloseModal();
                     await LoadData();
                 }
@@ -582,7 +584,7 @@
 
             if (result)
             {
-                successMessage = $"Presupuesto de '{budgetToDelete}' eliminado correctamente";
+                ShowSuccessMessage($"Presupuesto de '{budgetToDelete}' eliminado correctamente");
                 CloseDeleteModal();
                 await LoadData();
             }
@@ -644,5 +646,37 @@
         [Required]
         [Range(2020, 2100)]
         public int Year { get; set; }
+    }
+
+    private void ShowSuccessMessage(string message)
+    {
+        successMessage = message;
+        _isMessageFading = false;
+        StateHasChanged();
+
+        // Cancelar timer anterior si existe
+        _successMessageTimer?.Dispose();
+
+        // Crear nuevo timer que inicia el fade-out después de 3 segundos
+        _successMessageTimer = new System.Threading.Timer(_ =>
+        {
+            InvokeAsync(() =>
+            {
+                // Activar animación de fade-out
+                _isMessageFading = true;
+                StateHasChanged();
+
+                // Esperar a que termine la animación (500ms) y luego limpiar
+                Task.Delay(500).ContinueWith(_ =>
+                {
+                    InvokeAsync(() =>
+                    {
+                        successMessage = null;
+                        _isMessageFading = false;
+                        StateHasChanged();
+                    });
+                });
+            });
+        }, null, 3000, Timeout.Infinite);
     }
 }

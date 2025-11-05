@@ -1,12 +1,13 @@
 ﻿.btnLogin {
     background: rgba(76, 175, 80, 0.25);
-    border-color: rgba(76, 175, 80, 0.5);
     color: white;
     font-weight: 300;
-    box-shadow: 0 0 12px rgba(76, 175, 80, 0.3);
+    box-shadow: 0 4px 16px 0 rgba(0, 0, 0, 0.3);
     border-radius: 20px;
     padding: 0.5rem 1rem;
-    text-decoration:none;
+    text-decoration: none;
+    border-color: red;
+    border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
     .btnLogin:hover {
