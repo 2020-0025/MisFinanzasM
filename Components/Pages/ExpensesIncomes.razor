@@ -10,6 +10,9 @@
 @inject IBudgetService BudgetService
 @inject IJSRuntime JSRuntime
 @inject NavigationManager NavigationManager
+@inject MisFinanzas.Infrastructure.Services.ReportService ReportService
+@inject MisFinanzas.Infrastructure.Services.PdfReportGenerator PdfReportGenerator
+@inject MisFinanzas.Infrastructure.Services.ExcelReportGenerator ExcelReportGenerator
 @implements IDisposable
 
 <PageTitle>Gastos e Ingresos - MisFinanzas</PageTitle>
@@ -70,6 +73,84 @@
                     <div class="balance-info">
                         <p class="text-info">Balance</p>
                         <h3>@balance.ToString("C")</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Panel de Filtros de Reportes -->
+        <div class="glass-card mb-4">
+            <div class="card-header">
+                <h4>📊 Generar Reporte</h4>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <!-- Período -->
+                    <div class="col-md-3">
+                        <label class="form-label text-white">Período</label>
+                        <select class="form-select glass-card text-white" @bind="reportPeriodType">
+                            <option value="@ReportPeriodType.LastWeek">Última semana</option>
+                            <option value="@ReportPeriodType.LastMonth">Último mes</option>
+                            <option value="@ReportPeriodType.Last3Months">Últimos 3 meses</option>
+                            <option value="@ReportPeriodType.Last6Months">Últimos 6 meses</option>
+                            <option value="@ReportPeriodType.LastYear">Último año</option>
+                            <option value="@ReportPeriodType.Custom">Personalizado</option>
+                        </select>
+                    </div>
+
+                    <!-- Fechas personalizadas (solo si es Custom) -->
+                    @if (reportPeriodType == ReportPeriodType.Custom)
+                    {
+                        <div class="col-md-2">
+                            <label class="form-label text-white">Fecha Inicio</label>
+                            <input type="date" class="form-control" @bind="customStartDate" />
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label text-white">Fecha Fin</label>
+                            <input type="date" class="form-control" @bind="customEndDate" />
+                        </div>
+                    }
+
+                    <!-- Tipo de transacción -->
+                    <div class="col-md-3">
+                        <label class="form-label text-white">Tipo</label>
+                        <select class="form-select glass-card text-white" @bind="reportTransactionType">
+                            <option value="">Ambos</option>
+                            <option value="@TransactionType.Income">Solo Ingresos</option>
+                            <option value="@TransactionType.Expense">Solo Gastos</option>
+                        </select>
+                    </div>
+
+                    <!-- Categoría -->
+                    <div class="col-md-3">
+                        <label class="form-label text-white">Categoría</label>
+                        <select class="form-select glass-card text-white" @bind="reportCategoryId">
+                            <option value="0">Todas las categorías</option>
+                            @foreach (var category in allCategories)
+                            {
+                                <option value="@category.CategoryId">@category.Icon @category.Title</option>
+                            }
+                        </select>
+                    </div>
+
+                    <!-- Botones -->
+                    <div class="col-12">
+                        <div class="d-flex gap-2 justify-content-end">
+                            <button class="btn btn-primary" @onclick="GeneratePdfReport" disabled="@isGeneratingReport">
+                                @if (isGeneratingReport)
+                                {
+                                    <span class="spinner-border spinner-border-sm me-2"></span>
+                                }
+                                📄 Descargar PDF
+                            </button>
+                            <button class="btn btn-success" @onclick="GenerateExcelReport" disabled="@isGeneratingReport">
+                                @if (isGeneratingReport)
+                                {
+                                    <span class="spinner-border spinner-border-sm me-2"></span>
+                                }
+                                📊 Descargar Excel
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -310,6 +391,13 @@
     private bool showDeleteModal = false;
     private int transactionIdToDelete;
     private string? transactionToDelete;
+    // Variables para reportes
+    private ReportPeriodType reportPeriodType = ReportPeriodType.LastMonth;
+    private string reportTransactionType = "";
+    private int reportCategoryId = 0;
+    private DateTime? customStartDate;
+    private DateTime? customEndDate;
+    private bool isGeneratingReport = false;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -596,6 +684,139 @@
             });
         }, null, 5000, System.Threading.Timeout.Infinite);
     }
+
+    #region Métodos de Reportes
+
+    private async Task GeneratePdfReport()
+    {
+        try
+        {
+            isGeneratingReport = true;
+            StateHasChanged();
+
+            // Validar fechas personalizadas
+            if (reportPeriodType == ReportPeriodType.Custom)
+            {
+                if (!customStartDate.HasValue || !customEndDate.HasValue)
+                {
+                    ShowErrorMessage("Debes seleccionar ambas fechas para el período personalizado");
+                    return;
+                }
+
+                if (customStartDate.Value > customEndDate.Value)
+                {
+                    ShowErrorMessage("La fecha de inicio no puede ser mayor que la fecha fin");
+                    return;
+                }
+            }
+
+            // Crear filtro
+            var filter = new ReportFilterDto
+            {
+                UserId = currentUserId!,
+                PeriodType = reportPeriodType,
+                CustomStartDate = customStartDate,
+                CustomEndDate = customEndDate,
+                TransactionTypeFilter = string.IsNullOrEmpty(reportTransactionType)
+                    ? null
+                    : Enum.Parse<TransactionType>(reportTransactionType),
+                CategoryIdFilter = reportCategoryId > 0 ? reportCategoryId : null
+            };
+
+            // Generar datos del reporte
+            var reportData = await ReportService.GenerateReportDataAsync(filter);
+
+            // Generar PDF
+            var pdfBytes = PdfReportGenerator.GeneratePdf(reportData);
+
+            // Descargar archivo
+            var fileName = $"Reporte_MisFinanzas_{DateTime.Now:yyyyMMdd_HHmmss}.pdf";
+            await DownloadFileAsync(fileName, pdfBytes, "application/pdf");
+
+            ShowSuccessMessage("Reporte PDF generado correctamente");
+        }
+        catch (Exception ex)
+        {
+            ShowErrorMessage($"Error al generar PDF: {ex.Message}");
+            Console.WriteLine($"Error en GeneratePdfReport: {ex}");
+        }
+        finally
+        {
+            isGeneratingReport = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task GenerateExcelReport()
+    {
+        try
+        {
+            isGeneratingReport = true;
+            StateHasChanged();
+
+            // Validar fechas personalizadas
+            if (reportPeriodType == ReportPeriodType.Custom)
+            {
+                if (!customStartDate.HasValue || !customEndDate.HasValue)
+                {
+                    ShowErrorMessage("Debes seleccionar ambas fechas para el período personalizado");
+                    return;
+                }
+
+                if (customStartDate.Value > customEndDate.Value)
+                {
+                    ShowErrorMessage("La fecha de inicio no puede ser mayor que la fecha fin");
+                    return;
+                }
+            }
+
+            // Crear filtro
+            var filter = new ReportFilterDto
+            {
+                UserId = currentUserId!,
+                PeriodType = reportPeriodType,
+                CustomStartDate = customStartDate,
+                CustomEndDate = customEndDate,
+                TransactionTypeFilter = string.IsNullOrEmpty(reportTransactionType)
+                    ? null
+                    : Enum.Parse<TransactionType>(reportTransactionType),
+                CategoryIdFilter = reportCategoryId > 0 ? reportCategoryId : null
+            };
+
+            // Generar datos del reporte
+            var reportData = await ReportService.GenerateReportDataAsync(filter);
+
+            // Generar Excel
+            var excelBytes = ExcelReportGenerator.GenerateExcel(reportData);
+
+            // Descargar archivo
+            var fileName = $"Reporte_MisFinanzas_{DateTime.Now:yyyyMMdd_HHmmss}.xlsx";
+            await DownloadFileAsync(fileName, excelBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+
+            ShowSuccessMessage("Reporte Excel generado correctamente");
+        }
+        catch (Exception ex)
+        {
+            ShowErrorMessage($"Error al generar Excel: {ex.Message}");
+            Console.WriteLine($"Error en GenerateExcelReport: {ex}");
+        }
+        finally
+        {
+            isGeneratingReport = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task DownloadFileAsync(string fileName, byte[] fileBytes, string contentType)
+    {
+        // Convertir bytes a base64
+        var base64 = Convert.ToBase64String(fileBytes);
+
+        // Usar JavaScript para descargar el archivo
+        await JSRuntime.InvokeVoidAsync("downloadFile", fileName, base64, contentType);
+    }
+
+    #endregion
 
     public void Dispose()
     {

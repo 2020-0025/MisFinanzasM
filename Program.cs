@@ -87,7 +87,10 @@ builder.Services.AddScoped<FinancialGoalService>();
 builder.Services.AddScoped<BudgetService>();
 // Registrar servicio de fondo para notificaciones automáticas
 builder.Services.AddHostedService<NotificationBackgroundService>();
-
+// Registrar servicios de reportes
+builder.Services.AddScoped<ReportService>();
+builder.Services.AddScoped<PdfReportGenerator>();
+builder.Services.AddScoped<ExcelReportGenerator>();
 
 
 var app = builder.Build();
