@@ -6,15 +6,27 @@
 @inject AuthService AuthService
 @inject INotificationService NotificationService
 @inject NavigationManager NavigationManager
+@inject IJSRuntime JSRuntime
 @implements IDisposable
 
 <PageTitle>Recordatorios - MisFinanzas</PageTitle>
 
 <div class="reminders-container">
-    <div class="reminders-header">
-        <h3>🔔 Recordatorios de Gastos Fijos</h3>
-        <p class="text-muted">Gestiona tus notificaciones de gastos recurrentes</p>
-    </div>
+    @if (!isAuthorized)
+    {
+        <div class="text-center text-white">
+            <div class="spinner-border" role="status">
+                <span class="visually-hidden">Cargando...</span>
+            </div>
+            <p class="mt-3">Verificando permisos...</p>
+        </div>
+    }
+    else
+    {
+        <div class="reminders-header">
+            <h3>🔔 Recordatorios de Gastos Fijos</h3>
+            <p class="text-muted">Gestiona tus notificaciones de gastos recurrentes</p>
+        </div>
 
     @if (!string.IsNullOrEmpty(errorMessage))
     {
@@ -124,9 +136,12 @@
             }
         }
     </div>
+    }
 </div>
 
 @code {
+    private bool isAuthorized = false;
+    private string? currentUserId;
     private List<Notification> allNotifications = new();
     private List<Notification> filteredNotifications = new();
     private string currentFilter = "all";
@@ -138,9 +153,39 @@
     private System.Threading.Timer? successTimer;
     private System.Threading.Timer? errorTimer;
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        await LoadNotifications();
+        if (firstRender)
+        {
+            await CheckAuthorization();
+
+            if (isAuthorized)
+            {
+                await LoadNotifications();
+            }
+
+            StateHasChanged();
+        }
+    }
+
+    private async Task CheckAuthorization()
+    {
+        try
+        {
+            currentUserId = await JSRuntime.InvokeAsync<string>("sessionStorage.getItem", "userId");
+
+            if (string.IsNullOrEmpty(currentUserId))
+            {
+                await JSRuntime.InvokeVoidAsync("eval", "window.location.href = '/login'");
+                return;
+            }
+
+            isAuthorized = true;
+        }
+        catch
+        {
+            await JSRuntime.InvokeVoidAsync("eval", "window.location.href = '/login'");
+        }
     }
 
     private async Task LoadNotifications()
@@ -149,13 +194,10 @@
         {
             isLoading = true;
 
-            if (string.IsNullOrEmpty(AuthService.UserId))
-            {
-                NavigationManager.NavigateTo("/login");
+            if (string.IsNullOrEmpty(currentUserId))
                 return;
-            }
 
-            allNotifications = await NotificationService.GetAllNotificationsByUserAsync(AuthService.UserId);
+            allNotifications = await NotificationService.GetAllNotificationsByUserAsync(currentUserId);
             ApplyFilter();
         }
         catch (Exception ex)
@@ -188,10 +230,10 @@
     {
         try
         {
-            if (string.IsNullOrEmpty(AuthService.UserId))
+            if (string.IsNullOrEmpty(currentUserId))
                 return;
 
-            var success = await NotificationService.MarkAsReadAsync(notificationId, AuthService.UserId);
+            var success = await NotificationService.MarkAsReadAsync(notificationId, currentUserId);
             if (success)
             {
                 await LoadNotifications();
@@ -208,10 +250,10 @@
     {
         try
         {
-            if (string.IsNullOrEmpty(AuthService.UserId))
+            if (string.IsNullOrEmpty(currentUserId))
                 return;
 
-            var success = await NotificationService.MarkAllAsReadAsync(AuthService.UserId);
+            var success = await NotificationService.MarkAllAsReadAsync(currentUserId);
             if (success)
             {
                 await LoadNotifications();
@@ -238,10 +280,10 @@
     {
         try
         {
-            if (string.IsNullOrEmpty(AuthService.UserId))
+            if (string.IsNullOrEmpty(currentUserId))
                 return;
 
-            var success = await NotificationService.DeleteNotificationAsync(notificationId, AuthService.UserId);
+            var success = await NotificationService.DeleteNotificationAsync(notificationId, currentUserId);
             if (success)
             {
                 await LoadNotifications();
