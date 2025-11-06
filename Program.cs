@@ -70,7 +70,7 @@ builder.Services.AddIdentityCore<MisFinanzas.Domain.Entities.ApplicationUser>(op
     .AddDefaultTokenProviders();
 
 // REGISTRAR NUESTROS SERVICIOS (Dependency Injection)
-builder.Services.AddScoped<ICategoryService, CategoryService> ();
+builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<IExpenseIncomeService, ExpenseIncomeService>();
 builder.Services.AddScoped<IFinancialGoalService, FinancialGoalService>();
 builder.Services.AddScoped<IBudgetService, BudgetService>();
@@ -85,6 +85,8 @@ builder.Services.AddScoped<CategoryService>();
 builder.Services.AddScoped<ExpenseIncomeService>();
 builder.Services.AddScoped<FinancialGoalService>();
 builder.Services.AddScoped<BudgetService>();
+// Registrar servicio de fondo para notificaciones automáticas
+builder.Services.AddHostedService<NotificationBackgroundService>();
 
 
 

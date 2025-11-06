@@ -12,9 +12,6 @@
 @inject IJSRuntime JSRuntime
 @using Microsoft.JSInterop
 
-@using MisFinanzas.Infrastructure.Interfaces
-@inject INotificationService NotificationService
-
 <PageTitle>Panel de Control - Mis Finanzas</PageTitle>
 
 <div class="dashboard-container">
@@ -53,10 +50,6 @@
                     <span style="font-size: 17px;">📅</span>
                     <span class="text-white">Últimos @selectedDays días</span>
                 </div>
-
-                <button @onclick="GenerateNotifications" class="btn btn-warning btn-sm">
-                    🔔 Generar Notificaciones (TEST)
-                </button>
             </div>
         </div>
 
@@ -902,19 +895,5 @@
         public string Icon { get; set; } = "";
         public string Title { get; set; } = "";
         public string Message { get; set; } = "";
-    }
-
-
-    private async Task GenerateNotifications()
-    {
-        try
-        {
-            await NotificationService.GenerateNotificationsForFixedExpensesAsync();
-            await JSRuntime.InvokeVoidAsync("alert", "✓ Notificaciones generadas correctamente! Revisa el ícono de campana en el menú.");
-        }
-        catch (Exception ex)
-        {
-            await JSRuntime.InvokeVoidAsync("alert", $"❌ Error al generar notificaciones: {ex.Message}");
-        }
     }
 }

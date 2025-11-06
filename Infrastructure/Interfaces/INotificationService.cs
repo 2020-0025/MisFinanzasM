@@ -16,6 +16,9 @@ namespace MisFinanzas.Infrastructure.Interfaces
         // Generar notificaciones automáticas
         Task GenerateNotificationsForFixedExpensesAsync();
 
+        // Generar notificación inmediata para una categoría específica
+        Task GenerateNotificationForCategoryAsync(int categoryId);
+
         // Limpiar notificaciones antiguas
         Task CleanOldNotificationsAsync(int daysOld = 60);
 

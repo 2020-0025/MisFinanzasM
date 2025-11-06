@@ -10,10 +10,12 @@ namespace MisFinanzas.Infrastructure.Services
     public class CategoryService : ICategoryService
     {
         private readonly ApplicationDbContext _context;
+        private readonly INotificationService _notificationService;
 
-        public CategoryService(ApplicationDbContext context)
+        public CategoryService(ApplicationDbContext context, INotificationService notificationService)
         {
             _context = context;
+            _notificationService = notificationService;
         }
 
         public async Task<List<CategoryDto>> GetAllByUserAsync(string userId)
@@ -94,6 +96,20 @@ namespace MisFinanzas.Infrastructure.Services
             dto.CategoryId = category.CategoryId;
             dto.UserId = userId;
 
+            //  Generar notificación inmediata si es gasto fijo
+            if (category.IsFixedExpense && category.DayOfMonth.HasValue)
+            {
+                try
+                {
+                    await _notificationService.GenerateNotificationForCategoryAsync(category.CategoryId);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"⚠️ Error al generar notificación para categoría {category.CategoryId}: {ex.Message}");
+                    // No fallar la creación de categoría por error en notificaciones
+                }
+            }
+
             return dto;
         }
 
@@ -113,6 +129,21 @@ namespace MisFinanzas.Infrastructure.Services
             category.EstimatedAmount = dto.EstimatedAmount;
 
             await _context.SaveChangesAsync();
+
+            //  Generar notificación inmediata si es gasto fijo
+            if (category.IsFixedExpense && category.DayOfMonth.HasValue)
+            {
+                try
+                {
+                    await _notificationService.GenerateNotificationForCategoryAsync(category.CategoryId);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"⚠️ Error al generar notificación para categoría {category.CategoryId}: {ex.Message}");
+                    // No fallar la actualización por error en notificaciones
+                }
+            }
+
             return true;
         }
 
