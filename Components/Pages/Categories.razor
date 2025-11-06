@@ -185,6 +185,43 @@
                             }
                         </div>
 
+                        <!-- Campos de Recordatorio (Solo para Gastos) -->
+                        @if (formModel.Type == TransactionType.Expense)
+                        {
+                            <div class="mb-3">
+                                <div class="form-check">
+                                    <InputCheckbox @bind-Value="formModel.IsFixedExpense" class="form-check-input" id="isFixedExpense" />
+                                    <label class="form-check-label text-white" for="isFixedExpense">
+                                        📅 Es un gasto fijo mensual (con recordatorio)
+                                    </label>
+                                </div>
+                            </div>
+
+                            @if (formModel.IsFixedExpense)
+                            {
+                                <div class="alert alert-info mb-3">
+                                    <small class="text-info">
+                                        <strong>💡 Recordatorio:</strong> Se te notificará 3 días antes de la fecha de pago.
+                                    </small>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label text-white">Día del mes de pago</label>
+                                        <InputNumber @bind-Value="formModel.DayOfMonth" class="form-control" placeholder="Ej: 15" min="1" max="31" />
+                                        <small class="form-text text-white">Número del 1 al 31</small>
+                                    </div>
+
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label text-white">Monto estimado (opcional)</label>
+                                        <InputNumber @bind-Value="formModel.EstimatedAmount" class="form-control" placeholder="0.00" />
+                                        <small class="form-text text-white">Monto aproximado del gasto</small>
+                                    </div>
+                                </div>
+                            }
+                        }
+
+
                         <div class="d-grid gap-2">
                             <button type="submit" class="btnSaveEdit" disabled="@isSaving">
                                 @if (isSaving)
@@ -363,7 +400,10 @@
         formModel = new CategoryFormModel
         {
             Type = TransactionType.Expense,
-            Icon = "📁"
+            Icon = "📁",
+            IsFixedExpense = false,
+            DayOfMonth = null,
+            EstimatedAmount = null
         };
         showModal = true;
     }
@@ -376,7 +416,10 @@
             CategoryId = category.CategoryId,
             Title = category.Title,
             Icon = category.Icon,
-            Type = category.Type
+            Type = category.Type,
+            IsFixedExpense = category.IsFixedExpense,
+            DayOfMonth = category.DayOfMonth,
+            EstimatedAmount = category.EstimatedAmount
         };
         showModal = true;
     }
@@ -437,7 +480,10 @@
                 CategoryId = formModel.CategoryId,
                 Title = formModel.Title.Trim(),
                 Icon = formModel.Icon.Trim(),
-                Type = formModel.Type
+                Type = formModel.Type,
+                IsFixedExpense = formModel.IsFixedExpense,
+                DayOfMonth = formModel.DayOfMonth,
+                EstimatedAmount = formModel.EstimatedAmount
             };
 
             if (isEditing)
@@ -566,6 +612,14 @@
         public string Icon { get; set; } = "📁";
 
         public TransactionType Type { get; set; } = TransactionType.Expense;
+
+        // Campos de Recordatorio
+        public bool IsFixedExpense { get; set; } = false;
+
+        [Range(1, 31, ErrorMessage = "El día debe estar entre 1 y 31")]
+        public int? DayOfMonth { get; set; }
+
+        public decimal? EstimatedAmount { get; set; }
     }
 
     private void ShowSuccessMessage(string message)

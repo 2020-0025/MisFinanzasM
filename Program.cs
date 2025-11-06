@@ -74,11 +74,13 @@ builder.Services.AddScoped<ICategoryService, CategoryService> ();
 builder.Services.AddScoped<IExpenseIncomeService, ExpenseIncomeService>();
 builder.Services.AddScoped<IFinancialGoalService, FinancialGoalService>();
 builder.Services.AddScoped<IBudgetService, BudgetService>();
+builder.Services.AddScoped<INotificationService, NotificationService>();
 builder.Services.AddScoped<IUserService, UserService>();
 // AGREGAR AuthService como Scoped
 builder.Services.AddScoped<AuthService>();
 // Registrar UserService
 builder.Services.AddScoped<UserService>();
+// Registrar servicios para el Dashboard y otros componentes
 builder.Services.AddScoped<CategoryService>();
 builder.Services.AddScoped<ExpenseIncomeService>();
 builder.Services.AddScoped<FinancialGoalService>();

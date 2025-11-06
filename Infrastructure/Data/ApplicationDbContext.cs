@@ -18,6 +18,7 @@ namespace MisFinanzas.Infrastructure.Data
         public DbSet<ExpenseIncome> ExpensesIncomes { get; set; }
         public DbSet<FinancialGoal> FinancialGoals { get; set; }
         public DbSet<Budget> Budgets { get; set; }
+        public DbSet<Notification> Notifications { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -235,6 +236,41 @@ namespace MisFinanzas.Infrastructure.Data
                 entity.Ignore(b => b.UsedPercentage);
                 entity.Ignore(b => b.IsOverBudget);
                 entity.Ignore(b => b.IsNearLimit);
+            });
+
+            // ====== CONFIGURACIÓN DE NOTIFICATIONS ======
+            builder.Entity<Notification>(entity =>
+            {
+                entity.HasKey(n => n.NotificationId);
+
+                entity.Property(n => n.NotificationDate)
+                    .IsRequired();
+
+                entity.Property(n => n.DueDate)
+                    .IsRequired();
+
+                entity.Property(n => n.IsRead)
+                    .HasDefaultValue(false);
+
+                entity.Property(n => n.CreatedAt)
+                    .HasDefaultValueSql("datetime('now')");
+
+                // Relación con ApplicationUser
+                entity.HasOne(n => n.User)
+                    .WithMany()
+                    .HasForeignKey(n => n.UserId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                // Relación con Category
+                entity.HasOne(n => n.Category)
+                    .WithMany()
+                    .HasForeignKey(n => n.CategoryId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                // Índices
+                entity.HasIndex(n => n.UserId);
+                entity.HasIndex(n => new { n.UserId, n.IsRead });
+                entity.HasIndex(n => n.DueDate);
             });
 
             // ====== SEED DATA: ROLES Y USUARIO ADMIN ======

@@ -21,6 +21,14 @@ namespace MisFinanzas.Domain.Entities
         [Required]
         public TransactionType Type { get; set; } = TransactionType.Expense;
 
+        // Campos para Recordatorios de Gastos Fijos
+        public bool IsFixedExpense { get; set; } = false;
+
+        public int? DayOfMonth { get; set; } // 1-31, null si no es gasto fijo
+
+        [Column(TypeName = "decimal(18,2)")]
+        public decimal? EstimatedAmount { get; set; } // Monto estimado del gasto
+
         // Foreign Key
         [Required]
         public string UserId { get; set; } = string.Empty;

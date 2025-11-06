@@ -27,7 +27,10 @@ namespace MisFinanzas.Infrastructure.Services
                     UserId = c.UserId,
                     Title = c.Title,
                     Icon = c.Icon,
-                    Type = c.Type
+                    Type = c.Type,
+                    IsFixedExpense = c.IsFixedExpense,
+                    DayOfMonth = c.DayOfMonth,
+                    EstimatedAmount = c.EstimatedAmount
                 })
                 .ToListAsync();
         }
@@ -43,7 +46,10 @@ namespace MisFinanzas.Infrastructure.Services
                     UserId = c.UserId,
                     Title = c.Title,
                     Icon = c.Icon,
-                    Type = c.Type
+                    Type = c.Type,
+                    IsFixedExpense = c.IsFixedExpense,
+                    DayOfMonth = c.DayOfMonth,
+                    EstimatedAmount = c.EstimatedAmount
                 })
                 .ToListAsync();
         }
@@ -62,7 +68,10 @@ namespace MisFinanzas.Infrastructure.Services
                 UserId = category.UserId,
                 Title = category.Title,
                 Icon = category.Icon,
-                Type = category.Type
+                Type = category.Type,
+                IsFixedExpense = category.IsFixedExpense,
+                DayOfMonth = category.DayOfMonth,
+                EstimatedAmount = category.EstimatedAmount
             };
         }
 
@@ -73,7 +82,10 @@ namespace MisFinanzas.Infrastructure.Services
                 UserId = userId,
                 Title = dto.Title,
                 Icon = dto.Icon,
-                Type = dto.Type
+                Type = dto.Type,
+                IsFixedExpense = dto.IsFixedExpense,
+                DayOfMonth = dto.DayOfMonth,
+                EstimatedAmount = dto.EstimatedAmount
             };
 
             _context.Categories.Add(category);
@@ -96,6 +108,9 @@ namespace MisFinanzas.Infrastructure.Services
             category.Title = dto.Title;
             category.Icon = dto.Icon;
             category.Type = dto.Type;
+            category.IsFixedExpense = dto.IsFixedExpense;
+            category.DayOfMonth = dto.DayOfMonth;
+            category.EstimatedAmount = dto.EstimatedAmount;
 
             await _context.SaveChangesAsync();
             return true;
