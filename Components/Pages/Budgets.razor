@@ -8,6 +8,7 @@
 @inject ICategoryService CategoryService
 @inject IJSRuntime JSRuntime
 @inject NavigationManager NavigationManager
+@implements IDisposable
 
 <PageTitle>Presupuestos - MisFinanzas</PageTitle>
 
@@ -114,19 +115,19 @@
         </div>
 
         <!-- Mensajes -->
-        @if (!string.IsNullOrEmpty(successMessage))
+        @if (!string.IsNullOrEmpty(errorMessage))
         {
-            <div class="alert alert-success alert-dismissible fade show @(_isMessageFading ? "message-fade-out" : "")" role="alert">
-                @successMessage
-                <button type="button" class="btn-close" @onclick="() => { successMessage = null; _isMessageFading = false; }">❌</button>
+            <div class="custom-alert error @(showErrorMessage ? "show" : "")">
+                <span class="alert-icon">✕</span>
+                <span class="alert-text">@errorMessage</span>
             </div>
         }
 
-        @if (!string.IsNullOrEmpty(errorMessage))
+        @if (!string.IsNullOrEmpty(successMessage))
         {
-            <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                @errorMessage
-                <button type="button" class="btn-close" @onclick="() => errorMessage = null">❌</button>
+            <div class="custom-alert success @(showSuccessMessage ? "show" : "")">
+                <span class="alert-icon">✓</span>
+                <span class="alert-text">@successMessage</span>
             </div>
         }
 
@@ -369,8 +370,10 @@
     // Mensajes
     private string? successMessage;
     private string? errorMessage;
-    private System.Threading.Timer? _successMessageTimer;
-    private bool _isMessageFading = false;
+    private bool showSuccessMessage = false;
+    private bool showErrorMessage = false;
+    private System.Threading.Timer? successTimer;
+    private System.Threading.Timer? errorTimer;
 
     // Modal Crear/Editar
     private bool showModal = false;
@@ -444,7 +447,7 @@
         }
         catch (Exception ex)
         {
-            errorMessage = $"Error al cargar datos: {ex.Message}";
+            ShowErrorMessage($"Error al cargar datos: {ex.Message}");
         }
         finally
         {
@@ -494,19 +497,19 @@
 
             if (formModel.CategoryId == 0)
             {
-                errorMessage = "Debes seleccionar una categoría";
+                ShowErrorMessage("Debes seleccionar una categoría");
                 return;
             }
 
             if (string.IsNullOrWhiteSpace(formModel.Name))
             {
-                errorMessage = "El nombre del presupuesto es requerido";
+                ShowErrorMessage("El nombre del presupuesto es requerido");
                 return;
             }
 
             if (formModel.AssignedAmount <= 0)
             {
-                errorMessage = "El monto debe ser mayor a cero";
+                ShowErrorMessage("El monto debe ser mayor a cero");
                 return;
             }
 
@@ -533,7 +536,7 @@
                 }
                 else
                 {
-                    errorMessage = "No se pudo actualizar el presupuesto";
+                    ShowErrorMessage("No se pudo actualizar el presupuesto");
                 }
             }
             else
@@ -548,13 +551,13 @@
                 }
                 else
                 {
-                    errorMessage = created.Error ?? "No se pudo crear el presupuesto";
+                    ShowErrorMessage(created.Error ?? "No se pudo crear el presupuesto");
                 }
             }
         }
         catch (Exception ex)
         {
-            errorMessage = $"Error: {ex.Message}";
+            ShowErrorMessage($"Error: {ex.Message}");
         }
         finally
         {
@@ -590,12 +593,12 @@
             }
             else
             {
-                errorMessage = "No se pudo eliminar el presupuesto";
+                ShowErrorMessage("No se pudo eliminar el presupuesto");
             }
         }
         catch (Exception ex)
         {
-            errorMessage = $"Error: {ex.Message}";
+            ShowErrorMessage($"Error: {ex.Message}");
         }
     }
 
@@ -651,32 +654,46 @@
     private void ShowSuccessMessage(string message)
     {
         successMessage = message;
-        _isMessageFading = false;
+        showSuccessMessage = true;
         StateHasChanged();
 
-        // Cancelar timer anterior si existe
-        _successMessageTimer?.Dispose();
-
-        // Crear nuevo timer que inicia el fade-out después de 3 segundos
-        _successMessageTimer = new System.Threading.Timer(_ =>
+        successTimer?.Dispose();
+        successTimer = new System.Threading.Timer(_ =>
         {
             InvokeAsync(() =>
             {
-                // Activar animación de fade-out
-                _isMessageFading = true;
+                showSuccessMessage = false;
                 StateHasChanged();
-
-                // Esperar a que termine la animación (500ms) y luego limpiar
-                Task.Delay(500).ContinueWith(_ =>
-                {
-                    InvokeAsync(() =>
-                    {
-                        successMessage = null;
-                        _isMessageFading = false;
-                        StateHasChanged();
-                    });
-                });
+                System.Threading.Thread.Sleep(300);
+                successMessage = string.Empty;
+                StateHasChanged();
             });
-        }, null, 3000, Timeout.Infinite);
+        }, null, 3000, System.Threading.Timeout.Infinite);
+    }
+
+    private void ShowErrorMessage(string message)
+    {
+        errorMessage = message;
+        showErrorMessage = true;
+        StateHasChanged();
+
+        errorTimer?.Dispose();
+        errorTimer = new System.Threading.Timer(_ =>
+        {
+            InvokeAsync(() =>
+            {
+                showErrorMessage = false;
+                StateHasChanged();
+                System.Threading.Thread.Sleep(300);
+                errorMessage = string.Empty;
+                StateHasChanged();
+            });
+        }, null, 5000, System.Threading.Timeout.Infinite);
+    }
+
+    public void Dispose()
+    {
+        successTimer?.Dispose();
+        errorTimer?.Dispose();
     }
 }

@@ -352,7 +352,7 @@
     }
 
     .custom-alert.error {
-        background: rgba(244, 67, 54, 0.95);
+        background: rgba(244, 67, 54, 0.15);
         border: 1px solid rgba(244, 67, 54, 1);
         color: white;
     }

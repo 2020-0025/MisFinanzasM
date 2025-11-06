@@ -6,6 +6,7 @@
 @inject IUserService UserService
 @inject IJSRuntime JSRuntime
 @inject NavigationManager NavigationManager
+@implements IDisposable
 
 <PageTitle>Panel de Administración - MisFinanzas</PageTitle>
 
@@ -68,19 +69,19 @@
         </div>
 
         <!-- Mensajes -->
-        @if (!string.IsNullOrEmpty(successMessage))
+        @if (!string.IsNullOrEmpty(errorMessage))
         {
-            <div class="alert alert-success alert-dismissible fade show" role="alert">
-                @successMessage
-                <button type="button" class="btn-close" @onclick="() => successMessage = null">❌</button>
+            <div class="custom-alert error @(showErrorMessage ? "show" : "")">
+                <span class="alert-icon">✕</span>
+                <span class="alert-text">@errorMessage</span>
             </div>
         }
 
-        @if (!string.IsNullOrEmpty(errorMessage))
+        @if (!string.IsNullOrEmpty(successMessage))
         {
-            <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                @errorMessage
-                <button type="button" class="btn-close" @onclick="() => errorMessage = null">❌</button>
+            <div class="custom-alert success @(showSuccessMessage ? "show" : "")">
+                <span class="alert-icon">✓</span>
+                <span class="alert-text">@successMessage</span>
             </div>
         }
 
@@ -221,6 +222,10 @@
     // Mensajes
     private string? successMessage;
     private string? errorMessage;
+    private bool showSuccessMessage = false;
+    private bool showErrorMessage = false;
+    private System.Threading.Timer? successTimer;
+    private System.Threading.Timer? errorTimer;
 
     // Modal de eliminación
     private bool showDeleteModal = false;
@@ -278,7 +283,7 @@
         }
         catch (Exception ex)
         {
-            errorMessage = $"Error al cargar datos: {ex.Message}";
+            ShowErrorMessage($"Error al cargar datos: {ex.Message}");
         }
         finally
         {
@@ -294,17 +299,17 @@
 
             if (result)
             {
-                successMessage = "Estado del usuario actualizado correctamente";
+                ShowSuccessMessage("Estado del usuario actualizado correctamente");
                 await LoadData();
             }
             else
             {
-                errorMessage = "No se pudo actualizar el estado del usuario";
+                ShowErrorMessage("No se pudo actualizar el estado del usuario");
             }
         }
         catch (Exception ex)
         {
-            errorMessage = $"Error: {ex.Message}";
+            ShowErrorMessage($"Error: {ex.Message}");
         }
     }
 
@@ -333,7 +338,7 @@
 
             if (result)
             {
-                successMessage = $"Usuario '{userToDelete}' eliminado correctamente";
+                ShowSuccessMessage($"Usuario '{userToDelete}' eliminado correctamente");
                 showDeleteModal = false;
                 userIdToDelete = null;
                 userToDelete = null;
@@ -341,12 +346,58 @@
             }
             else
             {
-                errorMessage = "No se pudo eliminar el usuario";
+                ShowErrorMessage("No se pudo eliminar el usuario");
             }
         }
         catch (Exception ex)
         {
-            errorMessage = $"Error: {ex.Message}";
+            ShowErrorMessage($"Error: {ex.Message}");
         }
+    }
+
+    private void ShowSuccessMessage(string message)
+    {
+        successMessage = message;
+        showSuccessMessage = true;
+        StateHasChanged();
+
+        successTimer?.Dispose();
+        successTimer = new System.Threading.Timer(_ =>
+        {
+            InvokeAsync(() =>
+            {
+                showSuccessMessage = false;
+                StateHasChanged();
+                System.Threading.Thread.Sleep(300);
+                successMessage = string.Empty;
+                StateHasChanged();
+            });
+        }, null, 3000, System.Threading.Timeout.Infinite);
+    }
+
+    private void ShowErrorMessage(string message)
+    {
+        errorMessage = message;
+        showErrorMessage = true;
+        StateHasChanged();
+
+        errorTimer?.Dispose();
+        errorTimer = new System.Threading.Timer(_ =>
+        {
+            InvokeAsync(() =>
+            {
+                showErrorMessage = false;
+                StateHasChanged();
+                System.Threading.Thread.Sleep(300);
+                errorMessage = string.Empty;
+                StateHasChanged();
+            });
+        }, null, 5000, System.Threading.Timeout.Infinite);
+    }
+
+    public void Dispose()
+    {
+        successTimer?.Dispose();
+        errorTimer?.Dispose();
     }
 }
