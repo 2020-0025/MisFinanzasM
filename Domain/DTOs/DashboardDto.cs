@@ -1,4 +1,6 @@
-﻿namespace MisFinanzas.Domain.DTOs
+﻿using static MisFinanzas.Components.Pages.Dashboard;
+
+namespace MisFinanzas.Domain.DTOs
 {
     public class DashboardDto
     {
