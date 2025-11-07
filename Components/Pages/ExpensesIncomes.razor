@@ -5,6 +5,7 @@
 @using MisFinanzas.Domain.DTOs
 @using MisFinanzas.Domain.Enums
 @using System.ComponentModel.DataAnnotations
+@using MisFinanzas.Controllers
 @inject IExpenseIncomeService ExpenseIncomeService
 @inject ICategoryService CategoryService
 @inject IBudgetService BudgetService
@@ -739,11 +740,9 @@
 
             var fileId = FileCache.StoreFile(pdfBytes, fileName, "application/pdf");
 
-            // Abrir URL de descarga en nueva ventana
-
+            // Abrir URL de descarga
             var downloadUrl = $"/api/FileDownload/{fileId}";
-
-            await JSRuntime.InvokeVoidAsync("open", downloadUrl, "_blank");
+            await JSRuntime.InvokeVoidAsync("eval", $"window.open('{downloadUrl}', '_blank')");
 
             ShowSuccessMessage("Reporte PDF generado correctamente");
         }
@@ -808,11 +807,9 @@
 
             var fileId = FileCache.StoreFile(excelBytes, fileName, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
 
-            // Abrir URL de descarga en nueva ventana
-
+            // Abrir URL de descarga
             var downloadUrl = $"/api/FileDownload/{fileId}";
-
-            await JSRuntime.InvokeVoidAsync("open", downloadUrl, "_blank");
+            await JSRuntime.InvokeVoidAsync("eval", $"window.open('{downloadUrl}', '_blank')");
 
             ShowSuccessMessage("Reporte Excel generado correctamente");
         }

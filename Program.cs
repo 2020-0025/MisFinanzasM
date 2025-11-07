@@ -94,7 +94,7 @@ builder.Services.AddScoped<ExcelReportGenerator>();
 
 // Registrar caché temporal de archivos como Singleton
 
-builder.Services.AddSingleton<TemporaryFileCache>();
+builder.Services.AddSingleton<MisFinanzas.Infrastructure.Services.TemporaryFileCache>();
 
 // Agregar soporte para controladores API
 
