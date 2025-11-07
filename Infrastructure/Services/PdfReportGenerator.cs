@@ -13,12 +13,12 @@ namespace MisFinanzas.Infrastructure.Services
             var page = document.AddPage();
             var gfx = XGraphics.FromPdfPage(page);
 
-            var fontTitle = new XFont("Arial", 20, XFontStyle.Bold);
-            var fontSubtitle = new XFont("Arial", 12, XFontStyle.Regular);
-            var fontHeader = new XFont("Arial", 14, XFontStyle.Bold);
-            var fontNormal = new XFont("Arial", 10, XFontStyle.Regular);
-            var fontSmall = new XFont("Arial", 8, XFontStyle.Regular);
-            var fontBold = new XFont("Arial", 10, XFontStyle.Bold);
+            var fontTitle = new XFont("Times New Roman", 20, XFontStyle.Bold);
+            var fontSubtitle = new XFont("Times New Roman", 12, XFontStyle.Regular);
+            var fontHeader = new XFont("Times New Roman", 14, XFontStyle.Bold);
+            var fontNormal = new XFont("Times New Roman", 10, XFontStyle.Regular);
+            var fontSmall = new XFont("Times New Roman", 8, XFontStyle.Regular);
+            var fontBold = new XFont("Times New Roman", 10, XFontStyle.Bold);
 
             double yPosition = 40;
 
@@ -84,22 +84,22 @@ namespace MisFinanzas.Infrastructure.Services
                 yPosition += 20;
 
                 // Encabezados de tabla
-                gfx.DrawRectangle(XBrushes.LightGray, 40, yPosition - 5, page.Width - 80, 15);
-                gfx.DrawString("Categoría", fontBold, XBrushes.Black, new XPoint(45, yPosition));
-                gfx.DrawString("Monto", fontBold, XBrushes.Black, new XPoint(300, yPosition));
-                gfx.DrawString("%", fontBold, XBrushes.Black, new XPoint(420, yPosition));
-                gfx.DrawString("Cant.", fontBold, XBrushes.Black, new XPoint(480, yPosition));
-                yPosition += 15;
+                gfx.DrawRectangle(XBrushes.LightGray, 40, yPosition, page.Width - 80, 18);
+                gfx.DrawString("Categoría", fontBold, XBrushes.Black, new XPoint(45, yPosition + 12));
+                gfx.DrawString("Monto", fontBold, XBrushes.Black, new XPoint(300, yPosition + 12));
+                gfx.DrawString("%", fontBold, XBrushes.Black, new XPoint(420, yPosition + 12));
+                gfx.DrawString("Cant.", fontBold, XBrushes.Black, new XPoint(480, yPosition + 12));
+                yPosition += 22;
 
                 foreach (var category in reportData.ExpensesByCategory.Take(15))
                 {
                     yPosition = CheckNewPage(document, ref page, ref gfx, yPosition, fontTitle, fontSubtitle, fontHeader, fontNormal, fontSmall, fontBold);
 
-                    gfx.DrawString(TruncateString(category.CategoryName, 30), fontNormal, XBrushes.Black, new XPoint(45, yPosition));
-                    gfx.DrawString($"{category.TotalAmount:C}", fontNormal, XBrushes.Red, new XPoint(300, yPosition));
-                    gfx.DrawString($"{category.Percentage:F1}%", fontNormal, XBrushes.Black, new XPoint(420, yPosition));
-                    gfx.DrawString(category.TransactionCount.ToString(), fontNormal, XBrushes.Black, new XPoint(480, yPosition));
-                    yPosition += 15;
+                    gfx.DrawString(TruncateString(category.CategoryName, 30), fontNormal, XBrushes.Black, new XPoint(45, yPosition + 10));
+                    gfx.DrawString($"{category.TotalAmount:C}", fontNormal, XBrushes.Red, new XPoint(300, yPosition + 10));
+                    gfx.DrawString($"{category.Percentage:F1}%", fontNormal, XBrushes.Black, new XPoint(420, yPosition + 10));
+                    gfx.DrawString(category.TransactionCount.ToString(), fontNormal, XBrushes.Black, new XPoint(480, yPosition + 10));
+                    yPosition += 18;
                 }
                 yPosition += 10;
             }
@@ -113,22 +113,22 @@ namespace MisFinanzas.Infrastructure.Services
                 yPosition += 20;
 
                 // Encabezados de tabla
-                gfx.DrawRectangle(XBrushes.LightGray, 40, yPosition - 5, page.Width - 80, 15);
-                gfx.DrawString("Categoría", fontBold, XBrushes.Black, new XPoint(45, yPosition));
-                gfx.DrawString("Monto", fontBold, XBrushes.Black, new XPoint(300, yPosition));
-                gfx.DrawString("%", fontBold, XBrushes.Black, new XPoint(420, yPosition));
-                gfx.DrawString("Cant.", fontBold, XBrushes.Black, new XPoint(480, yPosition));
-                yPosition += 15;
+                gfx.DrawRectangle(XBrushes.LightGray, 40, yPosition, page.Width - 80, 18);
+                gfx.DrawString("Categoría", fontBold, XBrushes.Black, new XPoint(45, yPosition + 12));
+                gfx.DrawString("Monto", fontBold, XBrushes.Black, new XPoint(300, yPosition + 12));
+                gfx.DrawString("%", fontBold, XBrushes.Black, new XPoint(420, yPosition + 12));
+                gfx.DrawString("Cant.", fontBold, XBrushes.Black, new XPoint(480, yPosition + 12));
+                yPosition += 22;
 
                 foreach (var category in reportData.IncomesByCategory.Take(15))
                 {
                     yPosition = CheckNewPage(document, ref page, ref gfx, yPosition, fontTitle, fontSubtitle, fontHeader, fontNormal, fontSmall, fontBold);
 
-                    gfx.DrawString(TruncateString(category.CategoryName, 30), fontNormal, XBrushes.Black, new XPoint(45, yPosition));
-                    gfx.DrawString($"{category.TotalAmount:C}", fontNormal, XBrushes.Green, new XPoint(300, yPosition));
-                    gfx.DrawString($"{category.Percentage:F1}%", fontNormal, XBrushes.Black, new XPoint(420, yPosition));
-                    gfx.DrawString(category.TransactionCount.ToString(), fontNormal, XBrushes.Black, new XPoint(480, yPosition));
-                    yPosition += 15;
+                    gfx.DrawString(TruncateString(category.CategoryName, 30), fontNormal, XBrushes.Black, new XPoint(45, yPosition + 10));
+                    gfx.DrawString($"{category.TotalAmount:C}", fontNormal, XBrushes.Green, new XPoint(300, yPosition + 10));
+                    gfx.DrawString($"{category.Percentage:F1}%", fontNormal, XBrushes.Black, new XPoint(420, yPosition + 10));
+                    gfx.DrawString(category.TransactionCount.ToString(), fontNormal, XBrushes.Black, new XPoint(480, yPosition + 10));
+                    yPosition += 18;
                 }
                 yPosition += 10;
             }
@@ -142,13 +142,13 @@ namespace MisFinanzas.Infrastructure.Services
                 yPosition += 20;
 
                 // Encabezados de tabla
-                gfx.DrawRectangle(XBrushes.LightGray, 40, yPosition - 5, page.Width - 80, 15);
-                gfx.DrawString("Fecha", fontBold, XBrushes.Black, new XPoint(45, yPosition));
-                gfx.DrawString("Tipo", fontBold, XBrushes.Black, new XPoint(120, yPosition));
-                gfx.DrawString("Categoría", fontBold, XBrushes.Black, new XPoint(180, yPosition));
-                gfx.DrawString("Descripción", fontBold, XBrushes.Black, new XPoint(280, yPosition));
-                gfx.DrawString("Monto", fontBold, XBrushes.Black, new XPoint(450, yPosition));
-                yPosition += 15;
+                gfx.DrawRectangle(XBrushes.LightGray, 40, yPosition, page.Width - 80, 18);
+                gfx.DrawString("Fecha", fontBold, XBrushes.Black, new XPoint(45, yPosition + 12));
+                gfx.DrawString("Tipo", fontBold, XBrushes.Black, new XPoint(120, yPosition + 12));
+                gfx.DrawString("Categoría", fontBold, XBrushes.Black, new XPoint(180, yPosition + 12));
+                gfx.DrawString("Descripción", fontBold, XBrushes.Black, new XPoint(280, yPosition + 12));
+                gfx.DrawString("Monto", fontBold, XBrushes.Black, new XPoint(450, yPosition + 12));
+                yPosition += 22;
 
                 foreach (var transaction in reportData.Transactions.Take(30))
                 {
@@ -157,12 +157,12 @@ namespace MisFinanzas.Infrastructure.Services
                     var typeText = transaction.Type == TransactionType.Income ? "Ingreso" : "Gasto";
                     var amountColor = transaction.Type == TransactionType.Income ? XBrushes.Green : XBrushes.Red;
 
-                    gfx.DrawString(transaction.Date.ToString("dd/MM/yy"), fontSmall, XBrushes.Black, new XPoint(45, yPosition));
-                    gfx.DrawString(typeText, fontSmall, XBrushes.Black, new XPoint(120, yPosition));
-                    gfx.DrawString(TruncateString(transaction.CategoryTitle, 12), fontSmall, XBrushes.Black, new XPoint(180, yPosition));
-                    gfx.DrawString(TruncateString(transaction.Description ?? "-", 20), fontSmall, XBrushes.Black, new XPoint(280, yPosition));
-                    gfx.DrawString($"{transaction.Amount:C}", fontSmall, amountColor, new XPoint(450, yPosition));
-                    yPosition += 12;
+                    gfx.DrawString(transaction.Date.ToString("dd/MM/yy"), fontSmall, XBrushes.Black, new XPoint(45, yPosition + 8));
+                    gfx.DrawString(typeText, fontSmall, XBrushes.Black, new XPoint(120, yPosition + 8));
+                    gfx.DrawString(TruncateString(transaction.CategoryTitle, 12), fontSmall, XBrushes.Black, new XPoint(180, yPosition + 8));
+                    gfx.DrawString(TruncateString(transaction.Description ?? "-", 20), fontSmall, XBrushes.Black, new XPoint(280, yPosition + 8));
+                    gfx.DrawString($"{transaction.Amount:C}", fontSmall, amountColor, new XPoint(450, yPosition + 8));
+                    yPosition += 16;
                 }
 
                 if (reportData.Transactions.Count > 30)
