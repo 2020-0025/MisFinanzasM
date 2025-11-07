@@ -20,9 +20,10 @@ namespace MisFinanzas.Infrastructure.Services
             // 1. Calcular fechas del período
             var (startDate, endDate) = CalculateDateRange(filter);
 
-            // 2. Obtener nombre del usuario
-            var user = await _context.Users.FindAsync(filter.UserId);
-            var userName = user?.UserName ?? "Usuario";
+            // 2. Obtener nombre del usuario del filtro
+
+            var userName = string.IsNullOrEmpty(filter.UserName) ? "Usuario" : filter.UserName;
+
 
             // 3. Obtener transacciones filtradas
             var transactions = await GetFilteredTransactionsAsync(filter, startDate, endDate);

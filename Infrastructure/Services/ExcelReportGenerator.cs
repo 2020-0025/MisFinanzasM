@@ -9,18 +9,35 @@ namespace MisFinanzas.Infrastructure.Services
         /// Genera un archivo Excel del reporte y lo devuelve como array de bytes
         public byte[] GenerateExcel(ReportDataDto reportData)
         {
-            using var workbook = new XLWorkbook();
+            using (var workbook = new XLWorkbook())
 
-            // Crear hojas
-            CreateSummarySheet(workbook, reportData);
-            CreateExpensesByCategorySheet(workbook, reportData);
-            CreateIncomesByCategorySheet(workbook, reportData);
-            CreateTransactionsDetailSheet(workbook, reportData);
+            {
 
-            // Convertir a bytes
-            using var stream = new MemoryStream();
-            workbook.SaveAs(stream);
-            return stream.ToArray();
+                // Crear hojas
+
+                CreateSummarySheet(workbook, reportData);
+
+                CreateExpensesByCategorySheet(workbook, reportData);
+
+                CreateIncomesByCategorySheet(workbook, reportData);
+
+                CreateTransactionsDetailSheet(workbook, reportData);
+
+                // Convertir a bytes
+
+                using (var stream = new MemoryStream())
+
+                {
+
+                    workbook.SaveAs(stream);
+
+                    stream.Position = 0;
+
+                    return stream.ToArray();
+
+                }
+
+            }
         }
 
         #region Summary Sheet

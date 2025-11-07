@@ -83,22 +83,40 @@ namespace MisFinanzas.Infrastructure.Services
 
         private void ComposeHeader(IContainer container)
         {
-            container.Row(row =>
+            container.Column(column =>
+
             {
-                row.RelativeItem().Column(column =>
+
+                column.Item().Row(row =>
+
                 {
-                    column.Item().Text("MIS FINANZAS")
-                        .FontSize(20)
-                        .Bold()
-                        .FontColor(Colors.Blue.Darken2);
 
-                    column.Item().Text("Reporte Financiero")
-                        .FontSize(12)
-                        .FontColor(Colors.Grey.Darken1);
+                    row.RelativeItem().Column(col =>
+
+                    {
+
+                        col.Item().Text("MIS FINANZAS")
+
+                            .FontSize(20)
+
+                            .Bold()
+
+                            .FontColor(Colors.Blue.Darken2);
+
+
+
+                        col.Item().Text("Reporte Financiero")
+
+                            .FontSize(12)
+
+                            .FontColor(Colors.Grey.Darken1);
+
+                    });
+
                 });
-            });
+                column.Item().PaddingBottom(10).BorderBottom(1).BorderColor(Colors.Blue.Darken2);
 
-            container.PaddingBottom(10).BorderBottom(1).BorderColor(Colors.Blue.Darken2);
+            });
         }
 
         #endregion

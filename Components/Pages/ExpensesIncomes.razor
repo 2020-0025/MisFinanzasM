@@ -359,6 +359,7 @@
     private bool isAuthorized = false;
     private bool isLoading = true;
     private string? currentUserId;
+    private string? currentUserName;
 
     // Listas
     private List<ExpenseIncomeDto> expensesIncomes = new();
@@ -419,6 +420,7 @@
         try
         {
             currentUserId = await JSRuntime.InvokeAsync<string>("sessionStorage.getItem", "userId");
+            currentUserName = await JSRuntime.InvokeAsync<string>("sessionStorage.getItem", "userName");
 
             if (string.IsNullOrEmpty(currentUserId))
             {
@@ -714,6 +716,7 @@
             var filter = new ReportFilterDto
             {
                 UserId = currentUserId!,
+                UserName = currentUserName ?? "Usuario",
                 PeriodType = reportPeriodType,
                 CustomStartDate = customStartDate,
                 CustomEndDate = customEndDate,
@@ -774,6 +777,7 @@
             var filter = new ReportFilterDto
             {
                 UserId = currentUserId!,
+                UserName = currentUserName ?? "Usuario",
                 PeriodType = reportPeriodType,
                 CustomStartDate = customStartDate,
                 CustomEndDate = customEndDate,
