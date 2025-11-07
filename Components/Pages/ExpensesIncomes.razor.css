@@ -99,6 +99,11 @@
         padding: 0;
     }
 
+.form-select option {
+    background: #212529;
+    color: white;
+}
+
 /* Tabla */
 .table-responsive {
     border-radius: 0 0 15px 15px;

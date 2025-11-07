@@ -294,6 +294,11 @@
     font-size: 0.875rem;
 }
 
+.period-selector-card .form-select option {
+    background: #212529;
+    color: white;
+}
+
 .btnSaveEdit {
     background: rgba(76, 175, 80, 0.25);
     border-color: rgba(76, 175, 80, 0.5);

@@ -83,7 +83,7 @@
         <!-- Panel de Filtros de Reportes -->
         <div class="glass-card mb-4">
             <div class="card-header">
-                <h4>📊 Generar Reporte</h4>
+                <h4 class="text-white">📊 Generar Reporte</h4>
             </div>
             <div class="card-body">
                 <div class="row g-3">
@@ -138,14 +138,14 @@
                     <!-- Botones -->
                     <div class="col-12">
                         <div class="d-flex gap-2 justify-content-end">
-                            <button class="btn btn-primary" @onclick="GeneratePdfReport" disabled="@isGeneratingReport">
+                            <button class="btnSaveEdit" @onclick="GeneratePdfReport" disabled="@isGeneratingReport">
                                 @if (isGeneratingReport)
                                 {
                                     <span class="spinner-border spinner-border-sm me-2"></span>
                                 }
                                 📄 Descargar PDF
                             </button>
-                            <button class="btn btn-success" @onclick="GenerateExcelReport" disabled="@isGeneratingReport">
+                            <button class="btnSaveEdit" @onclick="GenerateExcelReport" disabled="@isGeneratingReport">
                                 @if (isGeneratingReport)
                                 {
                                     <span class="spinner-border spinner-border-sm me-2"></span>
