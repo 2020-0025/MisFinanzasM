@@ -1,6 +1,8 @@
-﻿using QuestPDF.Fluent;
-using QuestPDF.Helpers;
-using QuestPDF.Infrastructure;
+﻿using iText.Kernel.Pdf;
+using iText.Layout;
+using iText.Layout.Element;
+using iText.Layout.Properties;
+using iText.Kernel.Colors;
 using MisFinanzas.Domain.DTOs;
 using MisFinanzas.Domain.Enums;
 
@@ -8,395 +10,264 @@ namespace MisFinanzas.Infrastructure.Services
 {
     public class PdfReportGenerator
     {
-        /// Genera un PDF del reporte y lo devuelve como array de bytes
         public byte[] GeneratePdf(ReportDataDto reportData)
         {
-            // Configurar licencia de QuestPDF (Community)
-            QuestPDF.Settings.License = LicenseType.Community;
+            using var stream = new MemoryStream();
+            var writer = new PdfWriter(stream);
+            var pdf = new PdfDocument(writer);
+            var document = new Document(pdf);
 
-            var document = Document.Create(container =>
+            // Encabezado
+            AddHeader(document);
+
+            // Información del período
+            AddPeriodInfo(document, reportData);
+
+            // Resumen general
+            AddSummary(document, reportData);
+
+            // Comparativa (si existe)
+            if (reportData.Comparison != null)
             {
-                container.Page(page =>
-                {
-                    page.Size(PageSizes.Letter);
-                    page.Margin(40);
-                    page.DefaultTextStyle(x => x.FontSize(10));
+                AddComparison(document, reportData.Comparison);
+            }
 
-                    // Encabezado
-                    page.Header().Element(ComposeHeader);
+            // Gastos por categoría
+            if (reportData.ExpensesByCategory.Any())
+            {
+                AddExpensesByCategory(document, reportData);
+            }
 
-                    // Contenido principal
-                    page.Content().Column(column =>
-                    {
-                        column.Spacing(15);
+            // Ingresos por categoría
+            if (reportData.IncomesByCategory.Any())
+            {
+                AddIncomesByCategory(document, reportData);
+            }
 
-                        // Información del período
-                        column.Item().Element(c => ComposePeriodInfo(c, reportData));
+            // Detalle de transacciones
+            if (reportData.Transactions.Any())
+            {
+                AddTransactionsDetail(document, reportData);
+            }
 
-                        // Resumen general
-                        column.Item().Element(c => ComposeSummary(c, reportData));
+            // Pie de página
+            AddFooter(document, reportData);
 
-                        // Comparativa (si existe)
-                        if (reportData.Comparison != null)
-                        {
-                            column.Item().Element(c => ComposeComparison(c, reportData.Comparison));
-                        }
-
-                        // Gastos por categoría
-                        if (reportData.ExpensesByCategory.Any())
-                        {
-                            column.Item().Element(c => ComposeExpensesByCategory(c, reportData));
-                        }
-
-                        // Ingresos por categoría
-                        if (reportData.IncomesByCategory.Any())
-                        {
-                            column.Item().Element(c => ComposeIncomesByCategory(c, reportData));
-                        }
-
-                        // Detalle de transacciones
-                        if (reportData.Transactions.Any())
-                        {
-                            column.Item().Element(c => ComposeTransactionsDetail(c, reportData));
-                        }
-                    });
-
-                    // Pie de página
-                    page.Footer()
-                        .AlignCenter()
-                        .DefaultTextStyle(x => x.FontSize(8).FontColor(Colors.Grey.Medium))
-                        .Text(text =>
-                        {
-                            text.Span("Página ");
-                            text.CurrentPageNumber();
-                            text.Span(" de ");
-                            text.TotalPages();
-                            text.Span($" | Generado: {reportData.GeneratedAt:dd/MM/yyyy HH:mm}");
-                        });
-                });
-            });
-
-            return document.GeneratePdf();
+            document.Close();
+            return stream.ToArray();
         }
 
-        #region Header
-
-        private void ComposeHeader(IContainer container)
+        private void AddHeader(Document document)
         {
-            container.Column(column =>
+            var title = new Paragraph("MIS FINANZAS")
+                .SetFontSize(20)
+                .SetBold()
+                .SetFontColor(ColorConstants.BLUE);
+            document.Add(title);
 
-            {
+            var subtitle = new Paragraph("Reporte Financiero")
+                .SetFontSize(12)
+                .SetFontColor(ColorConstants.GRAY);
+            document.Add(subtitle);
 
-                column.Item().Row(row =>
-
-                {
-
-                    row.RelativeItem().Column(col =>
-
-                    {
-
-                        col.Item().Text("MIS FINANZAS")
-
-                            .FontSize(20)
-
-                            .Bold()
-
-                            .FontColor(Colors.Blue.Darken2);
-
-
-
-                        col.Item().Text("Reporte Financiero")
-
-                            .FontSize(12)
-
-                            .FontColor(Colors.Grey.Darken1);
-
-                    });
-
-                });
-                column.Item().PaddingBottom(10).BorderBottom(1).BorderColor(Colors.Blue.Darken2);
-
-            });
+            document.Add(new Paragraph("\n"));
         }
 
-        #endregion
-
-        #region Period Info
-
-        private void ComposePeriodInfo(IContainer container, ReportDataDto reportData)
+        private void AddPeriodInfo(Document document, ReportDataDto reportData)
         {
-            container.Background(Colors.Grey.Lighten3).Padding(10).Column(column =>
-            {
-                column.Spacing(3);
+            var periodPara = new Paragraph()
+                .Add(new Text($"Período: {reportData.PeriodDescription}\n").SetBold())
+                .Add(new Text($"Desde: {reportData.StartDate:dd/MM/yyyy}  "))
+                .Add(new Text($"Hasta: {reportData.EndDate:dd/MM/yyyy}\n"))
+                .Add(new Text($"Usuario: {reportData.UserName}"))
+                .SetFontSize(10)
+                .SetBackgroundColor(ColorConstants.LIGHT_GRAY)
+                .SetPadding(10);
 
-                column.Item().Row(row =>
-                {
-                    row.RelativeItem().Text($"Período: {reportData.PeriodDescription}").Bold();
-                });
-
-                column.Item().Row(row =>
-                {
-                    row.RelativeItem().Text($"Desde: {reportData.StartDate:dd/MM/yyyy}")
-                        .FontSize(9);
-                    row.RelativeItem().Text($"Hasta: {reportData.EndDate:dd/MM/yyyy}")
-                        .FontSize(9);
-                });
-
-                column.Item().Text($"Usuario: {reportData.UserName}").FontSize(9);
-            });
+            document.Add(periodPara);
+            document.Add(new Paragraph("\n"));
         }
 
-        #endregion
-
-        #region Summary
-
-        private void ComposeSummary(IContainer container, ReportDataDto reportData)
+        private void AddSummary(Document document, ReportDataDto reportData)
         {
-            container.Column(column =>
-            {
-                column.Item().Text("RESUMEN GENERAL")
-                    .FontSize(14)
-                    .Bold()
-                    .FontColor(Colors.Blue.Darken2);
+            var title = new Paragraph("RESUMEN GENERAL")
+                .SetFontSize(14)
+                .SetBold()
+                .SetFontColor(ColorConstants.BLUE);
+            document.Add(title);
 
-                column.Item().PaddingTop(5).BorderBottom(1).BorderColor(Colors.Grey.Medium);
+            var table = new Table(2).UseAllAvailableWidth();
 
-                column.Item().PaddingTop(10).Table(table =>
-                {
-                    table.ColumnsDefinition(columns =>
-                    {
-                        columns.RelativeColumn(2);
-                        columns.RelativeColumn(1);
-                    });
+            table.AddCell(new Cell().Add(new Paragraph("Total Ingresos:").SetBold()));
+            table.AddCell(new Cell().Add(new Paragraph($"{reportData.Summary.TotalIncome:C}")
+                .SetFontColor(ColorConstants.GREEN).SetBold()).SetTextAlignment(TextAlignment.RIGHT));
 
-                    // Ingresos
-                    table.Cell().Text("Total Ingresos:").Bold();
-                    table.Cell().AlignRight().Text($"{reportData.Summary.TotalIncome:C}")
-                        .FontColor(Colors.Green.Darken2).Bold();
+            table.AddCell(new Cell().Add(new Paragraph("Total Gastos:").SetBold()));
+            table.AddCell(new Cell().Add(new Paragraph($"{reportData.Summary.TotalExpense:C}")
+                .SetFontColor(ColorConstants.RED).SetBold()).SetTextAlignment(TextAlignment.RIGHT));
 
-                    // Gastos
-                    table.Cell().Text("Total Gastos:").Bold();
-                    table.Cell().AlignRight().Text($"{reportData.Summary.TotalExpense:C}")
-                        .FontColor(Colors.Red.Darken2).Bold();
+            table.AddCell(new Cell().Add(new Paragraph("Balance:").SetBold().SetFontSize(11)));
+            table.AddCell(new Cell().Add(new Paragraph($"{reportData.Summary.Balance:C}")
+                .SetFontColor(reportData.Summary.Balance >= 0 ? ColorConstants.BLUE : ColorConstants.RED)
+                .SetBold().SetFontSize(11)).SetTextAlignment(TextAlignment.RIGHT));
 
-                    // Balance
-                    table.Cell().Text("Balance:").Bold().FontSize(11);
-                    table.Cell().AlignRight().Text($"{reportData.Summary.Balance:C}")
-                        .FontColor(reportData.Summary.Balance >= 0 ? Colors.Blue.Darken2 : Colors.Red.Darken2)
-                        .Bold()
-                        .FontSize(11);
+            table.AddCell(new Cell().Add(new Paragraph("Promedio diario de gastos:")));
+            table.AddCell(new Cell().Add(new Paragraph($"{reportData.Summary.AverageDailyExpense:C}"))
+                .SetTextAlignment(TextAlignment.RIGHT));
 
-                    // Promedio diario
-                    table.Cell().PaddingTop(5).Text("Promedio diario de gastos:");
-                    table.Cell().PaddingTop(5).AlignRight().Text($"{reportData.Summary.AverageDailyExpense:C}");
+            table.AddCell(new Cell().Add(new Paragraph("Total de transacciones:")));
+            table.AddCell(new Cell().Add(new Paragraph(reportData.Summary.TotalTransactions.ToString()))
+                .SetTextAlignment(TextAlignment.RIGHT));
 
-                    // Total transacciones
-                    table.Cell().Text("Total de transacciones:");
-                    table.Cell().AlignRight().Text(reportData.Summary.TotalTransactions.ToString());
-                });
-            });
+            document.Add(table);
+            document.Add(new Paragraph("\n"));
         }
 
-        #endregion
-
-        #region Comparison
-
-        private void ComposeComparison(IContainer container, ReportComparisonDto comparison)
+        private void AddComparison(Document document, ReportComparisonDto comparison)
         {
-            container.Background(Colors.Blue.Lighten4).Padding(10).Column(column =>
-            {
-                column.Item().Text("Comparación con período anterior")
-                    .FontSize(11)
-                    .Bold()
-                    .FontColor(Colors.Blue.Darken2);
+            var compPara = new Paragraph()
+                .Add(new Text("Comparación con período anterior\n").SetBold())
+                .Add(new Text($"Ingresos: {comparison.IncomeChangeDisplay}  "))
+                .Add(new Text($"Gastos: {comparison.ExpenseChangeDisplay}  "))
+                .Add(new Text($"Balance: {comparison.BalanceChangeDisplay}"))
+                .SetFontSize(9)
+                .SetBackgroundColor(new DeviceRgb(173, 216, 230))
+                .SetPadding(10);
 
-                column.Item().PaddingTop(5).Row(row =>
-                {
-                    row.RelativeItem().Text($"Ingresos: {comparison.IncomeChangeDisplay}").FontSize(9);
-                    row.RelativeItem().Text($"Gastos: {comparison.ExpenseChangeDisplay}").FontSize(9);
-                    row.RelativeItem().Text($"Balance: {comparison.BalanceChangeDisplay}").FontSize(9);
-                });
-            });
+            document.Add(compPara);
+            document.Add(new Paragraph("\n"));
         }
 
-        #endregion
-
-        #region Expenses By Category
-
-        private void ComposeExpensesByCategory(IContainer container, ReportDataDto reportData)
+        private void AddExpensesByCategory(Document document, ReportDataDto reportData)
         {
-            container.Column(column =>
+            var title = new Paragraph("GASTOS POR CATEGORÍA")
+                .SetFontSize(14)
+                .SetBold()
+                .SetFontColor(ColorConstants.BLUE);
+            document.Add(title);
+
+            var table = new Table(new float[] { 3, 2, 1, 1 }).UseAllAvailableWidth();
+
+            // Encabezados
+            table.AddHeaderCell(new Cell().Add(new Paragraph("Categoría").SetBold())
+                .SetBackgroundColor(ColorConstants.LIGHT_GRAY));
+            table.AddHeaderCell(new Cell().Add(new Paragraph("Monto").SetBold())
+                .SetBackgroundColor(ColorConstants.LIGHT_GRAY).SetTextAlignment(TextAlignment.RIGHT));
+            table.AddHeaderCell(new Cell().Add(new Paragraph("%").SetBold())
+                .SetBackgroundColor(ColorConstants.LIGHT_GRAY).SetTextAlignment(TextAlignment.CENTER));
+            table.AddHeaderCell(new Cell().Add(new Paragraph("Cant.").SetBold())
+                .SetBackgroundColor(ColorConstants.LIGHT_GRAY).SetTextAlignment(TextAlignment.CENTER));
+
+            // Filas
+            foreach (var category in reportData.ExpensesByCategory)
             {
-                column.Item().Text("GASTOS POR CATEGORÍA")
-                    .FontSize(14)
-                    .Bold()
-                    .FontColor(Colors.Blue.Darken2);
+                table.AddCell(new Cell().Add(new Paragraph(category.CategoryName)));
+                table.AddCell(new Cell().Add(new Paragraph($"{category.TotalAmount:C}")
+                    .SetFontColor(ColorConstants.RED)).SetTextAlignment(TextAlignment.RIGHT));
+                table.AddCell(new Cell().Add(new Paragraph($"{category.Percentage:F1}%"))
+                    .SetTextAlignment(TextAlignment.CENTER));
+                table.AddCell(new Cell().Add(new Paragraph(category.TransactionCount.ToString()))
+                    .SetTextAlignment(TextAlignment.CENTER));
+            }
 
-                column.Item().PaddingTop(5).BorderBottom(1).BorderColor(Colors.Grey.Medium);
-
-                column.Item().PaddingTop(10).Table(table =>
-                {
-                    table.ColumnsDefinition(columns =>
-                    {
-                        columns.RelativeColumn(3);
-                        columns.RelativeColumn(2);
-                        columns.RelativeColumn(1);
-                        columns.RelativeColumn(1);
-                    });
-
-                    // Encabezados
-                    table.Header(header =>
-                    {
-                        header.Cell().Background(Colors.Grey.Lighten2).Padding(5).Text("Categoría").Bold();
-                        header.Cell().Background(Colors.Grey.Lighten2).Padding(5).AlignRight().Text("Monto").Bold();
-                        header.Cell().Background(Colors.Grey.Lighten2).Padding(5).AlignCenter().Text("%").Bold();
-                        header.Cell().Background(Colors.Grey.Lighten2).Padding(5).AlignCenter().Text("Cant.").Bold();
-                    });
-
-                    // Filas
-                    foreach (var category in reportData.ExpensesByCategory)
-                    {
-                        table.Cell().BorderBottom(0.5f).BorderColor(Colors.Grey.Lighten1).Padding(5)
-                            .Text($"{category.CategoryName}");
-
-                        table.Cell().BorderBottom(0.5f).BorderColor(Colors.Grey.Lighten1).Padding(5)
-                            .AlignRight().Text($"{category.TotalAmount:C}").FontColor(Colors.Red.Darken1);
-
-                        table.Cell().BorderBottom(0.5f).BorderColor(Colors.Grey.Lighten1).Padding(5)
-                            .AlignCenter().Text($"{category.Percentage:F1}%");
-
-                        table.Cell().BorderBottom(0.5f).BorderColor(Colors.Grey.Lighten1).Padding(5)
-                            .AlignCenter().Text(category.TransactionCount.ToString());
-                    }
-                });
-            });
+            document.Add(table);
+            document.Add(new Paragraph("\n"));
         }
 
-        #endregion
-
-        #region Incomes By Category
-
-        private void ComposeIncomesByCategory(IContainer container, ReportDataDto reportData)
+        private void AddIncomesByCategory(Document document, ReportDataDto reportData)
         {
-            container.Column(column =>
+            var title = new Paragraph("INGRESOS POR CATEGORÍA")
+                .SetFontSize(14)
+                .SetBold()
+                .SetFontColor(ColorConstants.BLUE);
+            document.Add(title);
+
+            var table = new Table(new float[] { 3, 2, 1, 1 }).UseAllAvailableWidth();
+
+            // Encabezados
+            table.AddHeaderCell(new Cell().Add(new Paragraph("Categoría").SetBold())
+                .SetBackgroundColor(ColorConstants.LIGHT_GRAY));
+            table.AddHeaderCell(new Cell().Add(new Paragraph("Monto").SetBold())
+                .SetBackgroundColor(ColorConstants.LIGHT_GRAY).SetTextAlignment(TextAlignment.RIGHT));
+            table.AddHeaderCell(new Cell().Add(new Paragraph("%").SetBold())
+                .SetBackgroundColor(ColorConstants.LIGHT_GRAY).SetTextAlignment(TextAlignment.CENTER));
+            table.AddHeaderCell(new Cell().Add(new Paragraph("Cant.").SetBold())
+                .SetBackgroundColor(ColorConstants.LIGHT_GRAY).SetTextAlignment(TextAlignment.CENTER));
+
+            // Filas
+            foreach (var category in reportData.IncomesByCategory)
             {
-                column.Item().Text("INGRESOS POR CATEGORÍA")
-                    .FontSize(14)
-                    .Bold()
-                    .FontColor(Colors.Blue.Darken2);
+                table.AddCell(new Cell().Add(new Paragraph(category.CategoryName)));
+                table.AddCell(new Cell().Add(new Paragraph($"{category.TotalAmount:C}")
+                    .SetFontColor(ColorConstants.GREEN)).SetTextAlignment(TextAlignment.RIGHT));
+                table.AddCell(new Cell().Add(new Paragraph($"{category.Percentage:F1}%"))
+                    .SetTextAlignment(TextAlignment.CENTER));
+                table.AddCell(new Cell().Add(new Paragraph(category.TransactionCount.ToString()))
+                    .SetTextAlignment(TextAlignment.CENTER));
+            }
 
-                column.Item().PaddingTop(5).BorderBottom(1).BorderColor(Colors.Grey.Medium);
-
-                column.Item().PaddingTop(10).Table(table =>
-                {
-                    table.ColumnsDefinition(columns =>
-                    {
-                        columns.RelativeColumn(3);
-                        columns.RelativeColumn(2);
-                        columns.RelativeColumn(1);
-                        columns.RelativeColumn(1);
-                    });
-
-                    // Encabezados
-                    table.Header(header =>
-                    {
-                        header.Cell().Background(Colors.Grey.Lighten2).Padding(5).Text("Categoría").Bold();
-                        header.Cell().Background(Colors.Grey.Lighten2).Padding(5).AlignRight().Text("Monto").Bold();
-                        header.Cell().Background(Colors.Grey.Lighten2).Padding(5).AlignCenter().Text("%").Bold();
-                        header.Cell().Background(Colors.Grey.Lighten2).Padding(5).AlignCenter().Text("Cant.").Bold();
-                    });
-
-                    // Filas
-                    foreach (var category in reportData.IncomesByCategory)
-                    {
-                        table.Cell().BorderBottom(0.5f).BorderColor(Colors.Grey.Lighten1).Padding(5)
-                            .Text($"{category.CategoryName}");
-
-                        table.Cell().BorderBottom(0.5f).BorderColor(Colors.Grey.Lighten1).Padding(5)
-                            .AlignRight().Text($"{category.TotalAmount:C}").FontColor(Colors.Green.Darken1);
-
-                        table.Cell().BorderBottom(0.5f).BorderColor(Colors.Grey.Lighten1).Padding(5)
-                            .AlignCenter().Text($"{category.Percentage:F1}%");
-
-                        table.Cell().BorderBottom(0.5f).BorderColor(Colors.Grey.Lighten1).Padding(5)
-                            .AlignCenter().Text(category.TransactionCount.ToString());
-                    }
-                });
-            });
+            document.Add(table);
+            document.Add(new Paragraph("\n"));
         }
 
-        #endregion
-
-        #region Transactions Detail
-
-        private void ComposeTransactionsDetail(IContainer container, ReportDataDto reportData)
+        private void AddTransactionsDetail(Document document, ReportDataDto reportData)
         {
-            container.Column(column =>
+            var title = new Paragraph("DETALLE DE TRANSACCIONES")
+                .SetFontSize(14)
+                .SetBold()
+                .SetFontColor(ColorConstants.BLUE);
+            document.Add(title);
+
+            var table = new Table(new float[] { 1, 1, 2, 3, 1.5f }).UseAllAvailableWidth();
+
+            // Encabezados
+            table.AddHeaderCell(new Cell().Add(new Paragraph("Fecha").SetBold().SetFontSize(9))
+                .SetBackgroundColor(ColorConstants.LIGHT_GRAY));
+            table.AddHeaderCell(new Cell().Add(new Paragraph("Tipo").SetBold().SetFontSize(9))
+                .SetBackgroundColor(ColorConstants.LIGHT_GRAY));
+            table.AddHeaderCell(new Cell().Add(new Paragraph("Categoría").SetBold().SetFontSize(9))
+                .SetBackgroundColor(ColorConstants.LIGHT_GRAY));
+            table.AddHeaderCell(new Cell().Add(new Paragraph("Descripción").SetBold().SetFontSize(9))
+                .SetBackgroundColor(ColorConstants.LIGHT_GRAY));
+            table.AddHeaderCell(new Cell().Add(new Paragraph("Monto").SetBold().SetFontSize(9))
+                .SetBackgroundColor(ColorConstants.LIGHT_GRAY).SetTextAlignment(TextAlignment.RIGHT));
+
+            // Filas (limitar a las primeras 100 transacciones)
+            foreach (var transaction in reportData.Transactions.Take(100))
             {
-                column.Item().Text("DETALLE DE TRANSACCIONES")
-                    .FontSize(14)
-                    .Bold()
-                    .FontColor(Colors.Blue.Darken2);
+                var typeText = transaction.Type == TransactionType.Income ? "Ingreso" : "Gasto";
+                var amountColor = transaction.Type == TransactionType.Income
+                    ? ColorConstants.GREEN
+                    : ColorConstants.RED;
 
-                column.Item().PaddingTop(5).BorderBottom(1).BorderColor(Colors.Grey.Medium);
+                table.AddCell(new Cell().Add(new Paragraph(transaction.Date.ToString("dd/MM/yyyy")).SetFontSize(8)));
+                table.AddCell(new Cell().Add(new Paragraph(typeText).SetFontSize(8)));
+                table.AddCell(new Cell().Add(new Paragraph(transaction.CategoryTitle).SetFontSize(8)));
+                table.AddCell(new Cell().Add(new Paragraph(transaction.Description ?? "-").SetFontSize(8)));
+                table.AddCell(new Cell().Add(new Paragraph($"{transaction.Amount:C}").SetFontSize(8)
+                    .SetFontColor(amountColor)).SetTextAlignment(TextAlignment.RIGHT));
+            }
 
-                column.Item().PaddingTop(10).Table(table =>
-                {
-                    table.ColumnsDefinition(columns =>
-                    {
-                        columns.RelativeColumn(1);
-                        columns.RelativeColumn(1);
-                        columns.RelativeColumn(2);
-                        columns.RelativeColumn(3);
-                        columns.RelativeColumn(1.5f);
-                    });
+            document.Add(table);
 
-                    // Encabezados
-                    table.Header(header =>
-                    {
-                        header.Cell().Background(Colors.Grey.Lighten2).Padding(5).Text("Fecha").Bold().FontSize(9);
-                        header.Cell().Background(Colors.Grey.Lighten2).Padding(5).Text("Tipo").Bold().FontSize(9);
-                        header.Cell().Background(Colors.Grey.Lighten2).Padding(5).Text("Categoría").Bold().FontSize(9);
-                        header.Cell().Background(Colors.Grey.Lighten2).Padding(5).Text("Descripción").Bold().FontSize(9);
-                        header.Cell().Background(Colors.Grey.Lighten2).Padding(5).AlignRight().Text("Monto").Bold().FontSize(9);
-                    });
-
-                    // Filas (limitar a las primeras 50 transacciones para evitar PDFs muy largos)
-                    foreach (var transaction in reportData.Transactions.Take(100))
-                    {
-                        var typeText = transaction.Type == TransactionType.Income ? "Ingreso" : "Gasto";
-                        var amountColor = transaction.Type == TransactionType.Income
-                            ? Colors.Green.Darken1
-                            : Colors.Red.Darken1;
-
-                        table.Cell().BorderBottom(0.5f).BorderColor(Colors.Grey.Lighten1).Padding(3)
-                            .Text(transaction.Date.ToString("dd/MM/yyyy")).FontSize(8);
-
-                        table.Cell().BorderBottom(0.5f).BorderColor(Colors.Grey.Lighten1).Padding(3)
-                            .Text(typeText).FontSize(8);
-
-                        table.Cell().BorderBottom(0.5f).BorderColor(Colors.Grey.Lighten1).Padding(3)
-                            .Text($"{transaction.CategoryTitle}").FontSize(8);
-
-                        table.Cell().BorderBottom(0.5f).BorderColor(Colors.Grey.Lighten1).Padding(3)
-                            .Text(transaction.Description ?? "-").FontSize(8);
-
-                        table.Cell().BorderBottom(0.5f).BorderColor(Colors.Grey.Lighten1).Padding(3)
-                            .AlignRight().Text($"{transaction.Amount:C}").FontColor(amountColor).FontSize(8);
-                    }
-                });
-
-                // Nota si hay más transacciones
-                if (reportData.Transactions.Count > 100)
-                {
-                    column.Item().PaddingTop(5).Text($"* Mostrando las primeras 100 transacciones de {reportData.Transactions.Count} totales")
-                        .FontSize(8)
-                        .Italic()
-                        .FontColor(Colors.Grey.Darken1);
-                }
-            });
+            // Nota si hay más transacciones
+            if (reportData.Transactions.Count > 100)
+            {
+                var note = new Paragraph($"* Mostrando las primeras 100 transacciones de {reportData.Transactions.Count} totales")
+                    .SetFontSize(8)
+                    .SetItalic()
+                    .SetFontColor(ColorConstants.GRAY);
+                document.Add(note);
+            }
         }
 
-        #endregion
+        private void AddFooter(Document document, ReportDataDto reportData)
+        {
+            var footer = new Paragraph($"Generado: {reportData.GeneratedAt:dd/MM/yyyy HH:mm}")
+                .SetFontSize(8)
+                .SetFontColor(ColorConstants.GRAY)
+                .SetTextAlignment(TextAlignment.CENTER);
+            document.Add(footer);
+        }
     }
 }
