@@ -20,7 +20,7 @@ namespace MisFinanzas.Infrastructure.Services
                 {
                     page.Size(PageSizes.Letter);
                     page.Margin(40);
-                    page.DefaultTextStyle(x => x.FontSize(10).FontFamily("Arial"));
+                    page.DefaultTextStyle(x => x.FontSize(10));
 
                     // Encabezado
                     page.Header().Element(ComposeHeader);

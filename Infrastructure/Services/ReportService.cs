@@ -70,37 +70,37 @@ namespace MisFinanzas.Infrastructure.Services
             {
                 case ReportPeriodType.LastWeek:
                     startDate = today.AddDays(-7);
-                    endDate = today;
+                    endDate = today.AddDays(1).AddTicks(-1); // Fin del día de hoy
                     break;
 
                 case ReportPeriodType.LastMonth:
                     startDate = today.AddMonths(-1);
-                    endDate = today;
+                    endDate = today.AddDays(1).AddTicks(-1);
                     break;
 
                 case ReportPeriodType.Last3Months:
                     startDate = today.AddMonths(-3);
-                    endDate = today;
+                    endDate = today.AddDays(1).AddTicks(-1);
                     break;
 
                 case ReportPeriodType.Last6Months:
                     startDate = today.AddMonths(-6);
-                    endDate = today;
+                    endDate = today.AddDays(1).AddTicks(-1);
                     break;
 
                 case ReportPeriodType.LastYear:
                     startDate = today.AddYears(-1);
-                    endDate = today;
+                    endDate = today.AddDays(1).AddTicks(-1);
                     break;
 
                 case ReportPeriodType.Custom:
-                    startDate = filter.CustomStartDate ?? today.AddMonths(-1);
-                    endDate = filter.CustomEndDate ?? today;
+                    startDate = (filter.CustomStartDate ?? today.AddMonths(-1)).Date;
+                    endDate = (filter.CustomEndDate ?? today).Date.AddDays(1).AddTicks(-1);
                     break;
 
                 default:
                     startDate = today.AddMonths(-1);
-                    endDate = today;
+                    endDate = today.AddDays(1).AddTicks(-1);
                     break;
             }
 
