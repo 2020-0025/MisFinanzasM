@@ -93,6 +93,12 @@ builder.Services.AddScoped<PdfReportGenerator>();
 builder.Services.AddScoped<ExcelReportGenerator>();
 
 
+// Configurar SignalR para archivos grandes
+builder.Services.AddSignalR(options =>
+{
+    options.MaximumReceiveMessageSize = 10 * 1024 * 1024; // 10 MB
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
