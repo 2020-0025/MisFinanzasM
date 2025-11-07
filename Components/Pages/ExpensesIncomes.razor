@@ -13,6 +13,7 @@
 @inject MisFinanzas.Infrastructure.Services.ReportService ReportService
 @inject MisFinanzas.Infrastructure.Services.PdfReportGenerator PdfReportGenerator
 @inject MisFinanzas.Infrastructure.Services.ExcelReportGenerator ExcelReportGenerator
+@inject MisFinanzas.Infrastructure.Services.TemporaryFileCache FileCache
 @implements IDisposable
 
 <PageTitle>Gastos e Ingresos - MisFinanzas</PageTitle>
@@ -732,9 +733,17 @@
             // Generar PDF
             var pdfBytes = PdfReportGenerator.GeneratePdf(reportData);
 
-            // Descargar archivo
+            // Guardar en caché temporal
+
             var fileName = $"Reporte_MisFinanzas_{DateTime.Now:yyyyMMdd_HHmmss}.pdf";
-            await DownloadFileAsync(fileName, pdfBytes, "application/pdf");
+
+            var fileId = FileCache.StoreFile(pdfBytes, fileName, "application/pdf");
+
+            // Abrir URL de descarga en nueva ventana
+
+            var downloadUrl = $"/api/FileDownload/{fileId}";
+
+            await JSRuntime.InvokeVoidAsync("open", downloadUrl, "_blank");
 
             ShowSuccessMessage("Reporte PDF generado correctamente");
         }
@@ -793,9 +802,17 @@
             // Generar Excel
             var excelBytes = ExcelReportGenerator.GenerateExcel(reportData);
 
-            // Descargar archivo
+            // Guardar en caché temporal
+
             var fileName = $"Reporte_MisFinanzas_{DateTime.Now:yyyyMMdd_HHmmss}.xlsx";
-            await DownloadFileAsync(fileName, excelBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+
+            var fileId = FileCache.StoreFile(excelBytes, fileName, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+
+            // Abrir URL de descarga en nueva ventana
+
+            var downloadUrl = $"/api/FileDownload/{fileId}";
+
+            await JSRuntime.InvokeVoidAsync("open", downloadUrl, "_blank");
 
             ShowSuccessMessage("Reporte Excel generado correctamente");
         }
@@ -809,15 +826,6 @@
             isGeneratingReport = false;
             StateHasChanged();
         }
-    }
-
-    private async Task DownloadFileAsync(string fileName, byte[] fileBytes, string contentType)
-    {
-        // Convertir bytes a base64
-        var base64 = Convert.ToBase64String(fileBytes);
-
-        // Usar JavaScript para descargar el archivo
-        await JSRuntime.InvokeVoidAsync("downloadFile", fileName, base64, contentType);
     }
 
     #endregion

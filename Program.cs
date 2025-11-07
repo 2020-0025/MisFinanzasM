@@ -92,6 +92,13 @@ builder.Services.AddScoped<ReportService>();
 builder.Services.AddScoped<PdfReportGenerator>();
 builder.Services.AddScoped<ExcelReportGenerator>();
 
+// Registrar caché temporal de archivos como Singleton
+
+builder.Services.AddSingleton<TemporaryFileCache>();
+
+// Agregar soporte para controladores API
+
+builder.Services.AddControllers();
 
 // Configurar SignalR para archivos grandes
 builder.Services.AddSignalR(options =>
@@ -117,6 +124,10 @@ app.UseHttpsRedirection();
 
 app.UseStaticFiles();
 app.UseAntiforgery();
+
+// Mapear controladores API
+
+app.MapControllers();
 
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
