@@ -1,8 +1,5 @@
-﻿using iText.Kernel.Pdf;
-using iText.Layout;
-using iText.Layout.Element;
-using iText.Layout.Properties;
-using iText.Kernel.Colors;
+﻿using PdfSharpCore.Drawing;
+using PdfSharpCore.Pdf;
 using MisFinanzas.Domain.DTOs;
 using MisFinanzas.Domain.Enums;
 
@@ -12,262 +9,195 @@ namespace MisFinanzas.Infrastructure.Services
     {
         public byte[] GeneratePdf(ReportDataDto reportData)
         {
-            using var stream = new MemoryStream();
-            var writer = new PdfWriter(stream);
-            var pdf = new PdfDocument(writer);
-            var document = new Document(pdf);
+            var document = new PdfDocument();
+            var page = document.AddPage();
+            var gfx = XGraphics.FromPdfPage(page);
+
+            var fontTitle = new XFont("Arial", 20, XFontStyle.Bold);
+            var fontSubtitle = new XFont("Arial", 12, XFontStyle.Regular);
+            var fontHeader = new XFont("Arial", 14, XFontStyle.Bold);
+            var fontNormal = new XFont("Arial", 10, XFontStyle.Regular);
+            var fontSmall = new XFont("Arial", 8, XFontStyle.Regular);
+            var fontBold = new XFont("Arial", 10, XFontStyle.Bold);
+
+            double yPosition = 40;
 
             // Encabezado
-            AddHeader(document);
+            gfx.DrawString("MIS FINANZAS", fontTitle, XBrushes.Blue, new XPoint(40, yPosition));
+            yPosition += 25;
+            gfx.DrawString("Reporte Financiero", fontSubtitle, XBrushes.Gray, new XPoint(40, yPosition));
+            yPosition += 30;
 
             // Información del período
-            AddPeriodInfo(document, reportData);
+            gfx.DrawRectangle(XBrushes.LightGray, 40, yPosition, page.Width - 80, 60);
+            yPosition += 15;
+            gfx.DrawString($"Período: {reportData.PeriodDescription}", fontBold, XBrushes.Black, new XPoint(50, yPosition));
+            yPosition += 15;
+            gfx.DrawString($"Desde: {reportData.StartDate:dd/MM/yyyy}  Hasta: {reportData.EndDate:dd/MM/yyyy}", fontNormal, XBrushes.Black, new XPoint(50, yPosition));
+            yPosition += 15;
+            gfx.DrawString($"Usuario: {reportData.UserName}", fontSmall, XBrushes.Black, new XPoint(50, yPosition));
+            yPosition += 30;
 
-            // Resumen general
-            AddSummary(document, reportData);
+            // Resumen General
+            gfx.DrawString("RESUMEN GENERAL", fontHeader, XBrushes.Blue, new XPoint(40, yPosition));
+            yPosition += 20;
 
-            // Comparativa (si existe)
+            gfx.DrawString("Total Ingresos:", fontBold, XBrushes.Black, new XPoint(40, yPosition));
+            gfx.DrawString($"{reportData.Summary.TotalIncome:C}", fontBold, XBrushes.Green, new XPoint(400, yPosition));
+            yPosition += 15;
+
+            gfx.DrawString("Total Gastos:", fontBold, XBrushes.Black, new XPoint(40, yPosition));
+            gfx.DrawString($"{reportData.Summary.TotalExpense:C}", fontBold, XBrushes.Red, new XPoint(400, yPosition));
+            yPosition += 15;
+
+            gfx.DrawString("Balance:", fontBold, XBrushes.Black, new XPoint(40, yPosition));
+            var balanceColor = reportData.Summary.Balance >= 0 ? XBrushes.Blue : XBrushes.Red;
+            gfx.DrawString($"{reportData.Summary.Balance:C}", fontBold, balanceColor, new XPoint(400, yPosition));
+            yPosition += 15;
+
+            gfx.DrawString("Promedio diario de gastos:", fontNormal, XBrushes.Black, new XPoint(40, yPosition));
+            gfx.DrawString($"{reportData.Summary.AverageDailyExpense:C}", fontNormal, XBrushes.Black, new XPoint(400, yPosition));
+            yPosition += 15;
+
+            gfx.DrawString("Total de transacciones:", fontNormal, XBrushes.Black, new XPoint(40, yPosition));
+            gfx.DrawString(reportData.Summary.TotalTransactions.ToString(), fontNormal, XBrushes.Black, new XPoint(400, yPosition));
+            yPosition += 25;
+
+            // Comparación (si existe)
             if (reportData.Comparison != null)
             {
-                AddComparison(document, reportData.Comparison);
+                gfx.DrawRectangle(new XSolidBrush(XColor.FromArgb(173, 216, 230)), 40, yPosition, page.Width - 80, 40);
+                yPosition += 15;
+                gfx.DrawString("Comparación con período anterior", fontBold, XBrushes.Black, new XPoint(50, yPosition));
+                yPosition += 15;
+                gfx.DrawString($"Ingresos: {reportData.Comparison.IncomeChangeDisplay}  Gastos: {reportData.Comparison.ExpenseChangeDisplay}  Balance: {reportData.Comparison.BalanceChangeDisplay}",
+                    fontSmall, XBrushes.Black, new XPoint(50, yPosition));
+                yPosition += 25;
             }
 
             // Gastos por categoría
             if (reportData.ExpensesByCategory.Any())
             {
-                AddExpensesByCategory(document, reportData);
+                yPosition = CheckNewPage(document, ref page, ref gfx, yPosition, fontTitle, fontSubtitle, fontHeader, fontNormal, fontSmall, fontBold);
+
+                gfx.DrawString("GASTOS POR CATEGORÍA", fontHeader, XBrushes.Blue, new XPoint(40, yPosition));
+                yPosition += 20;
+
+                // Encabezados de tabla
+                gfx.DrawRectangle(XBrushes.LightGray, 40, yPosition - 5, page.Width - 80, 15);
+                gfx.DrawString("Categoría", fontBold, XBrushes.Black, new XPoint(45, yPosition));
+                gfx.DrawString("Monto", fontBold, XBrushes.Black, new XPoint(300, yPosition));
+                gfx.DrawString("%", fontBold, XBrushes.Black, new XPoint(420, yPosition));
+                gfx.DrawString("Cant.", fontBold, XBrushes.Black, new XPoint(480, yPosition));
+                yPosition += 15;
+
+                foreach (var category in reportData.ExpensesByCategory.Take(15))
+                {
+                    yPosition = CheckNewPage(document, ref page, ref gfx, yPosition, fontTitle, fontSubtitle, fontHeader, fontNormal, fontSmall, fontBold);
+
+                    gfx.DrawString(TruncateString(category.CategoryName, 30), fontNormal, XBrushes.Black, new XPoint(45, yPosition));
+                    gfx.DrawString($"{category.TotalAmount:C}", fontNormal, XBrushes.Red, new XPoint(300, yPosition));
+                    gfx.DrawString($"{category.Percentage:F1}%", fontNormal, XBrushes.Black, new XPoint(420, yPosition));
+                    gfx.DrawString(category.TransactionCount.ToString(), fontNormal, XBrushes.Black, new XPoint(480, yPosition));
+                    yPosition += 15;
+                }
+                yPosition += 10;
             }
 
             // Ingresos por categoría
             if (reportData.IncomesByCategory.Any())
             {
-                AddIncomesByCategory(document, reportData);
+                yPosition = CheckNewPage(document, ref page, ref gfx, yPosition, fontTitle, fontSubtitle, fontHeader, fontNormal, fontSmall, fontBold);
+
+                gfx.DrawString("INGRESOS POR CATEGORÍA", fontHeader, XBrushes.Blue, new XPoint(40, yPosition));
+                yPosition += 20;
+
+                // Encabezados de tabla
+                gfx.DrawRectangle(XBrushes.LightGray, 40, yPosition - 5, page.Width - 80, 15);
+                gfx.DrawString("Categoría", fontBold, XBrushes.Black, new XPoint(45, yPosition));
+                gfx.DrawString("Monto", fontBold, XBrushes.Black, new XPoint(300, yPosition));
+                gfx.DrawString("%", fontBold, XBrushes.Black, new XPoint(420, yPosition));
+                gfx.DrawString("Cant.", fontBold, XBrushes.Black, new XPoint(480, yPosition));
+                yPosition += 15;
+
+                foreach (var category in reportData.IncomesByCategory.Take(15))
+                {
+                    yPosition = CheckNewPage(document, ref page, ref gfx, yPosition, fontTitle, fontSubtitle, fontHeader, fontNormal, fontSmall, fontBold);
+
+                    gfx.DrawString(TruncateString(category.CategoryName, 30), fontNormal, XBrushes.Black, new XPoint(45, yPosition));
+                    gfx.DrawString($"{category.TotalAmount:C}", fontNormal, XBrushes.Green, new XPoint(300, yPosition));
+                    gfx.DrawString($"{category.Percentage:F1}%", fontNormal, XBrushes.Black, new XPoint(420, yPosition));
+                    gfx.DrawString(category.TransactionCount.ToString(), fontNormal, XBrushes.Black, new XPoint(480, yPosition));
+                    yPosition += 15;
+                }
+                yPosition += 10;
             }
 
-            // Detalle de transacciones
+            // Detalle de transacciones (primeras 30)
             if (reportData.Transactions.Any())
             {
-                AddTransactionsDetail(document, reportData);
+                yPosition = CheckNewPage(document, ref page, ref gfx, yPosition, fontTitle, fontSubtitle, fontHeader, fontNormal, fontSmall, fontBold);
+
+                gfx.DrawString("DETALLE DE TRANSACCIONES", fontHeader, XBrushes.Blue, new XPoint(40, yPosition));
+                yPosition += 20;
+
+                // Encabezados de tabla
+                gfx.DrawRectangle(XBrushes.LightGray, 40, yPosition - 5, page.Width - 80, 15);
+                gfx.DrawString("Fecha", fontBold, XBrushes.Black, new XPoint(45, yPosition));
+                gfx.DrawString("Tipo", fontBold, XBrushes.Black, new XPoint(120, yPosition));
+                gfx.DrawString("Categoría", fontBold, XBrushes.Black, new XPoint(180, yPosition));
+                gfx.DrawString("Descripción", fontBold, XBrushes.Black, new XPoint(280, yPosition));
+                gfx.DrawString("Monto", fontBold, XBrushes.Black, new XPoint(450, yPosition));
+                yPosition += 15;
+
+                foreach (var transaction in reportData.Transactions.Take(30))
+                {
+                    yPosition = CheckNewPage(document, ref page, ref gfx, yPosition, fontTitle, fontSubtitle, fontHeader, fontNormal, fontSmall, fontBold);
+
+                    var typeText = transaction.Type == TransactionType.Income ? "Ingreso" : "Gasto";
+                    var amountColor = transaction.Type == TransactionType.Income ? XBrushes.Green : XBrushes.Red;
+
+                    gfx.DrawString(transaction.Date.ToString("dd/MM/yy"), fontSmall, XBrushes.Black, new XPoint(45, yPosition));
+                    gfx.DrawString(typeText, fontSmall, XBrushes.Black, new XPoint(120, yPosition));
+                    gfx.DrawString(TruncateString(transaction.CategoryTitle, 12), fontSmall, XBrushes.Black, new XPoint(180, yPosition));
+                    gfx.DrawString(TruncateString(transaction.Description ?? "-", 20), fontSmall, XBrushes.Black, new XPoint(280, yPosition));
+                    gfx.DrawString($"{transaction.Amount:C}", fontSmall, amountColor, new XPoint(450, yPosition));
+                    yPosition += 12;
+                }
+
+                if (reportData.Transactions.Count > 30)
+                {
+                    yPosition += 5;
+                    gfx.DrawString($"* Mostrando las primeras 30 transacciones de {reportData.Transactions.Count} totales",
+                        fontSmall, XBrushes.Gray, new XPoint(45, yPosition));
+                }
             }
 
             // Pie de página
-            AddFooter(document, reportData);
+            gfx.DrawString($"Generado: {reportData.GeneratedAt:dd/MM/yyyy HH:mm}", fontSmall, XBrushes.Gray,
+                new XPoint(40, page.Height - 30));
 
-            document.Close();
+            using var stream = new MemoryStream();
+            document.Save(stream, false);
             return stream.ToArray();
         }
 
-        private void AddHeader(Document document)
+        private double CheckNewPage(PdfDocument document, ref PdfPage page, ref XGraphics gfx, double yPosition,
+            XFont fontTitle, XFont fontSubtitle, XFont fontHeader, XFont fontNormal, XFont fontSmall, XFont fontBold)
         {
-            var title = new Paragraph("MIS FINANZAS")
-                .SetFontSize(20)
-                .SetBold()
-                .SetFontColor(ColorConstants.BLUE);
-            document.Add(title);
-
-            var subtitle = new Paragraph("Reporte Financiero")
-                .SetFontSize(12)
-                .SetFontColor(ColorConstants.GRAY);
-            document.Add(subtitle);
-
-            document.Add(new Paragraph("\n"));
-        }
-
-        private void AddPeriodInfo(Document document, ReportDataDto reportData)
-        {
-            var periodPara = new Paragraph()
-                .Add(new Text($"Período: {reportData.PeriodDescription}\n").SetBold())
-                .Add(new Text($"Desde: {reportData.StartDate:dd/MM/yyyy}  "))
-                .Add(new Text($"Hasta: {reportData.EndDate:dd/MM/yyyy}\n"))
-                .Add(new Text($"Usuario: {reportData.UserName}"))
-                .SetFontSize(10)
-                .SetBackgroundColor(ColorConstants.LIGHT_GRAY)
-                .SetPadding(10);
-
-            document.Add(periodPara);
-            document.Add(new Paragraph("\n"));
-        }
-
-        private void AddSummary(Document document, ReportDataDto reportData)
-        {
-            var title = new Paragraph("RESUMEN GENERAL")
-                .SetFontSize(14)
-                .SetBold()
-                .SetFontColor(ColorConstants.BLUE);
-            document.Add(title);
-
-            var table = new Table(2).UseAllAvailableWidth();
-
-            table.AddCell(new Cell().Add(new Paragraph("Total Ingresos:").SetBold()));
-            table.AddCell(new Cell().Add(new Paragraph($"{reportData.Summary.TotalIncome:C}")
-                .SetFontColor(ColorConstants.GREEN).SetBold()).SetTextAlignment(TextAlignment.RIGHT));
-
-            table.AddCell(new Cell().Add(new Paragraph("Total Gastos:").SetBold()));
-            table.AddCell(new Cell().Add(new Paragraph($"{reportData.Summary.TotalExpense:C}")
-                .SetFontColor(ColorConstants.RED).SetBold()).SetTextAlignment(TextAlignment.RIGHT));
-
-            table.AddCell(new Cell().Add(new Paragraph("Balance:").SetBold().SetFontSize(11)));
-            table.AddCell(new Cell().Add(new Paragraph($"{reportData.Summary.Balance:C}")
-                .SetFontColor(reportData.Summary.Balance >= 0 ? ColorConstants.BLUE : ColorConstants.RED)
-                .SetBold().SetFontSize(11)).SetTextAlignment(TextAlignment.RIGHT));
-
-            table.AddCell(new Cell().Add(new Paragraph("Promedio diario de gastos:")));
-            table.AddCell(new Cell().Add(new Paragraph($"{reportData.Summary.AverageDailyExpense:C}"))
-                .SetTextAlignment(TextAlignment.RIGHT));
-
-            table.AddCell(new Cell().Add(new Paragraph("Total de transacciones:")));
-            table.AddCell(new Cell().Add(new Paragraph(reportData.Summary.TotalTransactions.ToString()))
-                .SetTextAlignment(TextAlignment.RIGHT));
-
-            document.Add(table);
-            document.Add(new Paragraph("\n"));
-        }
-
-        private void AddComparison(Document document, ReportComparisonDto comparison)
-        {
-            var compPara = new Paragraph()
-                .Add(new Text("Comparación con período anterior\n").SetBold())
-                .Add(new Text($"Ingresos: {comparison.IncomeChangeDisplay}  "))
-                .Add(new Text($"Gastos: {comparison.ExpenseChangeDisplay}  "))
-                .Add(new Text($"Balance: {comparison.BalanceChangeDisplay}"))
-                .SetFontSize(9)
-                .SetBackgroundColor(new DeviceRgb(173, 216, 230))
-                .SetPadding(10);
-
-            document.Add(compPara);
-            document.Add(new Paragraph("\n"));
-        }
-
-        private void AddExpensesByCategory(Document document, ReportDataDto reportData)
-        {
-            var title = new Paragraph("GASTOS POR CATEGORÍA")
-                .SetFontSize(14)
-                .SetBold()
-                .SetFontColor(ColorConstants.BLUE);
-            document.Add(title);
-
-            var table = new Table(new float[] { 3, 2, 1, 1 }).UseAllAvailableWidth();
-
-            // Encabezados
-            table.AddHeaderCell(new Cell().Add(new Paragraph("Categoría").SetBold())
-                .SetBackgroundColor(ColorConstants.LIGHT_GRAY));
-            table.AddHeaderCell(new Cell().Add(new Paragraph("Monto").SetBold())
-                .SetBackgroundColor(ColorConstants.LIGHT_GRAY).SetTextAlignment(TextAlignment.RIGHT));
-            table.AddHeaderCell(new Cell().Add(new Paragraph("%").SetBold())
-                .SetBackgroundColor(ColorConstants.LIGHT_GRAY).SetTextAlignment(TextAlignment.CENTER));
-            table.AddHeaderCell(new Cell().Add(new Paragraph("Cant.").SetBold())
-                .SetBackgroundColor(ColorConstants.LIGHT_GRAY).SetTextAlignment(TextAlignment.CENTER));
-
-            // Filas
-            foreach (var category in reportData.ExpensesByCategory)
+            if (yPosition > page.Height - 100)
             {
-                table.AddCell(new Cell().Add(new Paragraph(category.CategoryName)));
-                table.AddCell(new Cell().Add(new Paragraph($"{category.TotalAmount:C}")
-                    .SetFontColor(ColorConstants.RED)).SetTextAlignment(TextAlignment.RIGHT));
-                table.AddCell(new Cell().Add(new Paragraph($"{category.Percentage:F1}%"))
-                    .SetTextAlignment(TextAlignment.CENTER));
-                table.AddCell(new Cell().Add(new Paragraph(category.TransactionCount.ToString()))
-                    .SetTextAlignment(TextAlignment.CENTER));
+                page = document.AddPage();
+                gfx = XGraphics.FromPdfPage(page);
+                return 40;
             }
-
-            document.Add(table);
-            document.Add(new Paragraph("\n"));
+            return yPosition;
         }
 
-        private void AddIncomesByCategory(Document document, ReportDataDto reportData)
+        private string TruncateString(string text, int maxLength)
         {
-            var title = new Paragraph("INGRESOS POR CATEGORÍA")
-                .SetFontSize(14)
-                .SetBold()
-                .SetFontColor(ColorConstants.BLUE);
-            document.Add(title);
-
-            var table = new Table(new float[] { 3, 2, 1, 1 }).UseAllAvailableWidth();
-
-            // Encabezados
-            table.AddHeaderCell(new Cell().Add(new Paragraph("Categoría").SetBold())
-                .SetBackgroundColor(ColorConstants.LIGHT_GRAY));
-            table.AddHeaderCell(new Cell().Add(new Paragraph("Monto").SetBold())
-                .SetBackgroundColor(ColorConstants.LIGHT_GRAY).SetTextAlignment(TextAlignment.RIGHT));
-            table.AddHeaderCell(new Cell().Add(new Paragraph("%").SetBold())
-                .SetBackgroundColor(ColorConstants.LIGHT_GRAY).SetTextAlignment(TextAlignment.CENTER));
-            table.AddHeaderCell(new Cell().Add(new Paragraph("Cant.").SetBold())
-                .SetBackgroundColor(ColorConstants.LIGHT_GRAY).SetTextAlignment(TextAlignment.CENTER));
-
-            // Filas
-            foreach (var category in reportData.IncomesByCategory)
-            {
-                table.AddCell(new Cell().Add(new Paragraph(category.CategoryName)));
-                table.AddCell(new Cell().Add(new Paragraph($"{category.TotalAmount:C}")
-                    .SetFontColor(ColorConstants.GREEN)).SetTextAlignment(TextAlignment.RIGHT));
-                table.AddCell(new Cell().Add(new Paragraph($"{category.Percentage:F1}%"))
-                    .SetTextAlignment(TextAlignment.CENTER));
-                table.AddCell(new Cell().Add(new Paragraph(category.TransactionCount.ToString()))
-                    .SetTextAlignment(TextAlignment.CENTER));
-            }
-
-            document.Add(table);
-            document.Add(new Paragraph("\n"));
-        }
-
-        private void AddTransactionsDetail(Document document, ReportDataDto reportData)
-        {
-            var title = new Paragraph("DETALLE DE TRANSACCIONES")
-                .SetFontSize(14)
-                .SetBold()
-                .SetFontColor(ColorConstants.BLUE);
-            document.Add(title);
-
-            var table = new Table(new float[] { 1, 1, 2, 3, 1.5f }).UseAllAvailableWidth();
-
-            // Encabezados
-            table.AddHeaderCell(new Cell().Add(new Paragraph("Fecha").SetBold().SetFontSize(9))
-                .SetBackgroundColor(ColorConstants.LIGHT_GRAY));
-            table.AddHeaderCell(new Cell().Add(new Paragraph("Tipo").SetBold().SetFontSize(9))
-                .SetBackgroundColor(ColorConstants.LIGHT_GRAY));
-            table.AddHeaderCell(new Cell().Add(new Paragraph("Categoría").SetBold().SetFontSize(9))
-                .SetBackgroundColor(ColorConstants.LIGHT_GRAY));
-            table.AddHeaderCell(new Cell().Add(new Paragraph("Descripción").SetBold().SetFontSize(9))
-                .SetBackgroundColor(ColorConstants.LIGHT_GRAY));
-            table.AddHeaderCell(new Cell().Add(new Paragraph("Monto").SetBold().SetFontSize(9))
-                .SetBackgroundColor(ColorConstants.LIGHT_GRAY).SetTextAlignment(TextAlignment.RIGHT));
-
-            // Filas (limitar a las primeras 100 transacciones)
-            foreach (var transaction in reportData.Transactions.Take(100))
-            {
-                var typeText = transaction.Type == TransactionType.Income ? "Ingreso" : "Gasto";
-                var amountColor = transaction.Type == TransactionType.Income
-                    ? ColorConstants.GREEN
-                    : ColorConstants.RED;
-
-                table.AddCell(new Cell().Add(new Paragraph(transaction.Date.ToString("dd/MM/yyyy")).SetFontSize(8)));
-                table.AddCell(new Cell().Add(new Paragraph(typeText).SetFontSize(8)));
-                table.AddCell(new Cell().Add(new Paragraph(transaction.CategoryTitle).SetFontSize(8)));
-                table.AddCell(new Cell().Add(new Paragraph(transaction.Description ?? "-").SetFontSize(8)));
-                table.AddCell(new Cell().Add(new Paragraph($"{transaction.Amount:C}").SetFontSize(8)
-                    .SetFontColor(amountColor)).SetTextAlignment(TextAlignment.RIGHT));
-            }
-
-            document.Add(table);
-
-            // Nota si hay más transacciones
-            if (reportData.Transactions.Count > 100)
-            {
-                var note = new Paragraph($"* Mostrando las primeras 100 transacciones de {reportData.Transactions.Count} totales")
-                    .SetFontSize(8)
-                    .SetItalic()
-                    .SetFontColor(ColorConstants.GRAY);
-                document.Add(note);
-            }
-        }
-
-        private void AddFooter(Document document, ReportDataDto reportData)
-        {
-            var footer = new Paragraph($"Generado: {reportData.GeneratedAt:dd/MM/yyyy HH:mm}")
-                .SetFontSize(8)
-                .SetFontColor(ColorConstants.GRAY)
-                .SetTextAlignment(TextAlignment.CENTER);
-            document.Add(footer);
+            if (string.IsNullOrEmpty(text)) return text;
+            return text.Length <= maxLength ? text : text.Substring(0, maxLength - 3) + "...";
         }
     }
 }
