@@ -257,7 +257,7 @@ namespace MisFinanzas.Infrastructure.Services
                     foreach (var category in reportData.ExpensesByCategory)
                     {
                         table.Cell().BorderBottom(0.5f).BorderColor(Colors.Grey.Lighten1).Padding(5)
-                            .Text($"{category.CategoryIcon} {category.CategoryName}");
+                            .Text($"{category.CategoryName}");
 
                         table.Cell().BorderBottom(0.5f).BorderColor(Colors.Grey.Lighten1).Padding(5)
                             .AlignRight().Text($"{category.TotalAmount:C}").FontColor(Colors.Red.Darken1);
@@ -310,7 +310,7 @@ namespace MisFinanzas.Infrastructure.Services
                     foreach (var category in reportData.IncomesByCategory)
                     {
                         table.Cell().BorderBottom(0.5f).BorderColor(Colors.Grey.Lighten1).Padding(5)
-                            .Text($"{category.CategoryIcon} {category.CategoryName}");
+                            .Text($"{category.CategoryName}");
 
                         table.Cell().BorderBottom(0.5f).BorderColor(Colors.Grey.Lighten1).Padding(5)
                             .AlignRight().Text($"{category.TotalAmount:C}").FontColor(Colors.Green.Darken1);
@@ -376,7 +376,7 @@ namespace MisFinanzas.Infrastructure.Services
                             .Text(typeText).FontSize(8);
 
                         table.Cell().BorderBottom(0.5f).BorderColor(Colors.Grey.Lighten1).Padding(3)
-                            .Text($"{transaction.CategoryIcon} {transaction.CategoryTitle}").FontSize(8);
+                            .Text($"{transaction.CategoryTitle}").FontSize(8);
 
                         table.Cell().BorderBottom(0.5f).BorderColor(Colors.Grey.Lighten1).Padding(3)
                             .Text(transaction.Description ?? "-").FontSize(8);
