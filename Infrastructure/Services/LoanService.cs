@@ -73,7 +73,7 @@ namespace MisFinanzas.Infrastructure.Services
                 var category = new Category
                 {
                     UserId = userId,
-                    Title = $"{loan.Icon} {loan.Title}",
+                    Title = loan.Title,
                     Icon = loan.Icon,
                     Type = TransactionType.Expense,
                     IsFixedExpense = createReminder, // Si se activa recordatorio, es gasto fijo
@@ -137,7 +137,7 @@ namespace MisFinanzas.Infrastructure.Services
                 // Actualizar categoría asociada
                 if (loan.Category != null)
                 {
-                    loan.Category.Title = $"{updatedLoan.Icon} {updatedLoan.Title}";
+                    loan.Category.Title = updatedLoan.Title;
                     loan.Category.Icon = updatedLoan.Icon;
                     loan.Category.EstimatedAmount = updatedLoan.InstallmentAmount;
                 }
@@ -335,6 +335,42 @@ namespace MisFinanzas.Infrastructure.Services
             catch (Exception ex)
             {
                 Console.WriteLine($"❌ Error al marcar como completado: {ex.Message}");
+                return false;
+            }
+        }
+
+        public async Task<bool> ReactivateLoanAsync(int loanId, string userId)
+        {
+            try
+            {
+                var loan = await GetByIdAsync(loanId, userId);
+
+                if (loan == null)
+                    return false;
+
+                // Solo se pueden reactivar préstamos cancelados (no completados)
+                if (loan.IsActive)
+                {
+                    Console.WriteLine($"⚠️ El préstamo '{loan.Title}' ya está activo");
+                    return false;
+                }
+
+                if (loan.IsCompleted)
+                {
+                    Console.WriteLine($"⚠️ El préstamo '{loan.Title}' está completado. No se puede reactivar.");
+                    return false;
+                }
+
+                // Reactivar el préstamo
+                loan.IsActive = true;
+                await _context.SaveChangesAsync();
+
+                Console.WriteLine($"✅ Préstamo '{loan.Title}' reactivado. Cuotas pagadas: {loan.InstallmentsPaid}/{loan.NumberOfInstallments}");
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"❌ Error al reactivar préstamo: {ex.Message}");
                 return false;
             }
         }

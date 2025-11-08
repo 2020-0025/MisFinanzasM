@@ -166,6 +166,19 @@ namespace MisFinanzas.Infrastructure.Services
                 .CountAsync(ei => ei.CategoryId == categoryId && ei.UserId == userId);
         }
 
+        public async Task<(bool BelongsToLoan, string? LoanTitle)> CheckIfBelongsToLoanAsync(int categoryId, string userId)
+        {
+            var loan = await _context.Loans
+                .FirstOrDefaultAsync(l => l.CategoryId == categoryId && l.UserId == userId);
+
+            if (loan != null)
+            {
+                return (true, loan.Title);
+            }
+
+            return (false, null);
+        }
+
         public async Task<bool> ExistsCategoryWithNameAsync(string title, TransactionType type, string userId, int? excludeCategoryId = null)
         {
             var query = _context.Categories

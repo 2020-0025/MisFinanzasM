@@ -4,6 +4,7 @@
 @using MisFinanzas.Infrastructure.Interfaces
 @using MisFinanzas.Domain.Entities
 @using System.ComponentModel.DataAnnotations
+@using MisFinanzas.Components.Shared
 @inject ILoanService LoanService
 @inject IJSRuntime JSRuntime
 @inject NavigationManager NavigationManager
@@ -171,6 +172,13 @@
                                                 <span style="font-size: 13px;">📝</span>
                                             </button>
                                         }
+                                        else if (!loan.IsActive && !loan.IsCompleted)
+                                        {
+                                            <!-- Préstamo cancelado - mostrar botón reactivar -->
+                                            <button class="btn btn-sm btn-primary" @onclick="() => ReactivateLoan(loan.LoanId)" title="Reactivar Préstamo">
+                                                <span style="font-size: 13px;">🔄</span> Reactivar
+                                            </button>
+                                        }
                                         <button class="btn btn-sm btn-danger"
                                                 @onclick="() => HandleDeleteLoan(loan)"
                                                 title="@(loan.IsActive ? "Eliminar" : "Eliminar del historial")">
@@ -261,7 +269,6 @@
             <div class="modal-body-custom">
                 <EditForm Model="currentLoan" OnValidSubmit="SaveLoan">
                     <DataAnnotationsValidator />
-                    <ValidationSummary />
 
                     <div class="mb-3">
                         <label class="form-label text-white">Título *</label>
@@ -278,12 +285,12 @@
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label class="form-label text-white">Monto del Préstamo *</label>
-                            <InputNumber class="form-control glass-input" @bind-Value="currentLoan.PrincipalAmount" @bind-Value:after="CalculatePreview" placeholder="10000" />
+                            <InputNumber class="form-control glass-input" @bind-Value="currentLoan.PrincipalAmount" @bind-Value:after="CalculatePreview" placeholder="10000" ParsingErrorMessage="Este campo es requerido" />
                             <ValidationMessage For="@(() => currentLoan.PrincipalAmount)" />
                         </div>
                         <div class="col-md-6 mb-3">
                             <label class="form-label text-white">Cuota Mensual *</label>
-                            <InputNumber class="form-control glass-input" @bind-Value="currentLoan.InstallmentAmount" @bind-Value:after="CalculatePreview" placeholder="500" />
+                            <InputNumber class="form-control glass-input" @bind-Value="currentLoan.InstallmentAmount" @bind-Value:after="CalculatePreview" placeholder="500" ParsingErrorMessage="Este campo es requerido" />
                             <ValidationMessage For="@(() => currentLoan.InstallmentAmount)" />
                         </div>
                     </div>
@@ -291,12 +298,12 @@
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label class="form-label text-white">Cantidad de Cuotas *</label>
-                            <InputNumber class="form-control glass-input" @bind-Value="currentLoan.NumberOfInstallments" @bind-Value:after="CalculatePreview" placeholder="12" />
+                            <InputNumber class="form-control glass-input" @bind-Value="currentLoan.NumberOfInstallments" @bind-Value:after="CalculatePreview" placeholder="12" ParsingErrorMessage="Este campo es requerido" />
                             <ValidationMessage For="@(() => currentLoan.NumberOfInstallments)" />
                         </div>
                         <div class="col-md-6 mb-3">
                             <label class="form-label text-white">Día de Pago (1-31) *</label>
-                            <InputNumber class="form-control glass-input" @bind-Value="currentLoan.DueDay" placeholder="15" />
+                            <InputNumber class="form-control glass-input" @bind-Value="currentLoan.DueDay" placeholder="15" ParsingErrorMessage="Este campo es requerido" />
                             <ValidationMessage For="@(() => currentLoan.DueDay)" />
                         </div>
                     </div>
@@ -308,17 +315,7 @@
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label text-white">Icono</label>
-                        <div class="icon-selector">
-                            @foreach (var icon in loanIcons)
-                            {
-                                <button type="button"
-                                        class="icon-option @(currentLoan.Icon == icon ? "selected" : "")"
-                                        @onclick="() => currentLoan.Icon = icon">
-                                    @icon
-                                </button>
-                            }
-                        </div>
+                        <IconSelector @bind-SelectedIcon="currentLoan.Icon" Label="Icono" />
                     </div>
 
                     @if (!isEditMode)
@@ -462,8 +459,7 @@
     private System.Threading.Timer? successTimer;
     private System.Threading.Timer? errorTimer;
 
-    // Iconos disponibles
-    private List<string> loanIcons = new() { "🏦", "💳", "🏠", "🚗", "🎓", "💰", "💵", "🏢", "📱", "🛒" };
+    
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -755,6 +751,31 @@
             else
             {
                 ShowErrorMessage("Error al deshacer el pago");
+            }
+        }
+        catch (Exception ex)
+        {
+            ShowErrorMessage($"Error: {ex.Message}");
+        }
+    }
+
+    private async Task ReactivateLoan(int loanId)
+    {
+        try
+        {
+            if (string.IsNullOrEmpty(currentUserId))
+                return;
+
+            var success = await LoanService.ReactivateLoanAsync(loanId, currentUserId);
+            if (success)
+            {
+                ShowSuccessMessage("Préstamo reactivado correctamente");
+                await LoadLoans();
+                await LoadSummary();
+            }
+            else
+            {
+                ShowErrorMessage("No se pudo reactivar el préstamo");
             }
         }
         catch (Exception ex)

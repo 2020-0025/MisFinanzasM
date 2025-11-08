@@ -18,6 +18,7 @@ namespace MisFinanzas.Infrastructure.Interfaces
         Task<bool> RegisterPaymentAsync(int loanId, string userId);
         Task<bool> UndoLastPaymentAsync(int loanId, string userId);
         Task<bool> MarkAsCompletedAsync(int loanId, string userId);
+        Task<bool> ReactivateLoanAsync(int loanId, string userId);
 
         // Validaciones
         Task<bool> ExistsLoanWithTitleAsync(string title, string userId, int? excludeLoanId = null);

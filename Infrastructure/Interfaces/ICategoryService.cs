@@ -14,6 +14,9 @@ namespace MisFinanzas.Infrastructure.Interfaces
         // Obtiene la cantidad de transacciones relacionadas a una categoría
         Task<int> GetRelatedTransactionsCountAsync(int categoryId, string userId);
 
+        //Verifica si pertenece a un prestamo
+        Task<(bool BelongsToLoan, string? LoanTitle)> CheckIfBelongsToLoanAsync(int categoryId, string userId);
+
         // Verifica si ya existe una categoría con ese nombre
         Task<bool> ExistsCategoryWithNameAsync(string title, TransactionType type, string userId, int? excludeCategoryId = null);
         // Verifica si ya existe una categoría con ese ícono

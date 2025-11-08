@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel;
 
 namespace MisFinanzas.Domain.Entities
 {
@@ -8,36 +9,44 @@ namespace MisFinanzas.Domain.Entities
         [Key]
         public int LoanId { get; set; }
 
-        [Required]
-        [StringLength(100)]
+        [Required(ErrorMessage = "Este campo es requerido")]
+        [StringLength(100, ErrorMessage = "Máximo 100 caracteres")]
+        [Display(Name = "Título")]
         public string Title { get; set; } = string.Empty;
 
-        [StringLength(500)]
+        [StringLength(500, ErrorMessage = "Máximo 500 caracteres")]
+        [Display(Name = "Descripción")]
         public string? Description { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Este campo es requerido")]
         [Column(TypeName = "decimal(18,2)")]
-        [Range(0.01, double.MaxValue)]
+        [Range(0.01, double.MaxValue, ErrorMessage = "Debe ser mayor a 0")]
+        [Display(Name = "Monto del préstamo")]
         public decimal PrincipalAmount { get; set; } // Monto real prestado
 
-        [Required]
+        [Required(ErrorMessage = "Este campo es requerido")]
         [Column(TypeName = "decimal(18,2)")]
-        [Range(0.01, double.MaxValue)]
+        [Range(0.01, double.MaxValue, ErrorMessage = "Debe ser mayor a 0")]
+        [Display(Name = "Cuota mensual")]
         public decimal InstallmentAmount { get; set; } // Cuota mensual
 
-        [Required]
-        [Range(1, 1000)]
+        [Required(ErrorMessage = "Este campo es requerido")]
+        [Range(1, 1000, ErrorMessage = "Debe estar entre 1 y 1000")]
+        [Display(Name = "Cantidad de cuotas")]
         public int NumberOfInstallments { get; set; } // Cantidad de cuotas
 
-        [Required]
-        [Range(1, 31)]
+        [Required(ErrorMessage = "Este campo es requerido")]
+        [Range(1, 31, ErrorMessage = "Debe estar entre 1 y 31")]
+        [Display(Name = "Día de pago")]
         public int DueDay { get; set; } // Día del mes para pagar
 
-        [Required]
+        [Required(ErrorMessage = "Este campo es requerido")]
+        [Display(Name = "Fecha de inicio")]
         public DateTime StartDate { get; set; } = DateTime.Now;
 
-        [Required]
-        [StringLength(10)]
+        [Required(ErrorMessage = "Este campo es requerido")]
+        [StringLength(10, ErrorMessage = "Máximo 10 caracteres")]
+        [Display(Name = "Icono")]
         public string Icon { get; set; } = "🏦";
 
         public bool IsActive { get; set; } = true;
