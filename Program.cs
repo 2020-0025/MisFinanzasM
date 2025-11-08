@@ -76,6 +76,7 @@ builder.Services.AddScoped<IFinancialGoalService, FinancialGoalService>();
 builder.Services.AddScoped<IBudgetService, BudgetService>();
 builder.Services.AddScoped<INotificationService, NotificationService>();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<ILoanService, LoanService>();
 // AGREGAR AuthService como Scoped
 builder.Services.AddScoped<AuthService>();
 // Registrar UserService

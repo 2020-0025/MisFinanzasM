@@ -17,7 +17,7 @@
             {
                 <button @onclick="Logout" class="btn-logout text-white" title="Cerrar Sesión">
                     <span style="font-size: 15px;">🔐</span>
-                    Cerrar Sesion
+                    Salir
                 </button>
                 <a href="@(_isAdmin ? "/admin" : "/profile")" class="user-info">
                     <span style="font-size: 15px;">🧑‍💼</span>
@@ -67,6 +67,10 @@
                     <span style="font-size: 17px;">💳</span>
                     <span class="text-white">Gastos/Ingresos</span>
                 </NavLink>
+                <NavLink class="nav-link-horizontal" href="/loans">
+                    <span style="font-size: 17px;">🏦</span>
+                    <span class="text-white">Préstamos</span>
+                </NavLink>
 
 
 
@@ -87,7 +91,7 @@
             {
                 <button @onclick="Logout" class="btn-logout-mobile text-white" title="Cerrar Sesión">
                     <span style="font-size: 15px;">🔐</span>
-                    Cerrar Sesion
+                    Salir
                 </button>
                 <a href="@(_isAdmin ? "/admin" : "/profile")" class="user-info-mobile">
                     <span style="font-size: 15px;">🧑‍💼</span>
@@ -143,6 +147,10 @@
         <NavLink href="/expenses-incomes" class="footer-nav-item">
             <span style="font-size: 17px;">💳</span>
             <span class="text-white">Gastos/Ingresos</span>
+        </NavLink>
+        <NavLink href="/loans" class="footer-nav-item">
+            <span style="font-size: 17px;">🏦</span>
+            <span class="text-white">Préstamos</span>
         </NavLink>
     }
 </nav>

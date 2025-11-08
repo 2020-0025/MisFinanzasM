@@ -20,5 +20,6 @@ namespace MisFinanzas.Domain.Entities
         public ICollection<ExpenseIncome> ExpensesIncomes { get; set; } = new List<ExpenseIncome>();
         public ICollection<FinancialGoal> FinancialGoals { get; set; } = new List<FinancialGoal>();
         public ICollection<Budget> Budgets { get; set; } = new List<Budget>();
+        public ICollection<Loan> Loans { get; set; } = new List<Loan>();
     }
 }

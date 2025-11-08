@@ -19,6 +19,7 @@ namespace MisFinanzas.Infrastructure.Data
         public DbSet<FinancialGoal> FinancialGoals { get; set; }
         public DbSet<Budget> Budgets { get; set; }
         public DbSet<Notification> Notifications { get; set; }
+        public DbSet<Loan> Loans { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -271,6 +272,88 @@ namespace MisFinanzas.Infrastructure.Data
                 entity.HasIndex(n => n.UserId);
                 entity.HasIndex(n => new { n.UserId, n.IsRead });
                 entity.HasIndex(n => n.DueDate);
+            });
+
+            // ====== CONFIGURACIÓN DE LOANS ======
+            builder.Entity<Loan>(entity =>
+            {
+                entity.HasKey(l => l.LoanId);
+
+                entity.Property(l => l.Title)
+                    .IsRequired()
+                    .HasMaxLength(100);
+
+                entity.Property(l => l.Description)
+                    .HasMaxLength(500);
+
+                entity.Property(l => l.Icon)
+                    .IsRequired()
+                    .HasMaxLength(10)
+                    .HasDefaultValue("🏦");
+
+                entity.Property(l => l.PrincipalAmount)
+                    .HasColumnType("decimal(18,2)")
+                    .IsRequired();
+
+                entity.Property(l => l.InstallmentAmount)
+                    .HasColumnType("decimal(18,2)")
+                    .IsRequired();
+
+                entity.Property(l => l.NumberOfInstallments)
+                    .IsRequired();
+
+                entity.Property(l => l.DueDay)
+                    .IsRequired();
+
+                entity.Property(l => l.StartDate)
+                    .HasDefaultValueSql("datetime('now')");
+
+                entity.Property(l => l.IsActive)
+                    .HasDefaultValue(true);
+
+                entity.Property(l => l.InstallmentsPaid)
+                    .HasDefaultValue(0);
+
+                // Relación con ApplicationUser
+                entity.HasOne(l => l.User)
+                    .WithMany(u => u.Loans)
+                    .HasForeignKey(l => l.UserId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                // Relación REQUERIDA con Category (auto-creada)
+                entity.HasOne(l => l.Category)
+                    .WithMany()
+                    .HasForeignKey(l => l.CategoryId)
+                    .OnDelete(DeleteBehavior.Restrict); // No permitir eliminar categoría si tiene préstamo
+
+                // Índices
+                entity.HasIndex(l => l.UserId);
+                entity.HasIndex(l => new { l.UserId, l.IsActive });
+                entity.HasIndex(l => l.CategoryId);
+
+                // Validaciones
+                entity.ToTable(t => t.HasCheckConstraint(
+                    "CK_Loan_PrincipalAmount", "PrincipalAmount > 0"));
+                entity.ToTable(t => t.HasCheckConstraint(
+                    "CK_Loan_InstallmentAmount", "InstallmentAmount > 0"));
+                entity.ToTable(t => t.HasCheckConstraint(
+                    "CK_Loan_NumberOfInstallments", "NumberOfInstallments >= 1 AND NumberOfInstallments <= 1000"));
+                entity.ToTable(t => t.HasCheckConstraint(
+                    "CK_Loan_DueDay", "DueDay >= 1 AND DueDay <= 31"));
+                entity.ToTable(t => t.HasCheckConstraint(
+                    "CK_Loan_InstallmentsPaid", "InstallmentsPaid >= 0"));
+
+                // Ignorar propiedades calculadas (no se mapean a BD)
+                entity.Ignore(l => l.TotalToPay);
+                entity.Ignore(l => l.TotalInterest);
+                entity.Ignore(l => l.ApproximateInterestRate);
+                entity.Ignore(l => l.RemainingInstallments);
+                entity.Ignore(l => l.TotalPaid);
+                entity.Ignore(l => l.ProgressPercentage);
+                entity.Ignore(l => l.NextPaymentDate);
+                entity.Ignore(l => l.IsCompleted);
+                entity.Ignore(l => l.InterestRateCategory);
+                entity.Ignore(l => l.InterestRateLabel);
             });
 
             // ====== SEED DATA: ROLES Y USUARIO ADMIN ======
