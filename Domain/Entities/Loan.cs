@@ -46,11 +46,9 @@ namespace MisFinanzas.Domain.Entities
         public int InstallmentsPaid { get; set; } = 0; // Cuántas cuotas pagadas
 
         // Foreign Keys
-        [Required]
         public string UserId { get; set; } = string.Empty;
 
-        [Required]
-        public int CategoryId { get; set; } // Categoría auto-creada
+        public int CategoryId { get; set; } // Categoría auto-creada (se asigna en servidor)
 
         // Navigation Properties
         public virtual ApplicationUser? User { get; set; }

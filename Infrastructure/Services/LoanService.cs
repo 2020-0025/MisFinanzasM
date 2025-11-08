@@ -165,38 +165,56 @@ namespace MisFinanzas.Infrastructure.Services
 
                 if (deleteHistory)
                 {
-                    // Opción A: Eliminación completa
-                    // Eliminar todos los ExpenseIncomes relacionados a esta categoría
+                    Console.WriteLine($"🗑️ Eliminando préstamo '{loan.Title}' con TODO el historial...");
+
+                    // 1. Eliminar TODAS las notificaciones relacionadas con esta categoría
+                    var relatedNotifications = await _context.Notifications
+                        .Where(n => n.CategoryId == loan.CategoryId && n.UserId == userId)
+                        .ToListAsync();
+
+                    if (relatedNotifications.Any())
+                    {
+                        _context.Notifications.RemoveRange(relatedNotifications);
+                        Console.WriteLine($"  ✅ {relatedNotifications.Count} notificación(es) eliminada(s)");
+                    }
+
+                    // 2. Eliminar TODOS los ExpenseIncomes (pagos) relacionados con esta categoría
                     var relatedExpenses = await _context.ExpensesIncomes
                         .Where(e => e.CategoryId == loan.CategoryId && e.UserId == userId)
                         .ToListAsync();
 
-                    _context.ExpensesIncomes.RemoveRange(relatedExpenses);
+                    if (relatedExpenses.Any())
+                    {
+                        _context.ExpensesIncomes.RemoveRange(relatedExpenses);
+                        Console.WriteLine($"  ✅ {relatedExpenses.Count} pago(s) eliminado(s)");
+                    }
 
-                    // Eliminar la categoría
+                    // 3. Eliminar el PRÉSTAMO (ANTES de la categoría por restricción FK)
+                    _context.Loans.Remove(loan);
+                    Console.WriteLine($"  ✅ Préstamo eliminado");
+
+                    // 4. Eliminar la CATEGORÍA (DESPUÉS del préstamo)
                     if (loan.Category != null)
                     {
                         _context.Categories.Remove(loan.Category);
+                        Console.WriteLine($"  ✅ Categoría '{loan.Category.Title}' eliminada");
                     }
-
-                    // Eliminar el préstamo
-                    _context.Loans.Remove(loan);
                 }
                 else
                 {
                     // Opción B: Marcar como inactivo (preservar historial)
+                    Console.WriteLine($"📦 Archivando préstamo '{loan.Title}' (preservando historial)...");
                     loan.IsActive = false;
-
-                    // Marcar categoría como inactiva (si Category tiene IsActive)
-                    // Por ahora solo desactivamos el préstamo
                 }
 
                 await _context.SaveChangesAsync();
+                Console.WriteLine($"✅ Operación completada exitosamente");
                 return true;
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"❌ Error al eliminar préstamo: {ex.Message}");
+                Console.WriteLine($"❌ StackTrace: {ex.StackTrace}");
                 return false;
             }
         }
@@ -244,6 +262,59 @@ namespace MisFinanzas.Infrastructure.Services
             catch (Exception ex)
             {
                 Console.WriteLine($"❌ Error al registrar pago: {ex.Message}");
+                return false;
+            }
+        }
+
+        public async Task<bool> UndoLastPaymentAsync(int loanId, string userId)
+        {
+            try
+            {
+                var loan = await GetByIdAsync(loanId, userId);
+
+                if (loan == null)
+                    return false;
+
+                // Validar que haya al menos un pago registrado
+                if (loan.InstallmentsPaid <= 0)
+                    return false;
+
+                // Buscar el último ExpenseIncome de este préstamo
+                var lastPayment = await _context.ExpensesIncomes
+                    .Where(ei => ei.CategoryId == loan.CategoryId && ei.UserId == userId && ei.Type == TransactionType.Expense)
+                    .OrderByDescending(ei => ei.Date)
+                    .ThenByDescending(ei => ei.Id)
+                    .FirstOrDefaultAsync();
+
+                if (lastPayment == null)
+                {
+                    // Inconsistencia: Hay contador pero no hay pago registrado
+                    // Resetear el contador
+                    loan.InstallmentsPaid = 0;
+                    await _context.SaveChangesAsync();
+                    return false;
+                }
+
+                // 1. Decrementar cuotas pagadas
+                loan.InstallmentsPaid--;
+
+                // 2. Si estaba marcado como completado, reactivarlo
+                if (!loan.IsActive && loan.InstallmentsPaid < loan.NumberOfInstallments)
+                {
+                    loan.IsActive = true;
+                }
+
+                // 3. Eliminar el ExpenseIncome (registro del pago)
+                _context.ExpensesIncomes.Remove(lastPayment);
+
+                await _context.SaveChangesAsync();
+
+                Console.WriteLine($"✅ Pago deshecho para préstamo {loan.LoanId}. Cuotas pagadas: {loan.InstallmentsPaid}");
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"❌ Error al deshacer pago: {ex.Message}");
                 return false;
             }
         }

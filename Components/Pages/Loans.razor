@@ -142,9 +142,18 @@
                                     <div class="loan-icon">@loan.Icon</div>
                                     <div class="flex-grow-1">
                                         <h4>@loan.Title</h4>
-                                        <span class="text-white badge @(loan.IsActive ? "bg-success" : "bg-secondary")">
-                                            @(loan.IsActive ? "Activo" : "Completado")
-                                        </span>
+                                        @if (loan.IsActive)
+                                        {
+                                            <span class="text-white badge bg-success">Activo</span>
+                                        }
+                                        else if (loan.IsCompleted)
+                                        {
+                                            <span class="text-white badge bg-primary">Completado ✓</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-white badge bg-warning">Cancelado</span>
+                                        }
                                     </div>
                                     <div class="loan-actions">
                                         @if (loan.IsActive && !loan.IsCompleted)
@@ -152,11 +161,19 @@
                                             <button class="btn btn-sm btn-success" @onclick="() => RegisterPayment(loan.LoanId)" title="Registrar Pago">
                                                 <span style="font-size: 13px;">💵</span>
                                             </button>
+                                            @if (loan.InstallmentsPaid > 0)
+                                            {
+                                                <button class="btn btn-sm btn-info" @onclick="() => UndoLastPayment(loan.LoanId)" title="Deshacer Último Pago">
+                                                    <span style="font-size: 13px;">↩️</span>
+                                                </button>
+                                            }
                                             <button class="btn btn-sm btn-warning" @onclick="() => OpenEditModal(loan)" title="Editar">
                                                 <span style="font-size: 13px;">📝</span>
                                             </button>
                                         }
-                                        <button class="btn btn-sm btn-danger" @onclick="() => OpenDeleteModal(loan)" title="Eliminar">
+                                        <button class="btn btn-sm btn-danger"
+                                                @onclick="() => HandleDeleteLoan(loan)"
+                                                title="@(loan.IsActive ? "Eliminar" : "Eliminar del historial")">
                                             <span style="font-size: 13px;">🗑️</span>
                                         </button>
                                     </div>
@@ -369,7 +386,7 @@
                 <button class="btn-close-custom" @onclick="CloseDeleteModal">✕</button>
             </div>
             <div class="modal-body-custom">
-                <p class="text-white">¿Estás seguro de eliminar este préstamo?</p>
+                <p class="text-white">¿Estás seguro de eliminar este préstamo <strong>activo</strong>?</p>
                 <div class="alert alert-info">
                     <strong>@loanToDelete?.Icon @loanToDelete?.Title</strong>
                     <p class="mb-0 mt-2">Este préstamo tiene @loanToDelete?.InstallmentsPaid pagos registrados</p>
@@ -641,11 +658,33 @@
         }
     }
 
+    private void HandleDeleteLoan(Loan loan)
+    {
+        if (!loan.IsActive)
+        {
+            // Préstamo en historial - eliminar directamente con TODO el historial
+            DeleteLoanFromHistory(loan);
+        }
+        else
+        {
+            // Préstamo activo - mostrar modal con opciones
+            OpenDeleteModal(loan);
+        }
+    }
+
     private void OpenDeleteModal(Loan loan)
     {
         loanToDelete = loan;
         deleteHistory = false;
         showDeleteModal = true;
+    }
+
+    private async void DeleteLoanFromHistory(Loan loan)
+    {
+        // Confirmación simple sin modal
+        loanToDelete = loan;
+        deleteHistory = true;
+        await ConfirmDelete();
     }
 
     private async Task ConfirmDelete()
@@ -691,6 +730,31 @@
             else
             {
                 ShowErrorMessage("Error al registrar el pago");
+            }
+        }
+        catch (Exception ex)
+        {
+            ShowErrorMessage($"Error: {ex.Message}");
+        }
+    }
+
+    private async Task UndoLastPayment(int loanId)
+    {
+        try
+        {
+            if (string.IsNullOrEmpty(currentUserId))
+                return;
+
+            var success = await LoanService.UndoLastPaymentAsync(loanId, currentUserId);
+            if (success)
+            {
+                ShowSuccessMessage("Pago deshecho correctamente");
+                await LoadLoans();
+                await LoadSummary();
+            }
+            else
+            {
+                ShowErrorMessage("Error al deshacer el pago");
             }
         }
         catch (Exception ex)

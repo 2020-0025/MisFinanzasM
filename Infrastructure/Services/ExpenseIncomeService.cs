@@ -150,6 +150,30 @@ namespace MisFinanzas.Infrastructure.Services
             if (gastoIngreso == null)
                 return false;
 
+            // VERIFICAR: ¿Este ExpenseIncome pertenece a un préstamo?
+            var loan = await _context.Loans
+                .FirstOrDefaultAsync(l => l.CategoryId == gastoIngreso.CategoryId && l.UserId == userId);
+
+            if (loan != null && gastoIngreso.Type == TransactionType.Expense)
+            {
+                // Este pago pertenece a un préstamo - ajustar contador
+                Console.WriteLine($"⚠️ Eliminando pago de préstamo '{loan.Title}'. Ajustando contador...");
+
+                // Validar que el contador no quede negativo
+                if (loan.InstallmentsPaid > 0)
+                {
+                    loan.InstallmentsPaid--;
+                    Console.WriteLine($"✅ Contador ajustado: {loan.InstallmentsPaid + 1} → {loan.InstallmentsPaid}");
+                }
+
+                // Si el préstamo estaba completado, reactivarlo
+                if (!loan.IsActive && loan.InstallmentsPaid < loan.NumberOfInstallments)
+                {
+                    loan.IsActive = true;
+                    Console.WriteLine($"✅ Préstamo reactivado (aún faltan {loan.NumberOfInstallments - loan.InstallmentsPaid} cuotas)");
+                }
+            }
+
             _context.ExpensesIncomes.Remove(gastoIngreso);
             await _context.SaveChangesAsync();
             return true;

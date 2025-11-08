@@ -13,7 +13,9 @@ public class NotificationBackgroundService : BackgroundService
 {
     private readonly IServiceProvider _serviceProvider;
     private readonly ILogger<NotificationBackgroundService> _logger;
-    private readonly TimeSpan _checkInterval = TimeSpan.FromHours(24); // Verificar cada 24 horas
+    //private readonly TimeSpan _checkInterval = TimeSpan.FromHours(24); // Verificar cada 24 horas
+
+    private readonly TimeSpan _checkInterval = TimeSpan.FromMinutes(1); // TESTING: Verificar cada minuto (cambiar a 24 horas en producción)
 
     public NotificationBackgroundService(
         IServiceProvider serviceProvider,
@@ -28,7 +30,10 @@ public class NotificationBackgroundService : BackgroundService
         _logger.LogInformation("🔔 NotificationBackgroundService iniciado");
 
         // Esperar hasta la próxima medianoche para la primera ejecución
-        await WaitUntilMidnight(stoppingToken);
+
+        // TESTING: Ejecutar inmediatamente sin esperar medianoche
+        // await WaitUntilMidnight(stoppingToken);
+        _logger.LogInformation("⚡ MODO TESTING: Ejecutando inmediatamente cada minuto");
 
         while (!stoppingToken.IsCancellationRequested)
         {
@@ -50,6 +55,9 @@ public class NotificationBackgroundService : BackgroundService
             }
 
             // Esperar 24 horas hasta la próxima ejecución
+           // await Task.Delay(_checkInterval, stoppingToken);
+
+            // Esperar el intervalo configurado (1 minuto en testing, 24 horas en producción)
             await Task.Delay(_checkInterval, stoppingToken);
         }
     }
