@@ -244,6 +244,7 @@
             <div class="modal-body-custom">
                 <EditForm Model="currentLoan" OnValidSubmit="SaveLoan">
                     <DataAnnotationsValidator />
+                    <ValidationSummary />
 
                     <div class="mb-3">
                         <label class="form-label text-white">Título *</label>
@@ -260,12 +261,12 @@
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label class="form-label text-white">Monto del Préstamo *</label>
-                            <InputNumber class="form-control glass-input" @bind-Value="currentLoan.PrincipalAmount" placeholder="10000" @oninput="CalculatePreview" />
+                            <InputNumber class="form-control glass-input" @bind-Value="currentLoan.PrincipalAmount" @bind-Value:after="CalculatePreview" placeholder="10000" />
                             <ValidationMessage For="@(() => currentLoan.PrincipalAmount)" />
                         </div>
                         <div class="col-md-6 mb-3">
                             <label class="form-label text-white">Cuota Mensual *</label>
-                            <InputNumber class="form-control glass-input" @bind-Value="currentLoan.InstallmentAmount" placeholder="500" @oninput="CalculatePreview" />
+                            <InputNumber class="form-control glass-input" @bind-Value="currentLoan.InstallmentAmount" @bind-Value:after="CalculatePreview" placeholder="500" />
                             <ValidationMessage For="@(() => currentLoan.InstallmentAmount)" />
                         </div>
                     </div>
@@ -273,7 +274,7 @@
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label class="form-label text-white">Cantidad de Cuotas *</label>
-                            <InputNumber class="form-control glass-input" @bind-Value="currentLoan.NumberOfInstallments" placeholder="12" @oninput="CalculatePreview" />
+                            <InputNumber class="form-control glass-input" @bind-Value="currentLoan.NumberOfInstallments" @bind-Value:after="CalculatePreview" placeholder="12" />
                             <ValidationMessage For="@(() => currentLoan.NumberOfInstallments)" />
                         </div>
                         <div class="col-md-6 mb-3">
@@ -577,14 +578,29 @@
 
     private async Task SaveLoan()
     {
+        Console.WriteLine("🔵 SaveLoan llamado");
+        Console.WriteLine($"🔵 UserId: {currentUserId}");
+        Console.WriteLine($"🔵 IsEditMode: {isEditMode}");
+        Console.WriteLine($"🔵 Loan Title: {currentLoan.Title}");
+        Console.WriteLine($"🔵 Principal: {currentLoan.PrincipalAmount}");
+        Console.WriteLine($"🔵 Installment: {currentLoan.InstallmentAmount}");
+        Console.WriteLine($"🔵 NumInstallments: {currentLoan.NumberOfInstallments}");
+
         try
         {
             if (string.IsNullOrEmpty(currentUserId))
+            {
+                Console.WriteLine("❌ UserId es null o vacío");
+                ShowErrorMessage("Error: No se pudo identificar el usuario");
                 return;
+            }
 
             if (isEditMode)
             {
+                Console.WriteLine("🔵 Intentando actualizar préstamo...");
                 var success = await LoanService.UpdateAsync(currentLoan.LoanId, currentLoan, currentUserId);
+                Console.WriteLine($"🔵 Update result: {success}");
+
                 if (success)
                 {
                     ShowSuccessMessage("Préstamo actualizado correctamente");
@@ -594,14 +610,18 @@
                 }
                 else
                 {
-                    ShowErrorMessage("Error al actualizar el préstamo");
+                    ShowErrorMessage("No se pudo actualizar el préstamo");
                 }
             }
             else
             {
+                Console.WriteLine("🔵 Intentando crear préstamo...");
                 var result = await LoanService.CreateAsync(currentLoan, currentUserId, createReminder);
-                if (result.Success)
+                Console.WriteLine($"🔵 Create result - Success: {result.Success}, Error: {result.Error}");
+
+                if (result.Success && result.Loan != null)
                 {
+                    Console.WriteLine($"🔵 Préstamo creado con ID: {result.Loan.LoanId}");
                     ShowSuccessMessage("Préstamo creado correctamente");
                     await LoadLoans();
                     await LoadSummary();
@@ -609,12 +629,14 @@
                 }
                 else
                 {
-                    ShowErrorMessage(result.Error ?? "Error al crear el préstamo");
+                    ShowErrorMessage($"Error al crear préstamo: {result.Error ?? "Error desconocido"}");
                 }
             }
         }
         catch (Exception ex)
         {
+            Console.WriteLine($"❌ Exception en SaveLoan: {ex.Message}");
+            Console.WriteLine($"❌ StackTrace: {ex.StackTrace}");
             ShowErrorMessage($"Error: {ex.Message}");
         }
     }

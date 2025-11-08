@@ -93,18 +93,11 @@ namespace MisFinanzas.Infrastructure.Services
                 _context.Loans.Add(loan);
                 await _context.SaveChangesAsync();
 
-                // 3. Generar notificación si el usuario lo solicitó
+                // 3. Las notificaciones se generarán automáticamente por el background service
+                // No generamos notificación inmediata para evitar conflictos de DbContext
                 if (createReminder)
                 {
-                    try
-                    {
-                        await _notificationService.GenerateNotificationForCategoryAsync(category.CategoryId);
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine($"⚠️ Error al generar notificación para préstamo {loan.LoanId}: {ex.Message}");
-                        // No fallar la creación por error en notificaciones
-                    }
+                    Console.WriteLine($"✅ Recordatorio configurado para préstamo {loan.LoanId}. El background service generará las notificaciones.");
                 }
 
                 return (true, null, loan);
