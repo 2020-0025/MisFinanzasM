@@ -160,17 +160,36 @@ namespace MisFinanzas.Infrastructure.Services
 
             await _context.SaveChangesAsync();
 
-            //  Generar notificación inmediata si es gasto fijo
+            //  ACTUALIZAR NOTIFICACIONES: Si es gasto fijo, regenerar notificaciones
             if (category.IsFixedExpense && category.DayOfMonth.HasValue)
             {
                 try
                 {
+                    // 1. Eliminar notificaciones futuras con la fecha vieja
+                    await _notificationService.DeleteFutureNotificationsByCategoryAsync(category.CategoryId, userId);
+
+                    // 2. Generar nueva notificación con la fecha actualizada
                     await _notificationService.GenerateNotificationForCategoryAsync(category.CategoryId);
+
+                    Console.WriteLine($"✅ Notificaciones actualizadas para categoría '{category.Title}' con nueva fecha: día {category.DayOfMonth.Value}");
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"⚠️ Error al generar notificación para categoría {category.CategoryId}: {ex.Message}");
+                    Console.WriteLine($"⚠️ Error al actualizar notificaciones para categoría {category.CategoryId}: {ex.Message}");
                     // No fallar la actualización por error en notificaciones
+                }
+            }
+            else if (!category.IsFixedExpense)
+            {
+                // Si dejó de ser gasto fijo, eliminar todas las notificaciones futuras
+                try
+                {
+                    await _notificationService.DeleteFutureNotificationsByCategoryAsync(category.CategoryId, userId);
+                    Console.WriteLine($"🗑️ Notificaciones eliminadas - la categoría '{category.Title}' ya no es gasto fijo");
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"⚠️ Error al eliminar notificaciones: {ex.Message}");
                 }
             }
 

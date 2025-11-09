@@ -235,5 +235,33 @@ namespace MisFinanzas.Infrastructure.Services
                 return false;
             }
         }
+
+        /// Elimina todas las notificaciones futuras de una categoría
+        /// Útil cuando se actualiza la fecha de vencimiento de un gasto fijo
+        public async Task DeleteFutureNotificationsByCategoryAsync(int categoryId, string userId)
+        {
+            try
+            {
+                var today = DateTime.Now.Date;
+
+                // Eliminar notificaciones futuras o de hoy (no las del pasado)
+                var futureNotifications = await _context.Notifications
+                    .Where(n => n.CategoryId == categoryId &&
+                               n.UserId == userId &&
+                               n.DueDate >= today)
+                    .ToListAsync();
+
+                if (futureNotifications.Any())
+                {
+                    _context.Notifications.RemoveRange(futureNotifications);
+                    await _context.SaveChangesAsync();
+                    Console.WriteLine($"🗑️ Eliminadas {futureNotifications.Count} notificación(es) futura(s) de la categoría {categoryId}");
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error deleting future notifications: {ex.Message}");
+            }
+        }
     }
 }

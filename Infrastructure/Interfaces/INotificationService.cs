@@ -23,5 +23,8 @@ namespace MisFinanzas.Infrastructure.Interfaces
         Task CleanOldNotificationsAsync(int daysOld = 60);
 
         Task<bool> DeleteNotificationAsync(int notificationId, string userId);
+
+        // Eliminar notificaciones futuras de una categoría (para actualización)
+        Task DeleteFutureNotificationsByCategoryAsync(int categoryId, string userId);
     }
 }
