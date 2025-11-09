@@ -161,8 +161,30 @@
 }
 
 /* Modal */
-.modal-backdrop.show {
-    opacity: 0.7;
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    padding: 20px;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
 }
 
 .modal-content {
@@ -170,11 +192,26 @@
     backdrop-filter: blur(20px);
     border: 1px solid rgba(255, 255, 255, 0.2);
     border-radius: 15px;
-    margin-top:20px;
+    margin-top: 20px;
+    width: 100%;
+    max-width: 600px;
     /* 1. Define un límite de altura */
     max-height: 475px;
     /* 2. Muestra el scroll vertical SI es necesario */
     overflow-y: auto;
+    animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(50px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
 }
 
     .modal-content .form-control,
@@ -252,6 +289,24 @@
 
     .btnDelete:hover {
         transform: translateY(-2px);
+    }
+
+.btn-close-custom {
+    background: rgba(244, 67, 54, 0.2);
+    border: 1px solid rgba(244, 67, 54, 0.4);
+    color: #F44336;
+    width: 35px;
+    height: 35px;
+    border-radius: 8px;
+    font-size: 1.5rem;
+    line-height: 1;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+    .btn-close-custom:hover {
+        background: rgba(244, 67, 54, 0.3);
+        transform: scale(1.1);
     }
 
 /* Responsive */

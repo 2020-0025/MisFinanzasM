@@ -260,9 +260,9 @@
 <!-- Modal Crear/Editar Préstamo -->
 @if (showModal)
 {
-    <div class="modal-overlay" @onclick="CloseModal">
+    <div class="modal-overlay">
         <div class="modal-content-custom" @onclick:stopPropagation="true">
-            <div class="modal-header-custom">
+            <div class="modal-header-custom border-secondary">
                 <h5>@(isEditMode ? "✏️ Editar Préstamo" : "➕ Nuevo Préstamo")</h5>
                 <button class="btn-close-custom" @onclick="CloseModal">✕</button>
             </div>
@@ -376,7 +376,7 @@
 <!-- Modal Eliminar -->
 @if (showDeleteModal)
 {
-    <div class="modal-overlay" @onclick="CloseDeleteModal">
+    <div class="modal-overlay">
         <div class="modal-content-custom modal-delete" @onclick:stopPropagation="true">
             <div class="modal-header-custom">
                 <h5>🗑️ Eliminar Préstamo</h5>

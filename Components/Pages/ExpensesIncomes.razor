@@ -256,105 +256,105 @@
 <!-- Modal Agregar/Editar -->
 @if (showModal)
 {
-    <div class="modal-backdrop show"></div>
-    <div class="modal show d-block" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content text-white">
-                <div class="modal-header border-secondary">
-                    <h5 class="modal-title">
-                        @(isEditing ? "✏️ Editar" : (currentType == TransactionType.Income ? "📈 Agregar Ingreso" : "📉 Agregar Gasto"))
-                    </h5>
-                    <button type="button" class="btn-close" @onclick="CloseModal">❌</button>
-                </div>
-                <div class="modal-body">
-                    <EditForm Model="formModel" OnValidSubmit="SaveTransaction">
-                        <DataAnnotationsValidator />
+    <div class="modal-overlay">
+        <div class="modal-content text-white" @onclick:stopPropagation="true">
+            <div class="modal-header border-secondary">
+                <h5 class="modal-title">
+                    @(isEditing ? "✏️ Editar" : (currentType == TransactionType.Income ? "📈 Agregar Ingreso" : "📉 Agregar Gasto"))
+                </h5>
+                <button class="btn-close-custom" @onclick="CloseModal">✕</button>
+            </div>
+            <div class="modal-body">
+                <EditForm Model="formModel" OnValidSubmit="SaveTransaction">
+                    <DataAnnotationsValidator />
 
-                        <div class="mb-3">
-                            <label class="form-label">Categoría</label>
-                            <InputSelect @bind-Value="formModel.CategoryId" class="form-select glass-card text-white">
-                                <option value="0">Selecciona una categoría</option>
-                                @foreach (var category in availableCategories)
-                                {
-                                    <option value="@category.CategoryId">@category.Icon @category.Title</option>
-                                }
-                            </InputSelect>
-                            <ValidationMessage For="() => formModel.CategoryId" class="text-danger" />
-                            @if (!string.IsNullOrEmpty(categoryValidationError))
+                    <div class="mb-3">
+                        <label class="form-label">Categoría</label>
+                        <InputSelect @bind-Value="formModel.CategoryId" class="form-select glass-card text-white">
+                            <option value="0">Selecciona una categoría</option>
+                            @foreach (var category in availableCategories)
                             {
-                                <div class="text-danger small mt-1">@categoryValidationError</div>
+                                <option value="@category.CategoryId">@category.Icon @category.Title</option>
                             }
-                        </div>
+                        </InputSelect>
+                        <ValidationMessage For="() => formModel.CategoryId" class="text-danger" />
+                        @if (!string.IsNullOrEmpty(categoryValidationError))
+                        {
+                            <div class="text-danger small mt-1">@categoryValidationError</div>
+                        }
+                    </div>
 
-                        <div class="mb-3">
-                            <label class="form-label">Monto</label>
-                            <InputNumber @bind-Value="formModel.Amount" class="form-control" placeholder="0.00" />
-                            <ValidationMessage For="() => formModel.Amount" class="text-danger" />
-                            @if (!string.IsNullOrEmpty(amountValidationError))
+                    <div class="mb-3">
+                        <label class="form-label">Monto</label>
+                        <InputNumber @bind-Value="formModel.Amount" class="form-control" placeholder="0.00" />
+                        <ValidationMessage For="() => formModel.Amount" class="text-danger" />
+                        @if (!string.IsNullOrEmpty(amountValidationError))
+                        {
+                            <div class="text-danger small mt-1">@amountValidationError</div>
+                        }
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Fecha</label>
+                        <InputDate @bind-Value="formModel.Date" class="form-control" />
+                        <ValidationMessage For="() => formModel.Date" class="text-danger" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Descripción (Opcional)</label>
+                        <InputTextArea @bind-Value="formModel.Description" class="form-control" rows="3" placeholder="Ej: Compra en supermercado" />
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btnSaveEdit" disabled="@isSaving">
+                            @if (isSaving)
                             {
-                                <div class="text-danger small mt-1">@amountValidationError</div>
+                                <span class="spinner-border spinner-border-sm me-2"></span>
+                                <span>Guardando...</span>
                             }
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label">Fecha</label>
-                            <InputDate @bind-Value="formModel.Date" class="form-control" />
-                            <ValidationMessage For="() => formModel.Date" class="text-danger" />
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label">Descripción (Opcional)</label>
-                            <InputTextArea @bind-Value="formModel.Description" class="form-control" rows="3" placeholder="Ej: Compra en supermercado" />
-                        </div>
-
-                        <div class="d-grid gap-2">
-                            <button type="submit" class="btnSaveEdit" disabled="@isSaving">
-                                @if (isSaving)
-                                {
-                                    <span class="spinner-border spinner-border-sm me-2"></span>
-                                    <span>Guardando...</span>
-                                }
-                                else
-                                {
-                                    <span>Guardar</span>
-                                }
-                            </button>
-                            <button type="button" class="btnCancel" @onclick="CloseModal">Cancelar</button>
-                        </div>
-                    </EditForm>
-                </div>
+                            else
+                            {
+                                <span>Guardar</span>
+                            }
+                        </button>
+                        <button type="button" class="btnCancel" @onclick="CloseModal">Cancelar</button>
+                    </div>
+                </EditForm>
             </div>
         </div>
+
+        
+
     </div>
+   
 }
 
 <!-- Modal de Confirmación de Eliminación -->
 @if (showDeleteModal)
 {
-    <div class="modal-backdrop show"></div>
-    <div class="modal show d-block" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content text-white">
-                <div class="modal-header border-secondary">
-                    <h5 class="modal-title">⚠️ Confirmar Eliminación</h5>
-                    <button type="button" class="btn-close" @onclick="CancelDelete">❌</button>
-                </div>
-                <div class="modal-body">
-                    <p>¿Estás seguro de que deseas eliminar este registro?</p>
-                    <p class="text-white"><strong>@transactionToDelete</strong></p>
-                    <p class="text-danger mb-0">
-                        <small>Esta acción no se puede deshacer.</small>
-                    </p>
-                </div>
-                <div class="modal-footer border-secondary">
-                    <button type="button" class="btnCancel" @onclick="CancelDelete">Cancelar</button>
-                    <button type="button" class="btnDelete" @onclick="DeleteTransaction">
-                        <span style="font-size: 13px;">🗑️</span> Eliminar
-                    </button>
-                </div>
+    <div class="modal-overlay">
+        <div class="modal-content text-white" @onclick:stopPropagation="true">
+            <div class="modal-header border-secondary">
+                <h5 class="modal-title">⚠️ Confirmar Eliminación</h5>
+                <button class="btn-close-custom" @onclick="CloseModal">✕</button>
+            </div>
+            <div class="modal-body">
+                <p>¿Estás seguro de que deseas eliminar este registro?</p>
+                <p class="text-white"><strong>@transactionToDelete</strong></p>
+                <p class="text-danger mb-0">
+                    <small>Esta acción no se puede deshacer.</small>
+                </p>
+            </div>
+            <div class="modal-footer border-secondary">
+                <button type="button" class="btnCancel" @onclick="CancelDelete">Cancelar</button>
+                <button type="button" class="btnDelete" @onclick="DeleteTransaction">
+                    <span style="font-size: 13px;">🗑️</span> Eliminar
+                </button>
             </div>
         </div>
+
     </div>
+    
 }
 
 @code {

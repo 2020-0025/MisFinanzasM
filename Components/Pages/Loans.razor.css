@@ -266,16 +266,19 @@
 }
 
 .modal-content-custom {
-    background: rgba(30, 30, 30, 0.98);
+    background: rgba(255, 255, 255, 0.05);
     backdrop-filter: blur(20px);
     border-radius: 16px;
     border: 1px solid rgba(255, 255, 255, 0.2);
     width: 100%;
     max-width: 600px;
-    max-height: 90vh;
-    overflow-y: auto;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
     animation: slideUp 0.3s ease;
+    /* 1. Define un límite de altura */
+    max-height: 475px;
+    /* 2. Muestra el scroll vertical SI es necesario */
+    overflow-y: auto;
+    margin-top: 20px;
 }
 
 @keyframes slideUp {
@@ -308,6 +311,8 @@
         font-weight: 600;
         font-size: 1.25rem;
     }
+
+
 
 .btn-close-custom {
     background: rgba(244, 67, 54, 0.2);
