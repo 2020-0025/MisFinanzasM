@@ -128,6 +128,36 @@ namespace MisFinanzas.Infrastructure.Services
             category.DayOfMonth = dto.DayOfMonth;
             category.EstimatedAmount = dto.EstimatedAmount;
 
+            // SINCRONIZACIÓN: Si esta categoría pertenece a un préstamo, actualizar el préstamo también
+            var loan = await _context.Loans
+                .FirstOrDefaultAsync(l => l.CategoryId == id && l.UserId == userId);
+
+            if (loan != null)
+            {
+                Console.WriteLine($"🔄 Categoría pertenece al préstamo '{loan.Title}'. Sincronizando cambios...");
+
+                // Sincronizar campos editables
+                loan.Title = dto.Title;
+                loan.Icon = dto.Icon;
+
+                // Si cambiaron el día de pago en la categoría, actualizarlo en el préstamo
+                if (dto.DayOfMonth.HasValue)
+                {
+                    loan.DueDay = dto.DayOfMonth.Value;
+                }
+
+                // Si cambiaron el monto estimado en la categoría, actualizarlo en el préstamo
+                if (dto.EstimatedAmount.HasValue)
+                {
+                    loan.InstallmentAmount = dto.EstimatedAmount.Value;
+                }
+
+                Console.WriteLine($"  ✅ Título: {loan.Title}");
+                Console.WriteLine($"  ✅ Icono: {loan.Icon}");
+                Console.WriteLine($"  ✅ Día de pago: {loan.DueDay}");
+                Console.WriteLine($"  ✅ Cuota mensual: {loan.InstallmentAmount:C}");
+            }
+
             await _context.SaveChangesAsync();
 
             //  Generar notificación inmediata si es gasto fijo
