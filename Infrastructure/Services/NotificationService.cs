@@ -67,10 +67,8 @@ namespace MisFinanzas.Infrastructure.Services
             return true;
         }
 
-        /// <summary>
         /// Genera notificaciones para TODAS las categorías con gastos fijos
         /// Llamado por el servicio de fondo diariamente
-        /// </summary>
         public async Task GenerateNotificationsForFixedExpensesAsync()
         {
             var today = DateTime.Now.Date;
@@ -89,9 +87,7 @@ namespace MisFinanzas.Infrastructure.Services
             await _context.SaveChangesAsync();
         }
 
-        /// <summary>
         /// Genera notificación INMEDIATA para una categoría específica (llamado al crear/editar)
-        /// </summary>
         public async Task GenerateNotificationForCategoryAsync(int categoryId)
         {
             var category = await _context.Categories
@@ -107,13 +103,11 @@ namespace MisFinanzas.Infrastructure.Services
             await _context.SaveChangesAsync();
         }
 
-        /// <summary>
         /// Lógica centralizada para generar notificación de una categoría
         /// Verifica:
         /// 1. Si ya existe notificación para este mes
         /// 2. Si ya se registró un pago de esta categoría este mes
         /// 3. Si estamos dentro de los 3 días antes de la fecha límite
-        /// </summary>
         private async Task GenerateNotificationForCategoryIfNeededAsync(Category category, DateTime today, int daysToNotify)
         {
             // Calcular la fecha de vencimiento del mes actual
@@ -126,81 +120,79 @@ namespace MisFinanzas.Infrastructure.Services
             if (dayOfMonth > daysInMonth)
                 dayOfMonth = daysInMonth;
 
-            var dueDate = new DateTime(currentYear, currentMonth, dayOfMonth);
+            var dueDateCurrentMonth = new DateTime(currentYear, currentMonth, dayOfMonth);
 
-            // Si la fecha ya pasó este mes, calcular para el próximo mes
-            if (dueDate < today)
+            // VERIFICACIÓN 1: ¿Ya existe una notificación para este mes?
+            var existingNotification = await _context.Notifications
+                .FirstOrDefaultAsync(n =>
+                    n.CategoryId == category.CategoryId &&
+                    n.UserId == category.UserId &&
+                    n.DueDate.Month == currentMonth &&
+                    n.DueDate.Year == currentYear);
+
+            if (existingNotification != null)
             {
-                if (currentMonth == 12)
+                // Ya existe notificación para este mes, no crear duplicado
+                return;
+            }
+
+            // VERIFICACIÓN 2: ¿Ya se registró un pago de esta categoría este mes?
+            var startOfMonth = new DateTime(currentYear, currentMonth, 1);
+            var endOfMonth = startOfMonth.AddMonths(1).AddDays(-1);
+
+            var hasPaymentThisMonth = await _context.ExpensesIncomes
+                .AnyAsync(ei =>
+                    ei.CategoryId == category.CategoryId &&
+                    ei.UserId == category.UserId &&
+                    ei.Type == TransactionType.Expense &&
+                    ei.Date >= startOfMonth &&
+                    ei.Date <= endOfMonth);
+
+            if (hasPaymentThisMonth)
+            {
+                // Ya pagó este mes, no generar notificación
+                return;
+            }
+
+            // DECIDIR: ¿Generar para mes actual (vencida) o próximo mes (futura)?
+            DateTime dueDate;
+
+            if (dueDateCurrentMonth < today)
+            {
+                // CASO 1: La fecha ya pasó este mes → Generar notificación VENCIDA para este mes
+                dueDate = dueDateCurrentMonth;
+                Console.WriteLine($"⚠️ Generando notificación VENCIDA para '{category.Title}' - vencía el {dueDate:dd/MM/yyyy}");
+            }
+            else
+            {
+                // CASO 2: La fecha aún no llega → Generar si faltan 3 días o menos
+                var notificationDate = dueDateCurrentMonth.AddDays(-daysToNotify);
+
+                if (today >= notificationDate && today <= dueDateCurrentMonth)
                 {
-                    currentMonth = 1;
-                    currentYear++;
+                    // Estamos dentro de la ventana de 3 días antes
+                    dueDate = dueDateCurrentMonth;
+                    Console.WriteLine($"🔔 Generando notificación para '{category.Title}' - vence el {dueDate:dd/MM/yyyy}");
                 }
                 else
                 {
-                    currentMonth++;
+                    // Aún no es momento de notificar (faltan más de 3 días)
+                    return;
                 }
-
-                daysInMonth = DateTime.DaysInMonth(currentYear, currentMonth);
-                if (category.DayOfMonth!.Value > daysInMonth)
-                    dayOfMonth = daysInMonth;
-                else
-                    dayOfMonth = category.DayOfMonth!.Value;
-
-                dueDate = new DateTime(currentYear, currentMonth, dayOfMonth);
             }
 
-            // Calcular fecha de notificación (3 días antes)
-            var notificationDate = dueDate.AddDays(-daysToNotify);
-
-            // Solo generar si estamos en la fecha de notificación o después (pero antes del vencimiento)
-            if (today >= notificationDate && today <= dueDate)
+            // Crear nueva notificación
+            var notification = new Notification
             {
-                //  VERIFICACIÓN 1: ¿Ya existe una notificación para este mes?
-                var existingNotification = await _context.Notifications
-                    .FirstOrDefaultAsync(n =>
-                        n.CategoryId == category.CategoryId &&
-                        n.UserId == category.UserId &&
-                        n.DueDate.Month == dueDate.Month &&
-                        n.DueDate.Year == dueDate.Year);
+                CategoryId = category.CategoryId,
+                UserId = category.UserId,
+                NotificationDate = today,
+                DueDate = dueDate,
+                IsRead = false,
+                CreatedAt = DateTime.UtcNow
+            };
 
-                if (existingNotification != null)
-                {
-                    // Ya existe notificación, no crear duplicado
-                    return;
-                }
-
-                //  VERIFICACIÓN 2: ¿Ya se registró un pago de esta categoría este mes?
-                var startOfMonth = new DateTime(dueDate.Year, dueDate.Month, 1);
-                var endOfMonth = startOfMonth.AddMonths(1).AddDays(-1);
-
-                var hasPaymentThisMonth = await _context.ExpensesIncomes
-                    .AnyAsync(ei =>
-                        ei.CategoryId == category.CategoryId &&
-                        ei.UserId == category.UserId &&
-                        ei.Type == TransactionType.Expense &&
-                        ei.Date >= startOfMonth &&
-                        ei.Date <= endOfMonth);
-
-                if (hasPaymentThisMonth)
-                {
-                    // Ya pagó este mes, no generar notificación
-                    return;
-                }
-
-                //  Crear nueva notificación
-                var notification = new Notification
-                {
-                    CategoryId = category.CategoryId,
-                    UserId = category.UserId,
-                    NotificationDate = today,
-                    DueDate = dueDate,
-                    IsRead = false,
-                    CreatedAt = DateTime.UtcNow
-                };
-
-                _context.Notifications.Add(notification);
-            }
+            _context.Notifications.Add(notification);
         }
 
         public async Task CleanOldNotificationsAsync(int daysOld = 60)
@@ -236,31 +228,35 @@ namespace MisFinanzas.Infrastructure.Services
             }
         }
 
-        /// Elimina todas las notificaciones futuras de una categoría
+        /// Elimina todas las notificaciones del mes actual de una categoría
+        /// Incluye notificaciones vencidas, de hoy y futuras del mes en curso
         /// Útil cuando se actualiza la fecha de vencimiento de un gasto fijo
         public async Task DeleteFutureNotificationsByCategoryAsync(int categoryId, string userId)
         {
             try
             {
                 var today = DateTime.Now.Date;
+                var startOfMonth = new DateTime(today.Year, today.Month, 1);
+                var endOfMonth = startOfMonth.AddMonths(1).AddDays(-1);
 
-                // Eliminar notificaciones futuras o de hoy (no las del pasado)
-                var futureNotifications = await _context.Notifications
+                // Eliminar TODAS las notificaciones del mes actual (vencidas, hoy y futuras)
+                var currentMonthNotifications = await _context.Notifications
                     .Where(n => n.CategoryId == categoryId &&
                                n.UserId == userId &&
-                               n.DueDate >= today)
+                               n.DueDate >= startOfMonth &&
+                               n.DueDate <= endOfMonth)
                     .ToListAsync();
 
-                if (futureNotifications.Any())
+                if (currentMonthNotifications.Any())
                 {
-                    _context.Notifications.RemoveRange(futureNotifications);
+                    _context.Notifications.RemoveRange(currentMonthNotifications);
                     await _context.SaveChangesAsync();
-                    Console.WriteLine($"🗑️ Eliminadas {futureNotifications.Count} notificación(es) futura(s) de la categoría {categoryId}");
+                    Console.WriteLine($"🗑️ Eliminadas {currentMonthNotifications.Count} notificación(es) del mes actual de la categoría {categoryId}");
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error deleting future notifications: {ex.Message}");
+                Console.WriteLine($"Error Eliminando Notificación(es): {ex.Message}");
             }
         }
     }
