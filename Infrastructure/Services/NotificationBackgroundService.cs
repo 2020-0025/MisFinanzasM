@@ -5,10 +5,8 @@ using MisFinanzas.Infrastructure.Interfaces;
 
 namespace MisFinanzas.Infrastructure.Services;
 
-/// <summary>
 /// Servicio de fondo que genera automáticamente notificaciones para gastos fijos
 /// Se ejecuta cada día a las 12:00 AM (medianoche)
-/// </summary>
 public class NotificationBackgroundService : BackgroundService
 {
     private readonly IServiceProvider _serviceProvider;
@@ -62,9 +60,7 @@ public class NotificationBackgroundService : BackgroundService
         }
     }
 
-    /// <summary>
     /// Espera hasta la próxima medianoche (12:00 AM)
-    /// </summary>
     private async Task WaitUntilMidnight(CancellationToken stoppingToken)
     {
         var now = DateTime.Now;
