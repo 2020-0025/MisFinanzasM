@@ -5,6 +5,7 @@
 @inject NavigationManager Navigation
 @inject AuthService AuthService
 @inject IJSRuntime JSRuntime
+@rendermode InteractiveServer
 
 <PageTitle>Mis Finanzas - Gestión Financiera Inteligente</PageTitle>
 
@@ -366,62 +367,58 @@
                     <!-- Gráfico de dona (NUEVO) -->
                     <div style="padding-top: 20px; border-top: 1px solid rgba(255, 255, 255, 0.2);">
                         <h3 style="color: rgba(255, 255, 255, 0.9); font-size: 1rem; margin-bottom: 12px; font-weight: 600;">
-                            🍩 Distribución de Gastos
+                            🍩 Gastos por categorías
                         </h3>
                         <div style="display: flex; flex-direction: column; align-items: center; padding: 10px; background: rgba(0, 0, 0, 0.2); border-radius: 8px;">
                             <!-- SVG Donut Chart -->
-                            <svg width="160" height="160" viewBox="0 0 160 160" style="filter: drop-shadow(0 0 10px rgba(0,0,0,0.3));">
+                            <svg width="200" height="200" viewBox="0 0 200 200" style="margin-bottom: 15px;">
                                 <!-- Círculo de fondo -->
-                                <circle cx="80" cy="80" r="70" fill="rgba(255,255,255,0.05)" />
+                                <circle cx="100" cy="100" r="90" fill="rgba(255,255,255,0.05)" />
 
-                                <!-- Segmentos del donut -->
-                                <!-- Alimentación (40%) - Azul -->
-                                <circle cx="80" cy="80" r="35" fill="none" stroke="#2196F3" stroke-width="30"
-                                        stroke-dasharray="88 220" transform="rotate(-90 80 80)"
-                                        style="filter: drop-shadow(0 0 5px rgba(33, 150, 243, 0.6))" />
+                                <!-- Segmentos del donut (cutout más grande = 70%) -->
+                                <!-- Alimentación (40%) - Verde brillante -->
+                                <circle cx="100" cy="100" r="55" fill="none" stroke="#10B981" stroke-width="50"
+                                        stroke-dasharray="138 345" transform="rotate(-90 100 100)" />
 
-                                <!-- Transporte (30%) - Verde -->
-                                <circle cx="80" cy="80" r="35" fill="none" stroke="#4CAF50" stroke-width="30"
-                                        stroke-dasharray="66 242" transform="rotate(54 80 80)"
-                                        style="filter: drop-shadow(0 0 5px rgba(76, 175, 80, 0.6))" />
+                                <!-- Transporte (30%) - Azul brillante -->
+                                <circle cx="100" cy="100" r="55" fill="none" stroke="#3B82F6" stroke-width="50"
+                                        stroke-dasharray="104 379" transform="rotate(54 100 100)" />
 
-                                <!-- Entretenimiento (20%) - Amarillo -->
-                                <circle cx="80" cy="80" r="35" fill="none" stroke="#FFC107" stroke-width="30"
-                                        stroke-dasharray="44 264" transform="rotate(162 80 80)"
-                                        style="filter: drop-shadow(0 0 5px rgba(255, 193, 7, 0.6))" />
+                                <!-- Entretenimiento (20%) - Naranja brillante -->
+                                <circle cx="100" cy="100" r="55" fill="none" stroke="#F59E0B" stroke-width="50"
+                                        stroke-dasharray="69 414" transform="rotate(162 100 100)" />
 
-                                <!-- Otros (10%) - Púrpura -->
-                                <circle cx="80" cy="80" r="35" fill="none" stroke="#9C27B0" stroke-width="30"
-                                        stroke-dasharray="22 286" transform="rotate(234 80 80)"
-                                        style="filter: drop-shadow(0 0 5px rgba(156, 39, 176, 0.6))" />
+                                <!-- Otros (10%) - Rosa brillante -->
+                                <circle cx="100" cy="100" r="55" fill="none" stroke="#EC4899" stroke-width="50"
+                                        stroke-dasharray="35 448" transform="rotate(234 100 100)" />
 
-                                <!-- Círculo interno para efecto de dona -->
-                                <circle cx="80" cy="80" r="50" fill="rgba(17, 25, 40, 0.95)" />
+                                <!-- Círculo interno para efecto de dona (70% cutout) -->
+                                <circle cx="100" cy="100" r="70" fill="rgba(17, 25, 40, 0.95)" />
 
                                 <!-- Texto central -->
-                                <text x="80" y="75" text-anchor="middle" fill="white" font-size="12" font-weight="600">Total</text>
-                                <text x="80" y="92" text-anchor="middle" fill="#4CAF50" font-size="16" font-weight="700">RD$3,750</text>
+                                <text x="100" y="95" text-anchor="middle" fill="rgba(255,255,255,0.7)" font-size="14" font-weight="400">Total</text>
+                                <text x="100" y="115" text-anchor="middle" fill="white" font-size="18" font-weight="700">RD$3,750</text>
                             </svg>
 
-                            <!-- Leyenda del gráfico de dona -->
-                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 15px; width: 100%;">
-                                <div style="display: flex; align-items: center; gap: 6px;">
-                                    <div style="width: 10px; height: 10px; background: #2196F3; border-radius: 2px;"></div>
-                                    <small style="color: white; font-size: 0.75rem;">Alimentación (40%)</small>
-                                </div>
-                                <div style="display: flex; align-items: center; gap: 6px;">
-                                    <div style="width: 10px; height: 10px; background: #4CAF50; border-radius: 2px;"></div>
-                                    <small style="color: white; font-size: 0.75rem;">Transporte (30%)</small>
-                                </div>
-                                <div style="display: flex; align-items: center; gap: 6px;">
-                                    <div style="width: 10px; height: 10px; background: #FFC107; border-radius: 2px;"></div>
-                                    <small style="color: white; font-size: 0.75rem;">Entret. (20%)</small>
-                                </div>
-                                <div style="display: flex; align-items: center; gap: 6px;">
-                                    <div style="width: 10px; height: 10px; background: #9C27B0; border-radius: 2px;"></div>
-                                    <small style="color: white; font-size: 0.75rem;">Otros (10%)</small>
-                                </div>
-                            </div>
+                           <!-- Leyenda debajo del gráfico (como en Dashboard) -->
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; max-width: 250px;">
+    <div style="display: flex; align-items: center; gap: 8px;">
+        <span style="width: 12px; height: 12px; border-radius: 50%; background: #10B981; display: inline-block;"></span>
+        <span style="color: rgba(255,255,255,0.9); font-size: 0.85rem;">Alimentación</span>
+    </div>
+    <div style="display: flex; align-items: center; gap: 8px;">
+        <span style="width: 12px; height: 12px; border-radius: 50%; background: #3B82F6; display: inline-block;"></span>
+        <span style="color: rgba(255,255,255,0.9); font-size: 0.85rem;">Transporte</span>
+    </div>
+    <div style="display: flex; align-items: center; gap: 8px;">
+        <span style="width: 12px; height: 12px; border-radius: 50%; background: #F59E0B; display: inline-block;"></span>
+        <span style="color: rgba(255,255,255,0.9); font-size: 0.85rem;">Entretenimiento</span>
+    </div>
+    <div style="display: flex; align-items: center; gap: 8px;">
+        <span style="width: 12px; height: 12px; border-radius: 50%; background: #EC4899; display: inline-block;"></span>
+        <span style="color: rgba(255,255,255,0.9); font-size: 0.85rem;">Otros</span>
+    </div>
+</div>
                         </div>
                     </div>
 
