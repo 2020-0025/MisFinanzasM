@@ -336,7 +336,7 @@
         <div class="modal-content text-white" @onclick:stopPropagation="true">
             <div class="modal-header border-secondary">
                 <h5 class="modal-title">⚠️ Confirmar Eliminación</h5>
-                <button class="btn-close-custom" @onclick="CloseModal">✕</button>
+                <button class="btn-close-custom" @onclick="CancelDelete">✕</button>
             </div>
             <div class="modal-body">
                 <p>¿Estás seguro de que deseas eliminar este registro?</p>
@@ -556,19 +556,17 @@
             }
             else
             {
-                var created = await ExpenseIncomeService.CreateAsync(dto, currentUserId!);
+                var result = await ExpenseIncomeService.CreateAsync(dto, currentUserId!);
 
-                if (created != null)
+                if (result.Success)
                 {
                     ShowSuccessMessage($"{(formModel.Type == TransactionType.Income ? "Ingreso" : "Gasto")} agregado correctamente");
                     CloseModal();
                     await LoadData();
-
-                    // TODO: Descontar de presupuesto si es gasto
                 }
                 else
                 {
-                    ShowErrorMessage("No se pudo crear la transacción");
+                    ShowErrorMessage(result.Error ?? "No se pudo crear la transacción");
                 }
             }
         }
