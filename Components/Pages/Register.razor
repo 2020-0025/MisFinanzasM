@@ -9,111 +9,167 @@
 @inject AuthService AuthService
 @layout MinimalLayout
 @inject UserManager<ApplicationUser> UserManager
+@inject SignInManager<ApplicationUser> SignInManager
 @inject NavigationManager NavigationManager
 @inject IJSRuntime JSRuntime
 
 <PageTitle>Registrarse - MisFinanzas</PageTitle>
 
-<div class="auth-container">
-    <div class="auth-card animate-slide-up">
-        <div class="auth-header">
-            <h2>🔑 Crear Cuenta</h2>
-            <p class="text-white">Únete a MisFinanzas y gestiona tus finanzas</p>
+<div class="auth-container-split">
+    <div class="auth-grid">
+
+        <!-- COLUMNA IZQUIERDA: Registro Tradicional -->
+        <div class="auth-card-column">
+            <div class="auth-header">
+                <h2>📝 Crear Cuenta</h2>
+                <p class="text-white">Regístrate en MisFinanzas</p>
+            </div>
+
+            @if (!string.IsNullOrEmpty(errorMessage))
+            {
+                <div class="alert alert-danger" role="alert">
+                    @errorMessage
+                </div>
+            }
+
+            @if (!string.IsNullOrEmpty(successMessage))
+            {
+                <div class="alert alert-success" role="alert">
+                    @successMessage
+                </div>
+            }
+
+            <EditForm Model="registerModel" OnValidSubmit="HandleRegister">
+                <DataAnnotationsValidator />
+
+                <div class="mb-3">
+                    <label for="fullName" class="form-label">Nombre Completo</label>
+                    <InputText @bind-Value="registerModel.FullName"
+                               class="form-control"
+                               id="fullName"
+                               placeholder="Ej: Juan Pérez" />
+                    <ValidationMessage For="() => registerModel.FullName" class="text-danger" />
+                </div>
+
+                <div class="mb-3">
+                    <label for="username" class="form-label">Usuario</label>
+                    <InputText @bind-Value="registerModel.Username"
+                               class="form-control"
+                               id="username"
+                               placeholder="Ej: juanperez" />
+                    <ValidationMessage For="() => registerModel.Username" class="text-danger" />
+                </div>
+
+                <div class="mb-3">
+                    <label for="email" class="form-label">Email</label>
+                    <InputText @bind-Value="registerModel.Email"
+                               type="email"
+                               class="form-control"
+                               id="email"
+                               placeholder="tu@email.com" />
+                    <ValidationMessage For="() => registerModel.Email" class="text-danger" />
+                </div>
+
+                <div class="mb-3">
+                    <label for="password" class="form-label">Contraseña</label>
+                    <InputText @bind-Value="registerModel.Password"
+                               type="password"
+                               class="form-control"
+                               id="password"
+                               placeholder="Mínimo 6 caracteres" />
+                    <ValidationMessage For="() => registerModel.Password" class="text-danger" />
+                    <small class="form-text text-warning">
+                        Debe contener mayúsculas, minúsculas y números
+                    </small>
+                </div>
+
+                <div class="mb-3">
+                    <label for="confirmPassword" class="form-label">Confirmar Contraseña</label>
+                    <InputText @bind-Value="registerModel.ConfirmPassword"
+                               type="password"
+                               class="form-control"
+                               id="confirmPassword"
+                               placeholder="Repite tu contraseña" />
+                    <ValidationMessage For="() => registerModel.ConfirmPassword" class="text-danger" />
+                </div>
+
+                <div class="login-footer-custom">
+                    <button class="btnComeBack"><a href="/">Regresar</a></button>
+
+                    <button type="submit" class="btnLogin" disabled="@isLoading">
+                        @if (isLoading)
+                        {
+                            <span class="spinner-border spinner-border-sm me-2"></span>
+                            <span>Creando cuenta...</span>
+                        }
+                        else
+                        {
+                            <span>Crear Cuenta</span>
+                        }
+                    </button>
+                </div>
+            </EditForm>
+
+            <div class="auth-footer">
+                <p>
+                    ¿Ya tienes cuenta? <a href="/login">Inicia sesión aquí</a>
+                </p>
+            </div>
         </div>
 
-        @if (!string.IsNullOrEmpty(errorMessage))
-        {
-            <div class="alert alert-danger" role="alert">
-                @errorMessage
-            </div>
-        }
-
-        @if (!string.IsNullOrEmpty(successMessage))
-        {
-            <div class="alert alert-success" role="alert">
-                @successMessage
-            </div>
-        }
-
-        <EditForm Model="registerModel" OnValidSubmit="HandleRegister">
-            <DataAnnotationsValidator />
-
-            <div class="mb-3">
-                <label for="fullName" class="form-label">Nombre Completo</label>
-                <InputText @bind-Value="registerModel.FullName"
-                           class="form-control"
-                           id="fullName"
-                           placeholder="Ej: Juan Pérez" />
-                <ValidationMessage For="() => registerModel.FullName" class="text-danger" />
-            </div>
-
-            <div class="mb-3">
-                <label for="username" class="form-label">Usuario</label>
-                <InputText @bind-Value="registerModel.Username"
-                           class="form-control"
-                           id="username"
-                           placeholder="Ej: juanperez" />
-                <ValidationMessage For="() => registerModel.Username" class="text-danger" />
-            </div>
-
-            <div class="mb-3">
-                <label for="email" class="form-label">Email</label>
-                <InputText @bind-Value="registerModel.Email"
-                           type="email"
-                           class="form-control"
-                           id="email"
-                           placeholder="tu@email.com" />
-                <ValidationMessage For="() => registerModel.Email" class="text-danger" />
-            </div>
-
-            <div class="mb-3">
-                <label for="password" class="form-label">Contraseña</label>
-                <InputText @bind-Value="registerModel.Password"
-                           type="password"
-                           class="form-control"
-                           id="password"
-                           placeholder="Mínimo 6 caracteres" />
-                <ValidationMessage For="() => registerModel.Password" class="text-danger" />
-                <small class="form-text text-warning">
-                    Debe contener mayúsculas, minúsculas y números
-                </small>
-            </div>
-
-            <div class="mb-3">
-                <label for="confirmPassword" class="form-label">Confirmar Contraseña</label>
-                <InputText @bind-Value="registerModel.ConfirmPassword"
-                           type="password"
-                           class="form-control"
-                           id="confirmPassword"
-                           placeholder="Repite tu contraseña" />
-                <ValidationMessage For="() => registerModel.ConfirmPassword" class="text-danger" />
-            </div>
-
-            <div class="login-footer-custom">
-                <button class="btnComeBack"><a href="/">Regresar</a></button>
-
-                <button type="submit" class="btnLogin" disabled="@isLoading">
-                    @if (isLoading)
-                    {
-                        <span class="spinner-border spinner-border-sm me-2"></span>
-                        <span>Creando cuenta...</span>
-                    }
-                    else
-                    {
-                        <span>Crear Cuenta</span>
-                    }
-                </button>
-
-            </div>
-
-            
-        </EditForm>
-
-        <div class="auth-footer">
-            <p>
-                ¿Ya tienes cuenta? <a href="/login">Inicia sesión aquí</a>
-            </p>
+        <!-- SEPARADOR VERTICAL -->
+        <div class="auth-divider">
+            <div class="divider-line"></div>
+            <span class="divider-text">O</span>
+            <div class="divider-line"></div>
         </div>
+
+        <!-- COLUMNA DERECHA: Proveedores Externos -->
+        <div class="auth-card-column">
+            <div class="auth-header">
+                <h2>🌐 Registro Rápido</h2>
+                <p class="text-white">Regístrate con tu cuenta externa</p>
+            </div>
+
+            <div class="external-providers">
+                <p class="text-white text-center mb-3" style="font-size: 0.9rem; opacity: 0.8;">
+                    Crea tu cuenta con:
+                </p>
+
+                <!-- Google -->
+                <form method="post" action="/external-login-challenge">
+                    <input type="hidden" name="provider" value="Google" />
+                    <input type="hidden" name="returnUrl" value="/external-login" />
+                    <button type="submit" class="btnExternal btnGoogle" disabled="@isLoading">
+                        <svg width="18" height="18" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.615z" fill="#4285F4" />
+                            <path d="M9.003 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.258c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.96v2.332C2.44 15.983 5.485 18 9.003 18z" fill="#34A853" />
+                            <path d="M3.964 10.707c-.18-.54-.282-1.117-.282-1.707 0-.593.102-1.17.282-1.709V4.958H.957C.347 6.173 0 7.548 0 9c0 1.452.348 2.827.957 4.042l3.007-2.335z" fill="#FBBC05" />
+                            <path d="M9.003 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.464.891 11.426 0 9.003 0 5.485 0 2.44 2.017.96 4.958L3.967 7.29c.708-2.127 2.692-3.71 5.036-3.71z" fill="#EA4335" />
+                        </svg>
+                        <span>Continuar con Google</span>
+                    </button>
+                </form>
+
+                <!-- Microsoft -->
+                <form method="post" action="/external-login-challenge">
+                    <input type="hidden" name="provider" value="Microsoft" />
+                    <input type="hidden" name="returnUrl" value="/external-login" />
+                    <button type="submit" class="btnExternal btnMicrosoft" disabled="@isLoading">
+                        <svg width="18" height="18" viewBox="0 0 21 21" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <rect width="10" height="10" fill="#F25022" />
+                            <rect x="11" width="10" height="10" fill="#7FBA00" />
+                            <rect y="11" width="10" height="10" fill="#00A4EF" />
+                            <rect x="11" y="11" width="10" height="10" fill="#FFB900" />
+                        </svg>
+                        <span>Continuar con Microsoft</span>
+                    </button>
+                </form>
+
+                
+            </div>
+        </div>
+
     </div>
 </div>
 

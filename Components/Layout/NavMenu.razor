@@ -690,7 +690,7 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
-        gap: 3rem;
+        gap: 0.5rem;
     }
 
     /* ===== LINKS DESKTOP ===== */
@@ -742,7 +742,7 @@
     .navbar-user {
         display: flex;
         align-items: center;
-        gap: 1rem;
+        gap: 0.5rem;
     }
 
     .user-info {
@@ -757,6 +757,7 @@
         text-decoration: none;
         transition: all 0.3s ease;
         height: 40px;
+        max-width: 180px;
     }
 
         .user-info:hover {
@@ -797,23 +798,22 @@
     .navbar-mobile {
         display: none;
         width: 100%;
-        justify-content: space-between;
+        justify-content: flex-start;
         align-items: center;
-        gap: 1rem;
     }
 
     .user-info-mobile {
         display: flex;
         align-items: center;
-        gap: 0.5rem;
         padding: 0.5rem 1rem;
         background: rgba(33, 150, 243, 0.15);
         border: 1px solid rgba(33, 150, 243, 0.3);
         border-radius: 10px;
         color: white;
-        max-width: 200px;
+        max-width: 300px;
         text-decoration: none;
         transition: all 0.3s ease;
+        gap: 0.5rem;
     }
 
         .user-info-mobile:hover {
@@ -825,7 +825,6 @@
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
-            flex: 1;
         }
 
     .btn-logout-mobile {

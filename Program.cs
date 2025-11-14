@@ -59,6 +59,21 @@ authBuilder.AddGoogle(options =>
     Console.WriteLine("Google Authentication configured");
 });
 
+authBuilder.AddMicrosoftAccount(options =>
+{
+    options.ClientId = builder.Configuration["Authentication:Microsoft:ClientId"]
+        ?? throw new InvalidOperationException("Microsoft ClientId not configured");
+    options.ClientSecret = builder.Configuration["Authentication:Microsoft:ClientSecret"]
+        ?? throw new InvalidOperationException("Microsoft ClientSecret not configured");
+    options.CallbackPath = "/signin-microsoft";
+    options.SaveTokens = true;
+
+    // Solicitar permisos de perfil y email
+    options.Scope.Add("User.Read");
+
+    Console.WriteLine("✅ Microsoft Authentication configured");
+});
+
 // CONFIGURAR SQLite CON NUESTRO DbContext
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
