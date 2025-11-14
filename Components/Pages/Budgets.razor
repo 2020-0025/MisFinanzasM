@@ -219,133 +219,135 @@
 <!-- Modal Crear/Editar Presupuesto -->
 @if (showModal)
 {
-    <div class="modal-backdrop show"></div>
-    <div class="modal show d-block" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content text-white">
-                <div class="modal-header border-secondary">
-                    <h5 class="modal-title">
-                        @(isEditing ? "✏️ Editar Presupuesto" : "➕ Nuevo Presupuesto")
-                    </h5>
-                    <button type="button" class="btn-close" @onclick="CloseModal">❌</button>
-                </div>
-                <div class="modal-body">
-                    <EditForm Model="formModel" OnValidSubmit="SaveBudget">
-                        <DataAnnotationsValidator />
+    <div class="modal-overlay">
 
-                        <div class="mb-3">
-                            <label class="form-label">Categoría: </label>
-                             <select class="form-select" @bind="formModel.CategoryId" disabled="@isEditing">
-                                <option value="0">Selecciona una categoría</option>
-                                @foreach (var category in expenseCategories)
-                                {
-                                    <option value="@category.CategoryId">@category.Icon @category.Title</option>
-                                }
-                            </select> 
-                            <ValidationMessage For="() => formModel.CategoryId" class="text-danger" />
+        <div class="modal-content text-white" @onclick:stopPropagation="true">
+            <div class="modal-header border-secondary">
+                <h5 class="modal-title">
+                    @(isEditing ? "✏️ Editar Presupuesto" : "➕ Nuevo Presupuesto")
+                </h5>
+                <button class="btn-close-custom" @onclick="CloseModal">✕</button>
+
+            </div>
+            <div class="modal-body">
+                <EditForm Model="formModel" OnValidSubmit="SaveBudget">
+                    <DataAnnotationsValidator />
+
+                    <div class="mb-3">
+                        <label class="form-label">Categoría: </label>
+                        <select class="form-select" @bind="formModel.CategoryId" disabled="@isEditing">
+                            <option value="0">Selecciona una categoría</option>
+                            @foreach (var category in expenseCategories)
+                            {
+                                <option value="@category.CategoryId">@category.Icon @category.Title</option>
+                            }
+                        </select>
+                        <ValidationMessage For="() => formModel.CategoryId" class="text-danger" />
+                        @if (isEditing)
+                        {
+                            <small class="form-text text-warning">No se puede cambiar la categoría</small>
+                        }
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Nombre del Presupuesto</label>
+                        <InputText @bind-Value="formModel.Name" class="form-control" placeholder="Ej: Presupuesto Alimentación" />
+                        <ValidationMessage For="() => formModel.Name" class="text-danger" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Monto Asignado</label>
+                        <InputNumber @bind-Value="formModel.AssignedAmount" class="form-control" placeholder="0.00" />
+                        <ValidationMessage For="() => formModel.AssignedAmount" class="text-danger" />
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Mes: </label>
+                            <select class="form-select" @bind="formModel.Month" disabled="@isEditing">
+                                <option value="1">Enero</option>
+                                <option value="2">Febrero</option>
+                                <option value="3">Marzo</option>
+                                <option value="4">Abril</option>
+                                <option value="5">Mayo</option>
+                                <option value="6">Junio</option>
+                                <option value="7">Julio</option>
+                                <option value="8">Agosto</option>
+                                <option value="9">Septiembre</option>
+                                <option value="10">Octubre</option>
+                                <option value="11">Noviembre</option>
+                                <option value="12">Diciembre</option>
+                            </select>
                             @if (isEditing)
                             {
-                                <small class="form-text text-warning">No se puede cambiar la categoría</small>
+                                <small class="form-text text-warning"> No se puede cambiar el mes</small>
                             }
                         </div>
 
-                        <div class="mb-3">
-                            <label class="form-label">Nombre del Presupuesto</label>
-                            <InputText @bind-Value="formModel.Name" class="form-control" placeholder="Ej: Presupuesto Alimentación" />
-                            <ValidationMessage For="() => formModel.Name" class="text-danger" />
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label">Monto Asignado</label>
-                            <InputNumber @bind-Value="formModel.AssignedAmount" class="form-control" placeholder="0.00" />
-                            <ValidationMessage For="() => formModel.AssignedAmount" class="text-danger" />
-                        </div>
-
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">Mes: </label>
-                                 <select class="form-select" @bind="formModel.Month" disabled="@isEditing">
-                                    <option value="1">Enero</option>
-                                    <option value="2">Febrero</option>
-                                    <option value="3">Marzo</option>
-                                    <option value="4">Abril</option>
-                                    <option value="5">Mayo</option>
-                                    <option value="6">Junio</option>
-                                    <option value="7">Julio</option>
-                                    <option value="8">Agosto</option>
-                                    <option value="9">Septiembre</option>
-                                    <option value="10">Octubre</option>
-                                    <option value="11">Noviembre</option>
-                                    <option value="12">Diciembre</option>
-                                </select> 
-                                @if (isEditing)
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Año: </label>
+                            <select class="form-select" @bind="formModel.Year" disabled="@isEditing">
+                                @for (int year = DateTime.Now.Year - 1; year <= DateTime.Now.Year + 2; year++)
                                 {
-                                    <small class="form-text text-warning"> No se puede cambiar el mes</small>
+                                    <option value="@year">@year</option>
                                 }
-                            </div>
-
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">Año: </label>
-                                 <select class="form-select" @bind="formModel.Year" disabled="@isEditing">
-                                    @for (int year = DateTime.Now.Year - 1; year <= DateTime.Now.Year + 2; year++)
-                                    {
-                                        <option value="@year">@year</option>
-                                    }
-                                </select> 
-                                @if (isEditing)
-                                {
-                                    <small class="form-text text-warning"> No se puede cambiar el año</small>
-                                }
-                            </div>
+                            </select>
+                            @if (isEditing)
+                            {
+                                <small class="form-text text-warning"> No se puede cambiar el año</small>
+                            }
                         </div>
+                    </div>
 
-                        <div class="d-grid gap-2">
-                            <button type="submit" class="btnSaveEdit" disabled="@isSaving">
-                                @if (isSaving)
-                                {
-                                    <span class="spinner-border spinner-border-sm me-2"></span>
-                                    <span>Guardando...</span>
-                                }
-                                else
-                                {
-                                    <span>Guardar Presupuesto</span>
-                                }
-                            </button>
-                            <button type="button" class="btnCancel" @onclick="CloseModal">Cancelar</button>
-                        </div>
-                    </EditForm>
-                </div>
+                    <div class="modal-footer-custom gap-2">
+                        <button type="submit" class="btn btnSaveEdit" disabled="@isSaving">
+                            @if (isSaving)
+                            {
+                                <span class="spinner-border spinner-border-sm me-2"></span>
+                                <span>Guardando...</span>
+                            }
+                            else
+                            {
+                                <span>Guardar</span>
+                            }
+                        </button>
+                        <button type="button" class="btn btnCancel" @onclick="CloseModal">Cancelar</button>
+                    </div>
+                </EditForm>
             </div>
         </div>
+
     </div>
+    
 }
 
 <!-- Modal Confirmar Eliminación -->
 @if (showDeleteModal)
 {
-    <div class="modal-backdrop show"></div>
-    <div class="modal show d-block" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content text-white">
-                <div class="modal-header border-secondary">
-                    <h5 class="modal-title">⚠️ Eliminar Presupuesto</h5>
-                    <button type="button" class="btn-close" @onclick="CloseDeleteModal">❌</button>
-                </div>
-                <div class="modal-body">
-                    <p>¿Estás seguro de que deseas eliminar el presupuesto de <strong>@budgetToDelete</strong>?</p>
-                    <p class="text-danger mb-0">
-                        <strong>Esta acción no se puede deshacer.</strong>
-                    </p>
-                </div>
-                <div class="modal-footer border-secondary">
-                    <button type="button" class="btnCancel" @onclick="CloseDeleteModal">Cancelar</button>
-                    <button type="button" class="btnDelete" @onclick="DeleteBudget">
-                        <span style="font-size: 13px;">🗑️</span> Eliminar
-                    </button>
-                </div>
+    <div class="modal-overlay">
+
+        <div class="modal-content text-white" @onclick:stopPropagation="true">
+            <div class="modal-header border-secondary">
+                <h5 class="modal-title">⚠️ Eliminar Presupuesto</h5>
+                <button class="btn-close-custom" @onclick="CloseDeleteModal">✕</button>
+
+            </div>
+            <div class="modal-body">
+                <p>¿Estás seguro de que deseas eliminar el presupuesto de <strong>@budgetToDelete</strong>?</p>
+                <p class="text-danger mb-0">
+                    <strong>Esta acción no se puede deshacer.</strong>
+                </p>
+            </div>
+            <div class="modal-footer border-secondary">
+                <button type="button" class="btnCancel" @onclick="CloseDeleteModal">Cancelar</button>
+                <button type="button" class="btnDelete" @onclick="DeleteBudget">
+                    <span style="font-size: 13px;">🗑️</span> Eliminar
+                </button>
             </div>
         </div>
+
     </div>
+   
 }
 
 @code {

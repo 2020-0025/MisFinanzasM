@@ -23,10 +23,34 @@
     }
     else
     {
-        <div class="reminders-header">
-            <h3>🔔 Recordatorios de Gastos Fijos</h3>
-            <p class="text-muted">Gestiona tus notificaciones de gastos recurrentes</p>
+        <div class="reminders-header mb-1">
+            <h3>🔔 Recordatorios</h3>
+            <p class="text-white">Gestiona tus notificaciones de gastos recurrentes</p> <br />
+
+            <!-- Filtros y acciones -->
+            <div class="filters-section mt-0">
+                <div class="filter-buttons mb-4">
+                    <button class="btn-filter @(currentFilter == "all" ? "active" : "")" @onclick='() => SetFilter("all")'>
+                        Todos (@allNotifications.Count)
+                    </button>
+                    <button class="btn-filter @(currentFilter == "unread" ? "active" : "")" @onclick='() => SetFilter("unread")'>
+                        No leídos (@allNotifications.Count(n => !n.IsRead))
+                    </button>
+                    <button class="btn-filter @(currentFilter == "read" ? "active" : "")" @onclick='() => SetFilter("read")'>
+                        Leídos (@allNotifications.Count(n => n.IsRead))
+                    </button>
+                </div>
+                @if (allNotifications.Any(n => !n.IsRead))
+                {
+                    <button class="btn-mark-all-page text-white mb-4" @onclick="MarkAllAsRead">
+                        ✓ Marcar todos como leídos
+                    </button>
+                }
+            </div>
+
         </div>
+
+        
 
     @if (!string.IsNullOrEmpty(errorMessage))
     {
@@ -44,26 +68,7 @@
         </div>
     }
 
-    <!-- Filtros y acciones -->
-    <div class="filters-section">
-        <div class="filter-buttons">
-            <button class="btn-filter @(currentFilter == "all" ? "active" : "")" @onclick='() => SetFilter("all")'>
-                Todas (@allNotifications.Count)
-            </button>
-            <button class="btn-filter @(currentFilter == "unread" ? "active" : "")" @onclick='() => SetFilter("unread")'>
-                No leídas (@allNotifications.Count(n => !n.IsRead))
-            </button>
-            <button class="btn-filter @(currentFilter == "read" ? "active" : "")" @onclick='() => SetFilter("read")'>
-                Leídas (@allNotifications.Count(n => n.IsRead))
-            </button>
-        </div>
-        @if (allNotifications.Any(n => !n.IsRead))
-        {
-            <button class="btn-mark-all-page" @onclick="MarkAllAsRead">
-                ✓ Marcar todas como leídas
-            </button>
-        }
-    </div>
+   
 
     <!-- Lista de notificaciones -->
     <div class="notifications-list">
@@ -73,14 +78,14 @@
                 <div class="spinner-border text-primary" role="status">
                     <span class="visually-hidden">Cargando...</span>
                 </div>
-                <p>Cargando notificaciones...</p>
+                <p>Cargando Recordatorios...</p>
             </div>
         }
         else if (!filteredNotifications.Any())
         {
             <div class="empty-state">
                 <span style="font-size: 64px;">📭</span>
-                <h5>No hay notificaciones</h5>
+                <h5>No hay Recordatoris</h5>
                 <p>@GetEmptyMessage()</p>
             </div>
         }
@@ -202,7 +207,7 @@
         }
         catch (Exception ex)
         {
-            ShowErrorMessage($"Error al cargar notificaciones: {ex.Message}");
+            ShowErrorMessage($"Error al cargar recordatorios: {ex.Message}");
         }
         finally
         {
@@ -237,12 +242,12 @@
             if (success)
             {
                 await LoadNotifications();
-                ShowSuccessMessage("Notificación marcada como leída");
+                ShowSuccessMessage("recordatorio marcado como leído");
             }
         }
         catch (Exception ex)
         {
-            ShowErrorMessage($"Error al marcar notificación: {ex.Message}");
+            ShowErrorMessage($"Error al marcar recordatorio: {ex.Message}");
         }
     }
 
@@ -257,12 +262,12 @@
             if (success)
             {
                 await LoadNotifications();
-                ShowSuccessMessage("Todas las notificaciones fueron marcadas como leídas");
+                ShowSuccessMessage("Todos los recordatorios fueron marcados como leídos");
             }
         }
         catch (Exception ex)
         {
-            ShowErrorMessage($"Error al marcar notificaciones: {ex.Message}");
+            ShowErrorMessage($"Error al marcar recordatorios: {ex.Message}");
         }
     }
 
@@ -270,9 +275,9 @@
     {
         return currentFilter switch
         {
-            "unread" => "No tienes notificaciones sin leer",
-            "read" => "No tienes notificaciones leídas",
-            _ => "No tienes notificaciones aún. Las notificaciones de gastos fijos aparecerán aquí."
+            "unread" => "No tienes recordatorios sin leer",
+            "read" => "No tienes recordatorios leídos",
+            _ => "No tienes recordatorios aún. Los recordatorios de gastos fijos aparecerán aquí."
         };
     }
 
@@ -287,16 +292,16 @@
             if (success)
             {
                 await LoadNotifications();
-                ShowSuccessMessage("Notificación eliminada correctamente");
+                ShowSuccessMessage("Recordatorio eliminado correctamente");
             }
             else
             {
-                ShowErrorMessage("No se pudo eliminar la notificación");
+                ShowErrorMessage("No se pudo eliminar el recordatorio");
             }
         }
         catch (Exception ex)
         {
-            ShowErrorMessage($"Error al eliminar notificación: {ex.Message}");
+            ShowErrorMessage($"Error al eliminar Recordatorio: {ex.Message}");
         }
     }
 

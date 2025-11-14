@@ -145,41 +145,41 @@
                                         <h4>@loan.Title</h4>
                                         @if (loan.IsActive)
                                         {
-                                            <span class="text-white badge bg-success">Activo</span>
+                                            <span class="text-white badge bg-success-custom">Activo</span>
                                         }
                                         else if (loan.IsCompleted)
                                         {
-                                            <span class="text-white badge bg-primary">Completado ✓</span>
+                                            <span class="text-white badge bg-info-custom">Completado ✓</span>
                                         }
                                         else
                                         {
-                                            <span class="text-white badge bg-warning">Cancelado</span>
+                                            <span class="text-white badge bg-warning-custom">Cancelado</span>
                                         }
                                     </div>
                                     <div class="loan-actions">
                                         @if (loan.IsActive && !loan.IsCompleted)
                                         {
-                                            <button class="btn btn-sm btn-success" @onclick="() => RegisterPayment(loan.LoanId)" title="Registrar Pago">
+                                            <button class="btn btn-sm btn-success" style="background-color:rgba(76, 175, 80, 0.25);" @onclick="() => RegisterPayment(loan.LoanId)" title="Registrar Pago">
                                                 <span style="font-size: 13px;">💵</span>
                                             </button>
                                             @if (loan.InstallmentsPaid > 0)
                                             {
-                                                <button class="btn btn-sm btn-info" @onclick="() => UndoLastPayment(loan.LoanId)" title="Deshacer Último Pago">
+                                                <button class="btn btn-sm btn-info" style="background-color: rgba(33, 150, 243, 0.25);" @onclick="() => UndoLastPayment(loan.LoanId)" title="Deshacer Último Pago">
                                                     <span style="font-size: 13px;">↩️</span>
                                                 </button>
                                             }
-                                            <button class="btn btn-sm btn-warning" @onclick="() => OpenEditModal(loan)" title="Editar">
+                                            <button class="btn btn-sm btn-warning" style="background-color:rgba(255, 193, 7, 0.25);" @onclick="() => OpenEditModal(loan)" title="Editar">
                                                 <span style="font-size: 13px;">📝</span>
                                             </button>
                                         }
                                         else if (!loan.IsActive && !loan.IsCompleted)
                                         {
                                             <!-- Préstamo cancelado - mostrar botón reactivar -->
-                                            <button class="btn btn-sm btn-primary" @onclick="() => ReactivateLoan(loan.LoanId)" title="Reactivar Préstamo">
-                                                <span style="font-size: 13px;">🔄</span> Reactivar
+                                            <button class="btn btn-sm btn-primary" style="background-color:rgba(76, 175, 80, 0.25);" @onclick="() => ReactivateLoan(loan.LoanId)" title="Reactivar Préstamo">
+                                                <span style="font-size: 13px;">🔄</span>
                                             </button>
                                         }
-                                        <button class="btn btn-sm btn-danger"
+                                        <button class="btn btn-sm btn-danger" style="background-color:rgba(244, 67, 54, 0.25);"
                                                 @onclick="() => HandleDeleteLoan(loan)"
                                                 title="@(loan.IsActive ? "Eliminar" : "Eliminar del historial")">
                                             <span style="font-size: 13px;">🗑️</span>
@@ -362,10 +362,11 @@
                     }
 
                     <div class="modal-footer-custom">
-                        <button type="button" class="btn btn-secondary" @onclick="CloseModal">Cancelar</button>
-                        <button type="submit" class="btn btn-primary">
+                        <button type="submit" class=" btn btnSaveEdit">
                             @(isEditMode ? "Actualizar" : "Crear")
                         </button>
+                        <button type="button" class="btn btnCancel" @onclick="CloseModal">Cancelar</button>
+
                     </div>
                 </EditForm>
             </div>
@@ -409,9 +410,9 @@
                     </div>
                 }
             </div>
-            <div class="modal-footer-custom">
-                <button class="btn btn-secondary" @onclick="CloseDeleteModal">Cancelar</button>
-                <button class="btn btn-danger" @onclick="ConfirmDelete">Eliminar</button>
+            <div class="modal-footer-custom mb-4" style="margin-right:20px;">
+                <button class="btn btnCancel" @onclick="CloseDeleteModal">Cancelar</button>
+                <button class="btn btnDelete" @onclick="ConfirmDelete">Eliminar</button>
             </div>
         </div>
     </div>
@@ -591,28 +592,28 @@
 
     private async Task SaveLoan()
     {
-        Console.WriteLine("🔵 SaveLoan llamado");
-        Console.WriteLine($"🔵 UserId: {currentUserId}");
-        Console.WriteLine($"🔵 IsEditMode: {isEditMode}");
-        Console.WriteLine($"🔵 Loan Title: {currentLoan.Title}");
-        Console.WriteLine($"🔵 Principal: {currentLoan.PrincipalAmount}");
-        Console.WriteLine($"🔵 Installment: {currentLoan.InstallmentAmount}");
-        Console.WriteLine($"🔵 NumInstallments: {currentLoan.NumberOfInstallments}");
+        Console.WriteLine("SaveLoan llamado");
+        Console.WriteLine($"UserId: {currentUserId}");
+        Console.WriteLine($"IsEditMode: {isEditMode}");
+        Console.WriteLine($"Loan Title: {currentLoan.Title}");
+        Console.WriteLine($"Principal: {currentLoan.PrincipalAmount}");
+        Console.WriteLine($"Installment: {currentLoan.InstallmentAmount}");
+        Console.WriteLine($"NumInstallments: {currentLoan.NumberOfInstallments}");
 
         try
         {
             if (string.IsNullOrEmpty(currentUserId))
             {
-                Console.WriteLine("❌ UserId es null o vacío");
+                Console.WriteLine("UserId es null o vacío");
                 ShowErrorMessage("Error: No se pudo identificar el usuario");
                 return;
             }
 
             if (isEditMode)
             {
-                Console.WriteLine("🔵 Intentando actualizar préstamo...");
+                Console.WriteLine("Intentando actualizar préstamo...");
                 var success = await LoanService.UpdateAsync(currentLoan.LoanId, currentLoan, currentUserId);
-                Console.WriteLine($"🔵 Update result: {success}");
+                Console.WriteLine($"Update result: {success}");
 
                 if (success)
                 {
@@ -628,13 +629,13 @@
             }
             else
             {
-                Console.WriteLine("🔵 Intentando crear préstamo...");
+                Console.WriteLine("Intentando crear préstamo...");
                 var result = await LoanService.CreateAsync(currentLoan, currentUserId, createReminder);
-                Console.WriteLine($"🔵 Create result - Success: {result.Success}, Error: {result.Error}");
+                Console.WriteLine($"Create result - Success: {result.Success}, Error: {result.Error}");
 
                 if (result.Success && result.Loan != null)
                 {
-                    Console.WriteLine($"🔵 Préstamo creado con ID: {result.Loan.LoanId}");
+                    Console.WriteLine($"Préstamo creado con ID: {result.Loan.LoanId}");
                     ShowSuccessMessage("Préstamo creado correctamente");
                     await LoadLoans();
                     await LoadSummary();

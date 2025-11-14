@@ -27,7 +27,7 @@
                 </a>
                 <!-- Bell Icon con Badge -->
                 <div class="notification-bell-container">
-                    <button @onclick="ToggleNotifications" class="btn-bell" title="Notificaciones">
+                    <button @onclick="ToggleNotifications" class="btn-bell" title="Recordatorios">
                         <span style="font-size: 18px;">🔔</span>
                         @if (unreadCount > 0)
                         {
@@ -165,10 +165,10 @@
     <!-- Dropdown Desktop/Tablet -->
     <div class="notification-dropdown notification-dropdown-global" @onclick:stopPropagation="true">
         <div class="dropdown-header">
-            <h6>Notificaciones</h6>
+            <h6>🔔 Recordatorios</h6>
             @if (unreadCount > 0)
             {
-                <button @onclick="MarkAllAsRead" class="btn-mark-all">Marcar todas</button>
+                <button @onclick="MarkAllAsRead" class="btn-mark-all text-white">Marcar todos</button>
             }
         </div>
         <div class="dropdown-body">
@@ -176,7 +176,7 @@
             {
                 <div class="no-notifications">
                     <span style="font-size: 32px;">📭</span>
-                    <p>No tienes notificaciones</p>
+                    <p>No tienes Recordatorios</p>
                 </div>
             }
             else
@@ -212,7 +212,7 @@
             }
         </div>
         <div class="dropdown-footer">
-            <NavLink href="/reminders" class="btn-view-all" @onclick="CloseNotifications">Ver todas las notificaciones</NavLink>
+            <NavLink href="/reminders" class="btn-view-all text-white" @onclick="CloseNotifications">Ver todos los Recordatorios</NavLink>
         </div>
     </div>
 }
@@ -331,8 +331,8 @@
         width: 100vw;
         height: 100vh;
         z-index: 9998;
-        background: rgba(0, 0, 0, 0.4);
-        backdrop-filter: blur(3px);
+        background: rgba(0, 0, 0, 0.7);
+        backdrop-filter: blur(8px);
         cursor: pointer;
         animation: fadeInOverlay 0.2s ease-out;
     }
@@ -358,7 +358,7 @@
         width: 380px;
         max-width: calc(100vw - 2rem);
         max-height: 500px;
-        background: rgba(30, 30, 30, 0.98);
+        background: transparent;
         backdrop-filter: blur(20px);
         border: 1px solid rgba(255, 255, 255, 0.2);
         border-radius: 12px;
@@ -377,7 +377,7 @@
         width: 90vw;
         max-width: 380px;
         max-height: calc(100vh - 150px);
-        background: rgba(30, 30, 30, 0.98);
+        background: transparent;
         backdrop-filter: blur(20px);
         border: 1px solid rgba(255, 255, 255, 0.2);
         border-radius: 12px;
@@ -393,14 +393,14 @@
         display: block;
     }
 
-    /* Desktop: alineado a la derecha */
+    /* Desktop: alineado a la izquierda */
     @@media (min-width: 993px) {
         .notification-dropdown-global
 
     {
         top: 75px;
-        right: 1rem;
-        left: auto;
+        right: auto;
+        left: 1rem;
         width: 380px;
         max-width: calc(100vw - 2rem);
     }
@@ -672,15 +672,15 @@
     
     /* ===== NAVBAR HORIZONTAL ===== */
     .navbar-horizontal {
-        position: fixed;
+        position: relative;
         top: 0;
         left: 0;
         right: 0;
         height: 70px;
-        background: rgba(255, 255, 255, 0.05);
+        z-index: 1000;
+        background: rgba(0, 0, 0, 0.5);
         backdrop-filter: blur(20px);
         border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        z-index: 1000;
         box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
     }
 
@@ -833,7 +833,7 @@
         align-items: center;
         justify-content: center;
         gap: 0.5rem;
-        width: 180px;
+        width: 100px;
         height: 44px;
         background: rgba(244, 67, 54, 0.15);
         border: 1px solid rgba(244, 67, 54, 0.3);
@@ -857,11 +857,11 @@
         left: 0;
         right: 0;
         height: 70px;
-        background: rgba(255, 255, 255, 0.05);
+        background: transparent;
         backdrop-filter: blur(20px);
         -webkit-backdrop-filter: blur(20px);
         border-top: 1px solid rgba(255, 255, 255, 0.1);
-        z-index: 1000;
+         z-index: 1000;
         padding: 0.5rem 0;
         box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.3);
     }

@@ -4,11 +4,14 @@
     align-items: center;
     justify-content: center;
     padding: 20px;
+    background: transparent;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
 }
 
 
 .auth-card {
-    background: rgba(255, 255, 255, 0.05);
+    background: rgba(0, 0, 0, 0.5);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
     border-radius: 16px;
@@ -87,14 +90,44 @@
 
 .btnLogin {
     background: rgba(76, 175, 80, 0.25);
-    border-color: rgba(76, 175, 80, 0.5);
+    border: 1px solid rgba(76, 175, 80, 0.5);
     color: white;
     font-weight: 600;
-    box-shadow: 0 0 12px rgba(76, 175, 80, 0.3);
-    border-radius: 20px;
+    box-shadow: 0 0 12px rgba(33, 150, 243, 0.3);
+    border-radius: 10px;
     padding: 0.5rem 1rem;
+    transition: all 0.3s ease;
     text-decoration: none;
+   
 }
+
+    .btnLogin:hover {
+        background: rgba(76, 175, 80, 0.35);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 20px rgba(33, 150, 243, 0.4);
+    }
+
+.btnComeBack {
+    background: rgba(244, 67, 54, 0.25);
+    border: 1px solid rgba(244, 67, 54, 0.5);
+    color: white;
+    font-weight: 600;
+    box-shadow: 0 0 12px rgba(33, 150, 243, 0.3);
+    border-radius: 10px;
+    padding: 0.5rem 1rem;
+    transition: all 0.3s ease;
+}
+
+    .btnComeBack:hover {
+        background: rgba(244, 67, 54, 0.35);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 20px rgba(33, 150, 243, 0.4);
+    }
+
+    .btnComeBack a {
+        text-decoration: none;
+        color: white;
+    }
 
 .auth-footer {
     text-align: center;
@@ -122,3 +155,17 @@
     color: white;
     border-radius: 8px;
 }
+
+.login-footer-custom {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    margin-top: 20px;
+}
+
+    .login-footer-custom .btn {
+        padding: 10px 20px;
+        border-radius: 8px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }

@@ -1,25 +1,38 @@
 ﻿/* ===== CONTENEDOR PRINCIPAL ===== */
 .profile-container {
-    max-width: 900px;
-    margin: 0 auto;
-    padding: 2rem;
-    min-height: calc(100vh - 70px);
+    padding: 30px;
+    min-height: 100vh;
+    background: transparent;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+}
 }
 
 /* ===== HEADER ===== */
+
+
+.profile-header-container {
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+}
+
 .profile-header {
     display: flex;
     align-items: center;
     gap: 1.5rem;
-    margin-bottom: 2rem;
+    margin-bottom: 3rem;
+    margin-top: 1rem;
     padding: 2rem;
-    background: rgba(255, 255, 255, 0.05);
+    background-color: rgba(0, 0, 0, 0.5);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 16px;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
     animation: slideUp 0.5s ease;
+    width: 1000px;
+    margin: 0 auto;
 }
 
 .header-icon {
@@ -64,11 +77,12 @@
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
+    margin-top: 3rem;
 }
 
 /* ===== PROFILE CARDS ===== */
 .profile-card {
-    background: rgba(255, 255, 255, 0.05);
+    background: rgba(0, 0, 0, 0.5);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
     border: 1px solid rgba(255, 255, 255, 0.1);
@@ -77,6 +91,8 @@
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
     animation: slideUp 0.5s ease;
+    width: 900px;
+    margin: 0 auto;
 }
 
     .profile-card:hover {
@@ -335,13 +351,17 @@
         padding: 1.5rem;
     }
 
+    .profile-header {
+        width: 90%;
+    }
+
     .profile-header h1 {
         font-size: 1.75rem;
     }
 }
 
-/* Tablet (hasta 768px) */
-@media (max-width: 768px) {
+/* Tablet (hasta 912px) */
+@media (max-width: 912px) {
     .profile-container {
         padding: 1rem;
         padding-bottom: 90px; /* Espacio para footer móvil */
@@ -351,6 +371,7 @@
         flex-direction: column;
         text-align: center;
         padding: 1.5rem;
+        width: 95%;
     }
 
     .header-icon {
@@ -379,10 +400,20 @@
         flex-direction: column;
     }
 
+    .cards-container {
+        width: 98%;
+    }
+
+    .profile-card {
+        width: 98%;
+    }
+
     .btn {
-        width: 100%;
+        width: 50%;
         justify-content: center;
     }
+
+    
 }
 
 /* Mobile (hasta 576px) */
@@ -394,6 +425,7 @@
     .profile-header {
         padding: 1.25rem;
         gap: 1rem;
+        width: 90%;
     }
 
     .header-icon {
@@ -426,10 +458,14 @@
     }
 }
 
-/* Mobile pequeño (hasta 400px) */
-@media (max-width: 400px) {
+/* Mobile pequeño (hasta 440px) */
+@media (max-width: 440px) {
     .profile-container {
         padding: 0.5rem;
+    }
+
+    .profile-header {
+        width: 98%;
     }
 
     .header-icon {
@@ -442,5 +478,50 @@
 
     .card-header h2 {
         font-size: 1rem;
+    }
+
+    .cards-container {
+        width: 98%;
+    }
+    .profile-card {
+        width: 98%;
+    }
+
+    .btn {
+        width: 80%;
+        justify-content: center;
+    }
+}
+
+/* Mobile pequeño (hasta 390px) */
+@media ( max-width: 390px) {
+    .cards-container {
+        width: 98%;
+    }
+
+    .profile-card {
+        width: 98%;
+    }
+
+    .btn {
+        width: 70%;
+        justify-content: center;
+    }
+
+}
+
+/* Mobile pequeño (hasta 344px) */
+@media ( max-width: 344px) {
+    .cards-container {
+        width: 98%;
+    }
+
+    .profile-card {
+        width: 98%;
+    }
+
+    .btn {
+        width: 80%;
+        justify-content: center;
     }
 }

@@ -89,17 +89,24 @@
                 <ValidationMessage For="() => registerModel.ConfirmPassword" class="text-danger" />
             </div>
 
-            <button type="submit" class="btnLogin w-100 mb-3" disabled="@isLoading">
-                @if (isLoading)
-                {
-                    <span class="spinner-border spinner-border-sm me-2"></span>
-                    <span>Creando cuenta...</span>
-                }
-                else
-                {
-                    <span>Crear Cuenta</span>
-                }
-            </button>
+            <div class="login-footer-custom">
+                <button class="btnComeBack"><a href="/">Regresar</a></button>
+
+                <button type="submit" class="btnLogin" disabled="@isLoading">
+                    @if (isLoading)
+                    {
+                        <span class="spinner-border spinner-border-sm me-2"></span>
+                        <span>Creando cuenta...</span>
+                    }
+                    else
+                    {
+                        <span>Crear Cuenta</span>
+                    }
+                </button>
+
+            </div>
+
+            
         </EditForm>
 
         <div class="auth-footer">

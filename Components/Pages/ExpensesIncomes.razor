@@ -39,10 +39,10 @@
                     <p class="mb-0 text-white">Registra tus Gastos e Ingresos</p>
                 </div>
                 <div class="d-flex gap-2">
-                    <button class="btnDelete" @onclick="() => OpenModal(TransactionType.Expense)">
+                    <button class="btnAddExpenses" @onclick="() => OpenModal(TransactionType.Expense)">
                         <span style="font-size: 17px;">➕</span> Agregar Gasto
                     </button>
-                    <button class="btnSaveEdit" @onclick="() => OpenModal(TransactionType.Income)">
+                    <button class="btnAddIncomes" @onclick="() => OpenModal(TransactionType.Income)">
                         <span style="font-size: 17px;">➕</span> Agregar Ingreso
                     </button>
                 </div>
@@ -138,14 +138,14 @@
                     <!-- Botones -->
                     <div class="col-12">
                         <div class="d-flex gap-2 justify-content-end">
-                            <button class="btnSaveEdit" @onclick="GeneratePdfReport" disabled="@isGeneratingReport">
+                            <button class="btnExportPdf" @onclick="GeneratePdfReport" disabled="@isGeneratingReport">
                                 @if (isGeneratingReport)
                                 {
                                     <span class="spinner-border spinner-border-sm me-2"></span>
                                 }
                                 📄 Descargar PDF
                             </button>
-                            <button class="btnSaveEdit" @onclick="GenerateExcelReport" disabled="@isGeneratingReport">
+                            <button class="btnExportExcel" @onclick="GenerateExcelReport" disabled="@isGeneratingReport">
                                 @if (isGeneratingReport)
                                 {
                                     <span class="spinner-border spinner-border-sm me-2"></span>
@@ -305,8 +305,8 @@
                         <InputTextArea @bind-Value="formModel.Description" class="form-control" rows="3" placeholder="Ej: Compra en supermercado" />
                     </div>
 
-                    <div class="d-grid gap-2">
-                        <button type="submit" class="btnSaveEdit" disabled="@isSaving">
+                    <div class="modal-footer-custom gap-2">
+                        <button type="submit" class=" btn btnSaveEdit" disabled="@isSaving">
                             @if (isSaving)
                             {
                                 <span class="spinner-border spinner-border-sm me-2"></span>
@@ -317,7 +317,7 @@
                                 <span>Guardar</span>
                             }
                         </button>
-                        <button type="button" class="btnCancel" @onclick="CloseModal">Cancelar</button>
+                        <button type="button" class="btn btnCancel" @onclick="CloseModal">Cancelar</button>
                     </div>
                 </EditForm>
             </div>
