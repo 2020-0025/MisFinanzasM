@@ -169,3 +169,66 @@
         font-weight: 600;
         transition: all 0.3s ease;
     }
+
+/* Separador "O" entre métodos de login */
+.divider-custom {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    margin: 25px 0;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+    .divider-custom::before,
+    .divider-custom::after {
+        content: '';
+        flex: 1;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .divider-custom span {
+        padding: 0 15px;
+        font-size: 0.9rem;
+        font-weight: 500;
+    }
+
+/* Botón de Google */
+.btnGoogle {
+    width: 100%;
+    padding: 12px 24px;
+    background: white;
+    color: #3c4043;
+    border: 1px solid #dadce0;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    box-shadow: 0 1px 2px 0 rgba(60, 64, 67, 0.3);
+}
+
+    .btnGoogle:hover {
+        background: #f8f9fa;
+        border-color: #d2d4d6;
+        box-shadow: 0 1px 3px 0 rgba(60, 64, 67, 0.3);
+    }
+
+    .btnGoogle:active {
+        background: #f1f3f4;
+        box-shadow: 0 1px 2px 0 rgba(60, 64, 67, 0.3);
+    }
+
+    .btnGoogle:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+
+    .btnGoogle svg {
+        width: 18px;
+        height: 18px;
+    }

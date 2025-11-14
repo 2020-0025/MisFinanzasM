@@ -34,13 +34,30 @@ builder.Services.AddCascadingAuthenticationState();
 
 
 
+// Agregar Autenticación con Identity y Google
+var authBuilder = builder.Services.AddAuthentication(options =>
+{
+    options.DefaultScheme = IdentityConstants.ApplicationScheme;
+    options.DefaultSignInScheme = IdentityConstants.ExternalScheme;
+});
 
-builder.Services.AddAuthentication(options =>
-    {
-        options.DefaultScheme = IdentityConstants.ApplicationScheme;
-        options.DefaultSignInScheme = IdentityConstants.ExternalScheme;
-    })
-    .AddIdentityCookies();
+authBuilder.AddIdentityCookies();
+
+authBuilder.AddGoogle(options =>
+{
+    options.ClientId = builder.Configuration["Authentication:Google:ClientId"]
+        ?? throw new InvalidOperationException("Google ClientId not configured");
+    options.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"]
+        ?? throw new InvalidOperationException("Google ClientSecret not configured");
+    options.CallbackPath = "/signin-google";
+    options.SaveTokens = true;
+
+    // Solicitar permisos de perfil y email
+    options.Scope.Add("profile");
+    options.Scope.Add("email");
+
+    Console.WriteLine("Google Authentication configured");
+});
 
 // CONFIGURAR SQLite CON NUESTRO DbContext
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
