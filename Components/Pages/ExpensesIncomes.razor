@@ -6,6 +6,7 @@
 @using MisFinanzas.Domain.Enums
 @using System.ComponentModel.DataAnnotations
 @using MisFinanzas.Controllers
+@using MisFinanzas.Infrastructure.Services
 @inject IExpenseIncomeService ExpenseIncomeService
 @inject ICategoryService CategoryService
 @inject IBudgetService BudgetService
@@ -15,6 +16,7 @@
 @inject MisFinanzas.Infrastructure.Services.PdfReportGenerator PdfReportGenerator
 @inject MisFinanzas.Infrastructure.Services.ExcelReportGenerator ExcelReportGenerator
 @inject MisFinanzas.Infrastructure.Services.TemporaryFileCache FileCache
+@inject IWebHostEnvironment WebHostEnvironment
 @implements IDisposable
 
 <PageTitle>Gastos e Ingresos - MisFinanzas</PageTitle>
@@ -730,7 +732,21 @@
             var reportData = await ReportService.GenerateReportDataAsync(filter);
 
             // Generar PDF
-            var pdfBytes = PdfReportGenerator.GeneratePdf(reportData);
+            var logoPath = Path.Combine(WebHostEnvironment.WebRootPath, "images", "MisFinanzas.png");
+
+            // 🔍 DEBUG COMPLETO
+            Console.WriteLine($"WebRootPath: {WebHostEnvironment.WebRootPath}");
+            Console.WriteLine($"Logo path: {logoPath}");
+            Console.WriteLine($"File exists: {File.Exists(logoPath)}");
+
+            if (File.Exists(logoPath))
+            {
+                var fileInfo = new FileInfo(logoPath);
+                Console.WriteLine($"File size: {fileInfo.Length} bytes");
+            }
+
+            var pdfGenerator = new PdfReportGenerator();
+            var pdfBytes = pdfGenerator.GeneratePdf(reportData, logoPath);
 
             // Guardar en caché temporal
 
@@ -797,7 +813,8 @@
             var reportData = await ReportService.GenerateReportDataAsync(filter);
 
             // Generar Excel
-            var excelBytes = ExcelReportGenerator.GenerateExcel(reportData);
+            var logoPath = Path.Combine(WebHostEnvironment.WebRootPath, "images", "MisFinanzas.png");
+            var excelBytes = ExcelReportGenerator.GenerateExcel(reportData, logoPath);
 
             // Guardar en caché temporal
 
