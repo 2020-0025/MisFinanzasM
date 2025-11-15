@@ -520,6 +520,10 @@
         padding-bottom: 90px;
     }
 
+    .dashboard-header{
+        text-align: center !important;
+    }
+
     .stat-card {
         min-height: 150px;
     }
@@ -560,8 +564,11 @@
         padding: 0.75rem;
     }
 
-    .dashboard-header {
-        padding: 1rem 1.5rem;
+    .dashboard-header .d-flex {
+        padding: 1rem 0rem;
+        flex-direction: column;
+        text-align: center;
+        margin-bottom: 0;
     }
 
     .stat-value {

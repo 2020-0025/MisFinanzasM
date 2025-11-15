@@ -22,7 +22,6 @@
                     Salir
                 </button>
                 <a href="@(_isAdmin ? "/admin" : "/profile")" class="user-info">
-                    <span style="font-size: 15px;">🧑‍💼</span>
                     <span class="user-name">@_userName</span>
                 </a>
                 <!-- Bell Icon con Badge -->
@@ -73,17 +72,6 @@
                     <span style="font-size: 17px;">🏦</span>
                     <span class="text-white">Préstamos</span>
                 </NavLink>
-
-
-
-
-                @* @if (_isAdmin)
-                {
-                    <NavLink class="nav-link-horizontal admin-link" href="/admin">
-                        <span style="font-size: 17px;">👨‍💼</span>
-                        <span class="text-white">Admin</span>
-                    </NavLink>
-                } *@
             }
         </div>
 
@@ -96,7 +84,6 @@
                     Salir
                 </button>
                 <a href="@(_isAdmin ? "/admin" : "/profile")" class="user-info-mobile">
-                    <span style="font-size: 15px;">🧑‍💼</span>
                     <span class="user-name">@_userName</span>
                 </a>
 
@@ -127,32 +114,32 @@
     @if (_isAuthenticated)
     {
         <NavLink href="/dashboard" class="footer-nav-item">
-            <span style="font-size: 17px;">📊</span>
-            <span class="text-white">Control</span>
+            <span style="font-size: 20px;">📊</span>
+            <span class="text-white" style="font-size: 10px;">Control</span>
         </NavLink>
 
         <NavLink href="/categories" class="footer-nav-item">
-            <span style="font-size: 17px;">🏷️</span>
-            <span class="text-white">Categorías</span>
+            <span style="font-size: 20px;">🏷️</span>
+            <span class="text-white" style="font-size: 10px;">Categorías</span>
         </NavLink>
 
         <NavLink href="/budgets" class="footer-nav-item">
-            <span style="font-size: 17px;">💰</span>
-            <span class="text-white">Presupuestos</span>
+            <span style="font-size: 20px;">💰</span>
+            <span class="text-white" style="font-size: 10px;">Presupuestos</span>
         </NavLink>
 
         <NavLink href="/goals" class="footer-nav-item">
-            <span style="font-size: 17px;">🎯</span>
-            <span class="text-white">Metas</span>
+            <span style="font-size: 20px;">🎯</span>
+            <span class="text-white" style="font-size: 10px;">Metas</span>
         </NavLink>
 
         <NavLink href="/expenses-incomes" class="footer-nav-item">
-            <span style="font-size: 17px;">💳</span>
-            <span class="text-white">Gastos/Ingresos</span>
+            <span style="font-size: 20px;">💳</span>
+            <span class="text-white" style="font-size: 10px;">Gastos/Ingresos</span>
         </NavLink>
         <NavLink href="/loans" class="footer-nav-item">
-            <span style="font-size: 17px;">🏦</span>
-            <span class="text-white">Préstamos</span>
+            <span style="font-size: 20px;">🏦</span>
+            <span class="text-white" style="font-size: 10px;">Préstamos</span>
         </NavLink>
     }
 </nav>
@@ -906,24 +893,9 @@
 
     /* ===== RESPONSIVE ===== */
 
-    /* Tablet Grande (hasta 1200px) */
+    /* Tablet Grande y menores (hasta 1200px) */
     @@media (max-width: 1200px) {
-        .navbar-links
-
-    {
-        gap: 0.25rem;
-    }
-
-    .nav-link-horizontal {
-        padding: 0.5rem 0.75rem;
-        font-size: 0.9rem;
-    }
-
-    }
-
-    /* Tablet (hasta 992px) */
-    @@media (max-width: 992px) {
-        .navbar-links
+        .navbar-links .nav-link-horizontal
 
     {
         display: none;
@@ -938,18 +910,24 @@
     }
 
     .footer-mobile-nav {
+        display: flex !important;
+    }
+
+    .footer-nav-item {
         display: flex;
     }
 
-    .footer-nav-item span:first-child {
-        font-size: 1.75rem;
+        .footer-nav-item span:first-child {
+            font-size: 1.75rem;
+        }
+
+        .footer-nav-item span {
+            font-size: 0.8rem;
+        }
+
     }
 
-    .footer-nav-item span {
-        font-size: 0.8rem;
-    }
-
-    }
+    
 
     /* Mobile Grande (hasta 768px) */
     @@media (max-width: 768px) {

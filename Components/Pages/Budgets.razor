@@ -135,6 +135,20 @@
         <div class="budgets-list-card">
             <div class="card-header">
                 <h4>📋 Presupuestos por Categoría</h4>
+
+                @if (!budgets.Any() && !isLoading)
+                {
+                    <button class="copy-button" @onclick="CopyFromPreviousMonth" disabled="@isCopying">
+                        @if (isCopying)
+                        {
+                            <span>⏳ Copiando...</span>
+                        }
+                        else
+                        {
+                            <span>📋 Copiar Mes Anterior</span>
+                        }
+                    </button>
+                }
             </div>
             <div class="card-body">
                 @if (isLoading)
@@ -354,6 +368,9 @@
     private bool isAuthorized = false;
     private bool isLoading = true;
     private string? currentUserId;
+
+    // Para copiar presupuestos
+    private bool isCopying = false;
 
     // Selector de periodo
     private int selectedMonth = DateTime.Now.Month;
@@ -697,5 +714,40 @@
     {
         successTimer?.Dispose();
         errorTimer?.Dispose();
+    }
+
+    private async Task CopyFromPreviousMonth()
+    {
+        try
+        {
+            isCopying = true;
+
+            if (string.IsNullOrEmpty(currentUserId))
+                return;
+
+            var result = await BudgetService.CopyBudgetsFromPreviousMonthAsync(
+                currentUserId,
+                selectedMonth,
+                selectedYear
+            );
+
+            if (result.Success)
+            {
+                ShowSuccessMessage($"{result.CopiedCount} presupuesto(s) copiados correctamente");
+                await LoadData();
+            }
+            else
+            {
+                ShowErrorMessage(result.Error ?? "No se pudieron copiar los presupuestos");
+            }
+        }
+        catch (Exception ex)
+        {
+            ShowErrorMessage($"Error: {ex.Message}");
+        }
+        finally
+        {
+            isCopying = false;
+        }
     }
 }

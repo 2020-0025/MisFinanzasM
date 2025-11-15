@@ -491,6 +491,21 @@
         width: 80%;
         justify-content: center;
     }
+
+    .btn-primary {
+        margin: 0 auto;
+        width: 70%;
+    }
+
+    .btn-secondary {
+        margin: 0 auto;
+        width: 70%;
+    }
+
+    .btn-danger {
+        margin: 0 auto;
+        width: 70%;
+    }
 }
 
 /* Mobile pequeño (hasta 390px) */
@@ -508,6 +523,11 @@
         justify-content: center;
     }
 
+    .btn-primary {
+        margin: 0 auto;
+        width: 80%;
+    }
+
 }
 
 /* Mobile pequeño (hasta 344px) */
@@ -523,5 +543,10 @@
     .btn {
         width: 80%;
         justify-content: center;
+    }
+
+    .btn-primary {
+        margin: 0 auto;
+        width: 80%;
     }
 }

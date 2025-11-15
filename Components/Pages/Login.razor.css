@@ -157,6 +157,7 @@
     border-radius: 10px;
     padding: 0.6rem 1.2rem;
     transition: all 0.3s ease;
+    text-decoration: none;
 }
 
     .btnComeBack:hover {
@@ -165,10 +166,7 @@
         box-shadow: 0 4px 20px rgba(244, 67, 54, 0.4);
     }
 
-    .btnComeBack a {
-        text-decoration: none;
-        color: white;
-    }
+    
 
 /* FOOTER */
 .auth-footer {
@@ -257,6 +255,8 @@
     color: white;
     background: rgba(255, 193, 7, 0.25);
     border: 1px solid rgba(255, 193, 7, 0.5);
+    width: 70%;
+    margin: 0 auto;
 }
 
     .btnGoogle:hover {
@@ -279,6 +279,8 @@
     color: white;
     background: rgba(128, 0, 128, 0.25);
     border: 1px solid rgba(128, 0, 128, 0.5);
+    width: 70%;
+    margin: 0 auto;
 }
 
     .btnMicrosoft:hover {
@@ -307,6 +309,16 @@
     .auth-card-column {
         min-width: auto;
     }
+
+    .btnGoogle {
+        width: 45%;
+        margin: 0 auto;
+    }
+
+    .btnMicrosoft {
+        width: 45%;
+        margin: 0 auto;
+    }
 }
 
 @media (max-width: 576px) {
@@ -315,6 +327,33 @@
     }
 
     .login-footer-custom {
-        flex-direction: column;
+        display: flex;
+        gap: 10px;
+        justify-content: flex-end;
+        margin-top: 20px;
+    }
+
+    .btnGoogle {
+        width: 70%;
+        margin: 0 auto;
+    }
+
+    .btnMicrosoft {
+        width: 70%;
+        margin: 0 auto;
+    }
+
+ }
+
+@media (max-width:420px) {
+
+    .btnGoogle {
+        width: 90%;
+    }
+
+    .btnMicrosoft {
+        width: 90%;
     }
 }
+
+

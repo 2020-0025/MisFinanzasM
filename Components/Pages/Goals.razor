@@ -62,19 +62,19 @@
         <!-- Filtros -->
         <div class="filters-card">
             <div class="btn-group" role="group">
-                <button class="text-white btn @(currentFilter == GoalStatus.InProgress ? "" : "btn-outline-primary")"
+                <button class="btn btn-InProgress @(currentFilter == GoalStatus.InProgress ? "" : "btn-outline-primary")"
                         @onclick="() => FilterGoals(GoalStatus.InProgress)">
                     🟢 En Progreso (@activeCount)
                 </button>
-                <button class="text-white btn @(currentFilter == GoalStatus.Completed ? "" : "btn-outline-success")"
+                <button class="text-white btn btn-Completed @(currentFilter == GoalStatus.Completed ? "" : "btn-outline-success")"
                         @onclick="() => FilterGoals(GoalStatus.Completed)">
                     ✅ Completadas (@completedCount)
                 </button>
-                <button class="text-white btn @(currentFilter == GoalStatus.Cancelled ? "" : "btn-outline-secondary")"
+                <button class="text-white btn btn-Cancelled @(currentFilter == GoalStatus.Cancelled ? "" : "btn-outline-secondary")"
                         @onclick="() => FilterGoals(GoalStatus.Cancelled)">
                     ❌ Canceladas (@cancelledCount)
                 </button>
-                <button class="text-white btn @(currentFilter == null ? "" : "btn-outline-info")"
+                <button class="text-white btn btn-all @(currentFilter == null ? "" : "btn-outline-info")"
                         @onclick="() => FilterGoals(null)">
                     📋 Todas (@allGoals.Count)
                 </button>

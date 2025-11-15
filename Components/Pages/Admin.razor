@@ -29,11 +29,6 @@
                     <h1>👨‍💼 Panel de Administración</h1>
                     <p class="mb-0 text-white">Gestiona usuarios y visualiza estadísticas del sistema</p>
                 </div>
-                @* <div>
-                    <a href="/logout" class="btn btn-danger">
-                        <i class="bi bi-box-arrow-right"></i> Cerrar Sesión
-                    </a>
-                </div> *@
             </div>
         </div>
 
@@ -135,12 +130,12 @@
                                         </td>
                                         <td>@(user.FullName ?? "-")</td>
                                         <td>
-                                            <span class="badge @(user.UserRole == "Admin" ? "bg-danger" : "bg-primary")">
+                                            <span class="badge @(user.UserRole == "Admin" ? "bg-danger-custom" : "bg-primary-custom")">
                                                 @user.RoleDisplay
                                             </span>
                                         </td>
                                         <td>
-                                            <span class="badge @(user.IsActive ? "bg-success" : "bg-secondary")">
+                                            <span class="badge @(user.IsActive ? "bg-success-custom" : "bg-secondary-custom")">
                                                 @user.StatusDisplay
                                             </span>
                                         </td>
@@ -151,12 +146,12 @@
                                             @if (user.UserRole != "Admin")
                                             {
                                                 <div class="btn-group btn-group-sm" role="group">
-                                                    <button class="btn btn-warning"
+                                                    <button class="btn btn-warning-custom text-white"
                                                             @onclick="() => ToggleUserStatus(user.Id)"
                                                             title="@(user.IsActive ? "Desactivar" : "Activar")">
                                                         <i class="bi @(user.IsActive ? "bi-pause-circle" : "bi-play-circle")"></i>
                                                     </button>
-                                                    <button class="btn btn-danger"
+                                                    <button class="btn btn-danger-custom text-white"
                                                             @onclick="() => ConfirmDelete(user.Id, user.UserName)"
                                                             title="Eliminar">
                                                         <i class="bi bi-trash"></i>

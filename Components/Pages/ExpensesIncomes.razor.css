@@ -15,6 +15,8 @@
     padding: 30px;
     margin-bottom: 30px;
     box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+    display: flex;
+    gap: 23rem;
 }
 
     .page-header h1 {
@@ -403,16 +405,48 @@
 
     .page-header {
         padding: 20px;
+        flex-direction: column;
+        gap: 0.5rem;
     }
 
         .page-header .d-flex {
             flex-direction: column;
-            align-items: flex-start !important;
+            text-align: center;
         }
 
             .page-header .d-flex > div {
-                width: 100%;
+                width: 80%;
+                margin-bottom: 10px;
             }
+
+        .page-header .btnSaveGroup {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            width: 100%;
+        }
+
+            .page-header .btnSaveGroup .btnAddExpenses {
+                font-weight: 600;
+                align-items: center;
+                justify-content: center;
+                text-align: center;
+                padding: 0.5rem 1rem;
+                width: 90%;
+                font-size: 0.9rem;
+            }
+
+            .page-header .btnSaveGroup .btnAddIncomes {
+                font-weight: 600;
+                align-items: center;
+                justify-content: center;
+                text-align: center;
+                padding: 0.5rem 1rem;
+                width: 90%;
+                font-size: 0.9rem;
+            }
+    
 
     .balance-card {
         padding: 20px;

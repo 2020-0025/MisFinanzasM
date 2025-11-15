@@ -150,7 +150,6 @@
         }
 
     .notification-card.read {
-        opacity: 0.7;
     }
 
 .notification-card-icon {
@@ -215,7 +214,7 @@
 
 .detail-label {
     font-size: 0.9rem;
-    color: rgba(255, 255, 255, 0.6);
+    color: white;
 }
 
 .detail-value {
@@ -295,6 +294,10 @@
         padding: 1rem;
     }
 
+    .reminders-header {
+        text-align: center;
+    }
+    
     .filters-section {
         flex-direction: column;
         align-items: stretch;
@@ -306,10 +309,12 @@
 
     .btn-filter {
         flex: 1;
+        height:4rem;
     }
 
     .btn-mark-all-page {
-        width: 100%;
+        width: 70%;
+        margin: 0 auto;
     }
 
     .notification-card {
@@ -328,8 +333,7 @@
     }
 
     .notification-card-actions {
-        display: flex;
-        
+        display: flex !important;
     }
 }
 
@@ -398,5 +402,9 @@
     .custom-alert {
         min-width: calc(100vw - 2rem);
         max-width: calc(100vw - 2rem);
+    }
+
+    .notification-card-actions {
+        align-items: flex-end !important;
     }
 }

@@ -123,19 +123,29 @@
                         </div>
                     </div>
                     <div class="notification-card-actions">
-                        @if (!notification.IsRead)
-                        {
-                            <button class="btn-mark-read" @onclick="() => MarkAsRead(notification.NotificationId)" title="Marcar como leída">
-                                ✓
-                            </button>
-                        }
-                        else
-                        {
-                            <span class="read-checkmark" title="Leída">✓</span>
-                        }
-                        <button class="btn-delete-notification" @onclick="() => DeleteNotification(notification.NotificationId)" title="Eliminar notificación">
-                            🗑️
-                        </button>
+                        <div>
+                                @if (!notification.IsRead)
+                                {
+                                    <button class="btn-mark-read" @onclick="() => MarkAsRead(notification.NotificationId)" title="Marcar como leído">
+                                        ✓
+                                    </button>
+                                }
+                                else
+                                {
+                                    <span class="read-checkmark" title="Leído">✓</span>
+                                }
+
+                        </div>
+
+                        <div>
+                                <button class="btn-delete-notification" @onclick="() => DeleteNotification(notification.NotificationId)" title="Eliminar notificación">
+                                    🗑️
+                                </button>
+
+
+                        </div>
+                        
+                        
                     </div>
                 </div>
             }

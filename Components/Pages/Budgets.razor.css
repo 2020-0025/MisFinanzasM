@@ -152,6 +152,10 @@
     .budgets-list-card .card-header {
         border-bottom: 1px solid rgba(255, 255, 255, 0.2);
         padding: 20px 30px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 20px;
     }
 
         .budgets-list-card .card-header h4 {
@@ -159,6 +163,34 @@
             margin-bottom: 0;
             font-weight: 600;
         }
+
+        .budgets-list-card .card-header .copy-button {
+            background: rgba(76, 175, 80, 0.25);
+            color: white;
+            border: 1px solid rgba(76, 175, 80, 0.5);
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            white-space: nowrap;
+        }
+
+            .budgets-list-card .card-header .copy-button:hover {
+                background: rgba(76, 175, 80, 0.35);
+                transform: translateY(-2px);
+                box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+            }
+
+            .budgets-list-card .card-header .copy-button:disabled {
+                opacity: 0.5;
+                cursor: not-allowed;
+                transform: none;
+            }
 
     .budgets-list-card .card-body {
         padding: 30px;
@@ -439,13 +471,16 @@
 
         .page-header .d-flex {
             flex-direction: column;
-            align-items: flex-start !important;
+            text-align: center;
         }
 
-            .page-header .d-flex > div,
-            .page-header .d-flex > button {
-                width: 100%;
+            .page-header .d-flex > div {
+                width: 80%;
                 margin-bottom: 10px;
+            }
+
+            .page-header .d-flex > button {
+                width: 60%;
             }
 
     .period-selector-card {

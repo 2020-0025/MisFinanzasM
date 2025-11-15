@@ -134,6 +134,29 @@
     font-size: 0.9rem;
 }
 
+.bg-danger-custom {
+    background-color: rgba(244, 67, 54, 0.25);
+}
+
+.bg-primary-custom {
+    background-color: rgba(33, 150, 243, 0.25);
+}
+
+.bg-success-custom {
+    background-color: rgba(76, 175, 80, 0.25);
+}
+
+.bg-secondary-custom {
+    background-color: rgba(158, 158, 158, 0.25);
+}
+
+.btn-danger-custom {
+    background-color: rgba(244, 67, 54, 0.25);
+}
+
+.btn-warning-custom {
+    background-color: rgba(255, 193, 7, 0.25);
+}
 /* Alertas */
 .alert {
     background: rgba(255, 255, 255, 0.05);
@@ -217,5 +240,10 @@
 
     .password-display {
         font-size: 0.75rem;
+    }
+
+    .admin-header .d-flex {
+        flex-direction: column;
+        text-align: center;
     }
 }

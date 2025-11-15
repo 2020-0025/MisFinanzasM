@@ -196,19 +196,19 @@
                             <div class="loan-info">
                                 <div class="row text-white">
                                     <div class="col-6">
-                                        <small>💵 Monto Prestado:</small>
+                                        <small class="text-white">💵 Monto Prestado:</small>
                                         <p><strong>@loan.PrincipalAmount.ToString("C")</strong></p>
                                     </div>
                                     <div class="col-6">
-                                        <small>📅 Cuota Mensual:</small>
+                                        <small class="text-white">📅 Cuota Mensual:</small>
                                         <p><strong>@loan.InstallmentAmount.ToString("C")</strong></p>
                                     </div>
                                     <div class="col-6">
-                                        <small>💰 Total a Pagar:</small>
+                                        <small class="text-white">💰 Total a Pagar:</small>
                                         <p><strong>@loan.TotalToPay.ToString("C")</strong></p>
                                     </div>
                                     <div class="col-6">
-                                        <small>📈 Interés Cobrado:</small>
+                                        <small class="text-white">📈 Interés Cobrado:</small>
                                         <p>
                                             <strong class="@GetInterestColorClass(loan.InterestRateCategory)">
                                                 @loan.TotalInterest.ToString("C") (@loan.ApproximateInterestRate.ToString("F2")%)
@@ -241,11 +241,11 @@
                             <div class="loan-footer text-white">
                                 <div class="row">
                                     <div class="col-6">
-                                        <small>🗓️ Inicio:</small>
+                                        <small class="text-white">🗓️ Inicio:</small>
                                         <p>@loan.StartDate.ToString("dd/MM/yyyy")</p>
                                     </div>
                                     <div class="col-6">
-                                        <small>📆 Próximo Pago:</small>
+                                        <small class="text-white">📆 Próximo Pago:</small>
                                         <p>@(loan.IsActive && !loan.IsCompleted ? loan.NextPaymentDate.ToString("dd/MM/yyyy") : "N/A")</p>
                                     </div>
                                 </div>

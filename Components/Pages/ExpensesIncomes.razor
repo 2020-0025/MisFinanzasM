@@ -38,14 +38,14 @@
                     <h1>💸 Gastos e Ingresos</h1>
                     <p class="mb-0 text-white">Registra tus Gastos e Ingresos</p>
                 </div>
-                <div class="d-flex gap-2">
-                    <button class="btnAddExpenses" @onclick="() => OpenModal(TransactionType.Expense)">
-                        <span style="font-size: 17px;">➕</span> Agregar Gasto
-                    </button>
-                    <button class="btnAddIncomes" @onclick="() => OpenModal(TransactionType.Income)">
-                        <span style="font-size: 17px;">➕</span> Agregar Ingreso
-                    </button>
-                </div>
+            </div>
+            <div class="btnSaveGroup gap-2">
+                <button class="btnAddExpenses" @onclick="() => OpenModal(TransactionType.Expense)">
+                    ➕ Agregar Gasto
+                </button>
+                <button class="btnAddIncomes" @onclick="() => OpenModal(TransactionType.Income)">
+                    ➕ Agregar Ingreso
+                </button>
             </div>
         </div>
 
@@ -90,7 +90,7 @@
                     <!-- Período -->
                     <div class="col-md-3">
                         <label class="form-label text-white">Período</label>
-                        <select class="form-select glass-card text-white" @bind="reportPeriodType">
+                        <select class="form-select glass-card text-white border-primary" @bind="reportPeriodType">
                             <option value="@ReportPeriodType.LastWeek">Última semana</option>
                             <option value="@ReportPeriodType.LastMonth">Último mes</option>
                             <option value="@ReportPeriodType.Last3Months">Últimos 3 meses</option>
@@ -105,18 +105,18 @@
                     {
                         <div class="col-md-2">
                             <label class="form-label text-white">Fecha Inicio</label>
-                            <input type="date" class="form-control" @bind="customStartDate" />
+                            <input type="date" class="form-control border-primary" @bind="customStartDate" />
                         </div>
                         <div class="col-md-2">
                             <label class="form-label text-white">Fecha Fin</label>
-                            <input type="date" class="form-control" @bind="customEndDate" />
+                            <input type="date" class="form-control border-primary" @bind="customEndDate" />
                         </div>
                     }
 
                     <!-- Tipo de transacción -->
                     <div class="col-md-3">
                         <label class="form-label text-white">Tipo</label>
-                        <select class="form-select glass-card text-white" @bind="reportTransactionType">
+                        <select class="form-select glass-card text-white border-primary" @bind="reportTransactionType">
                             <option value="">Ambos</option>
                             <option value="@TransactionType.Income">Solo Ingresos</option>
                             <option value="@TransactionType.Expense">Solo Gastos</option>
@@ -126,7 +126,7 @@
                     <!-- Categoría -->
                     <div class="col-md-3">
                         <label class="form-label text-white">Categoría</label>
-                        <select class="form-select glass-card text-white" @bind="reportCategoryId">
+                        <select class="form-select glass-card text-white border-primary" @bind="reportCategoryId">
                             <option value="0">Todas las categorías</option>
                             @foreach (var category in allCategories)
                             {

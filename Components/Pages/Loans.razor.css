@@ -100,7 +100,6 @@
 
     .filters-card .btn {
         flex: 1;
-        border-radius: 10px;
         margin: 0 5px;
         padding: 10px;
         transition: all 0.3s ease;
@@ -572,9 +571,19 @@
         padding: 15px;
     }
 
-    .page-header {
-        padding: 20px;
+    .page-header .d-flex {
+        flex-direction: column;
+        text-align: center;
     }
+
+        .page-header .d-flex > div {
+            width: 80%;
+            margin-bottom: 10px;
+        }
+
+        .page-header .d-flex > button {
+            width: 60%;
+        }
 
     .summary-card {
         padding: 20px;
@@ -595,7 +604,7 @@
 
     .modal-content-custom {
         margin: 10px;
-        max-height: 95vh;
+        max-height: 70vh;
     }
 
     .modal-body-custom {
