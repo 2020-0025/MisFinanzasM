@@ -247,3 +247,11 @@
         text-align: center;
     }
 }
+
+@media (max-height: 710px) {
+    .users-table-card {
+        max-height: 400px;
+        overflow-y: auto;
+        margin-bottom: 30px;
+    }
+}

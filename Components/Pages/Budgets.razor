@@ -42,7 +42,7 @@
             <div class="row align-items-center">
                 <div class="col-md-4">
                     <label class="form-label text-white">Mes</label>
-                    <select class="form-select glass-card" @bind="selectedMonth" @bind:after="LoadData">
+                    <select class="form-select glass-card border-primary" @bind="selectedMonth" @bind:after="LoadData">
                         <option value="1">Enero</option>
                         <option value="2">Febrero</option>
                         <option value="3">Marzo</option>
@@ -59,7 +59,7 @@
                 </div>
                 <div class="col-md-4">
                     <label class="form-label text-white">Año</label>
-                    <select class="form-select glass-card" @bind="selectedYear" @bind:after="LoadData">
+                    <select class="form-select glass-card border-primary" @bind="selectedYear" @bind:after="LoadData">
                         @for (int year = DateTime.Now.Year - 1; year <= DateTime.Now.Year + 1; year++)
                         {
                             <option value="@year">@year</option>
@@ -67,7 +67,7 @@
                     </select>
                 </div>
                 <div class="col-md-4 d-flex align-items-end">
-                    <button class="btnCurrectMonth w-100" @onclick="SetCurrentMonth">
+                    <button class="btnCurrectMonth w-100 border-primary" @onclick="SetCurrentMonth">
                         <i class="bi bi-calendar-today"></i> Mes Actual
                     </button>
                 </div>

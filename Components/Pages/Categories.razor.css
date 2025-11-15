@@ -348,6 +348,12 @@
     }
 }
 
+@media (max-width: 412px) {
+    .page-header .d-flex > button {
+        width: 70%;
+    }
+}
+
 /* Animación para mensajes de éxito */
 .alert-success {
     animation: fadeIn 0.3s ease-in;

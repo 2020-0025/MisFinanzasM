@@ -115,31 +115,31 @@
     {
         <NavLink href="/dashboard" class="footer-nav-item">
             <span style="font-size: 20px;">📊</span>
-            <span class="text-white" style="font-size: 10px;">Control</span>
+            <span class="text-white" style="font-size: 50%;">Control</span>
         </NavLink>
 
         <NavLink href="/categories" class="footer-nav-item">
             <span style="font-size: 20px;">🏷️</span>
-            <span class="text-white" style="font-size: 10px;">Categorías</span>
+            <span class="text-white" style="font-size: 50%;">Categorías</span>
         </NavLink>
 
         <NavLink href="/budgets" class="footer-nav-item">
             <span style="font-size: 20px;">💰</span>
-            <span class="text-white" style="font-size: 10px;">Presupuestos</span>
+            <span class="text-white" style="font-size: 50%;">Presupuestos</span>
         </NavLink>
 
         <NavLink href="/goals" class="footer-nav-item">
             <span style="font-size: 20px;">🎯</span>
-            <span class="text-white" style="font-size: 10px;">Metas</span>
+            <span class="text-white" style="font-size: 50%;">Metas</span>
         </NavLink>
 
         <NavLink href="/expenses-incomes" class="footer-nav-item">
             <span style="font-size: 20px;">💳</span>
-            <span class="text-white" style="font-size: 10px;">Gastos/Ingresos</span>
+            <span class="text-white" style="font-size: 50%;">Gastos/Ingresos</span>
         </NavLink>
         <NavLink href="/loans" class="footer-nav-item">
             <span style="font-size: 20px;">🏦</span>
-            <span class="text-white" style="font-size: 10px;">Préstamos</span>
+            <span class="text-white" style="font-size: 50%;">Préstamos</span>
         </NavLink>
     }
 </nav>
@@ -922,9 +922,15 @@
         }
 
         .footer-nav-item span {
-            font-size: 0.8rem;
+            font-size: 2rem;
         }
 
+    }
+
+    @@media (max-width: 840px) {
+        .footer-nav-item span {
+            font-size: 3rem;
+        }
     }
 
     
@@ -947,7 +953,7 @@
         }
 
         .footer-nav-item span {
-            font-size: 0.85rem;
+            font-size: 2rem;
         }
 
     }
@@ -986,7 +992,7 @@
         .footer-nav-item span:first-child
 
     {
-        font-size: 2rem;
+        font-size: 3rem;
     }
 
     .footer-nav-item span {

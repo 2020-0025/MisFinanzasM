@@ -398,7 +398,7 @@
     }
 
 /* Responsive */
-@media (max-width: 768px) {
+@media (max-width: 1114px) {
     .expenses-container {
         padding: 15px;
     }
@@ -457,7 +457,7 @@
     }
 
     .balance-info h3 {
-        font-size: 1.5rem;
+        font-size: 85%;
     }
 
     .table-responsive {
@@ -469,6 +469,32 @@
         max-height: 350px;
         /* 2. Muestra el scroll vertical SI es necesario */
         overflow-y: auto;
+    }
+}
+
+@media (max-width: 480px) {
+    .page-header .btnSaveGroup .btnAddExpenses {
+       
+        width: 70%;
+        font-size: 0.7rem;
+    }
+
+    .page-header .btnSaveGroup .btnAddIncomes {
+        
+        width: 70%;
+        font-size: 0.7rem;
+    }
+}
+
+@media (max-width: 390px) {
+    .page-header .btnSaveGroup .btnAddExpenses {
+        width: 50%;
+        font-size: 50%;
+    }
+
+    .page-header .btnSaveGroup .btnAddIncomes {
+        width: 50%;
+        font-size: 50%;
     }
 }
 
