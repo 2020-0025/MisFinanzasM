@@ -7,7 +7,7 @@ namespace MisFinanzas.Infrastructure.Services
 {
     public class PdfReportGenerator
     {
-        public byte[] GeneratePdf(ReportDataDto reportData)
+        public byte[] GeneratePdf(ReportDataDto reportData, string logoPath)
         {
             var document = new PdfDocument();
             var page = document.AddPage();
@@ -22,11 +22,29 @@ namespace MisFinanzas.Infrastructure.Services
 
             double yPosition = 40;
 
-            // Encabezado
-            gfx.DrawString("MIS FINANZAS", fontTitle, XBrushes.Blue, new XPoint(40, yPosition));
-            yPosition += 25;
-            gfx.DrawString("Reporte Financiero", fontSubtitle, XBrushes.Gray, new XPoint(40, yPosition));
-            yPosition += 30;
+            // LOGO - Mejor alineación con el título
+            try
+            {
+                if (!string.IsNullOrEmpty(logoPath) && File.Exists(logoPath))
+                {
+                    using var logoImage = XImage.FromFile(logoPath);
+                    // Logo más arriba para alinearse con el centro del título
+                    gfx.DrawImage(logoImage, 40, yPosition - 7,  80, 80); //  Cambio: yPosition + 5
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error loading logo: {ex.Message}");
+            }
+
+            // Ajustar posición del texto para que quede al lado del logo
+            double textStartX = 130;
+
+            // Encabezado - centrado verticalmente con el logo
+            gfx.DrawString("MIS FINANZAS", fontTitle, XBrushes.Blue, new XPoint(textStartX, yPosition + 28)); // 🔥 Ajustado
+            gfx.DrawString("Reporte Financiero", fontSubtitle, XBrushes.Gray, new XPoint(textStartX, yPosition + 48)); // 🔥 Ajustado
+
+            yPosition += 80; // Mantener igual
 
             // Información del período
             gfx.DrawRectangle(XBrushes.LightGray, 40, yPosition, page.Width - 80, 60);
@@ -81,7 +99,7 @@ namespace MisFinanzas.Infrastructure.Services
                 yPosition = CheckNewPage(document, ref page, ref gfx, yPosition, fontTitle, fontSubtitle, fontHeader, fontNormal, fontSmall, fontBold);
 
                 gfx.DrawString("GASTOS POR CATEGORÍA", fontHeader, XBrushes.Blue, new XPoint(40, yPosition));
-                yPosition += 20;
+                yPosition += 15; //  AUMENTADO de 20 a 25
 
                 // Encabezados de tabla
                 gfx.DrawRectangle(XBrushes.LightGray, 40, yPosition, page.Width - 80, 18);
@@ -101,7 +119,7 @@ namespace MisFinanzas.Infrastructure.Services
                     gfx.DrawString(category.TransactionCount.ToString(), fontNormal, XBrushes.Black, new XPoint(480, yPosition + 10));
                     yPosition += 18;
                 }
-                yPosition += 10;
+                yPosition += 20; //  AUMENTADO de 10 a 15 (espacio después de la sección)
             }
 
             // Ingresos por categoría
@@ -110,7 +128,7 @@ namespace MisFinanzas.Infrastructure.Services
                 yPosition = CheckNewPage(document, ref page, ref gfx, yPosition, fontTitle, fontSubtitle, fontHeader, fontNormal, fontSmall, fontBold);
 
                 gfx.DrawString("INGRESOS POR CATEGORÍA", fontHeader, XBrushes.Blue, new XPoint(40, yPosition));
-                yPosition += 20;
+                yPosition += 15; //  AUMENTADO de 20 a 25
 
                 // Encabezados de tabla
                 gfx.DrawRectangle(XBrushes.LightGray, 40, yPosition, page.Width - 80, 18);
@@ -130,7 +148,7 @@ namespace MisFinanzas.Infrastructure.Services
                     gfx.DrawString(category.TransactionCount.ToString(), fontNormal, XBrushes.Black, new XPoint(480, yPosition + 10));
                     yPosition += 18;
                 }
-                yPosition += 10;
+                yPosition += 20; //  AUMENTADO de 10 a 15 (espacio después de la sección)
             }
 
             // Detalle de transacciones (primeras 30)
@@ -139,7 +157,7 @@ namespace MisFinanzas.Infrastructure.Services
                 yPosition = CheckNewPage(document, ref page, ref gfx, yPosition, fontTitle, fontSubtitle, fontHeader, fontNormal, fontSmall, fontBold);
 
                 gfx.DrawString("DETALLE DE TRANSACCIONES", fontHeader, XBrushes.Blue, new XPoint(40, yPosition));
-                yPosition += 20;
+                yPosition += 15; // AUMENTADO de 20 a 25
 
                 // Encabezados de tabla
                 gfx.DrawRectangle(XBrushes.LightGray, 40, yPosition, page.Width - 80, 18);
