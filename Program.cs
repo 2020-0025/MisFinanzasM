@@ -209,18 +209,19 @@ using (var scope = app.Services.CreateScope())
     }
 }
 
-// Aplicar ForwardedHeaders lo más temprano posible
-app.UseForwardedHeaders();
-
-// Forzar HTTPS en producción
+// Forzar HTTPS en producción ANTES de cualquier otro middleware
 if (!app.Environment.IsDevelopment())
 {
-    app.Use((context, next) =>
+    app.Use(async (context, next) =>
     {
         context.Request.Scheme = "https";
-        return next();
+        context.Request.Host = new HostString(context.Request.Host.Host, 443);
+        await next();
     });
 }
+
+// Aplicar ForwardedHeaders
+app.UseForwardedHeaders();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
