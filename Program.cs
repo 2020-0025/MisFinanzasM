@@ -187,9 +187,9 @@ builder.Services.AddScoped<FinancialGoalService>();
 builder.Services.AddScoped<BudgetService>();
 
 // Registrar servicio de fondo para notificaciones automáticas
-// TEMPORALMENTE DESHABILITADO para configuración de PostgreSQL/Render
-// builder.Services.AddHostedService<NotificationBackgroundService>();
-
+// ACTIVO EN MODO TESTING (cada 1 minuto) para demostración/presentación
+// Ver NotificationBackgroundService.cs para cambiar a modo producción (24 horas)
+builder.Services.AddHostedService<NotificationBackgroundService>();
 // Registrar servicios de reportes
 builder.Services.AddScoped<ReportService>();
 builder.Services.AddScoped<PdfReportGenerator>();

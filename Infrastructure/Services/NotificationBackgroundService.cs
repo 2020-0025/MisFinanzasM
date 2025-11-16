@@ -4,16 +4,33 @@ using Microsoft.Extensions.Logging;
 using MisFinanzas.Infrastructure.Interfaces;
 
 namespace MisFinanzas.Infrastructure.Services;
-
 /// Servicio de fondo que genera automáticamente notificaciones para gastos fijos
-/// Se ejecuta cada día a las 12:00 AM (medianoche)
+///
+/// ========== CONFIGURACIÓN DE MODO ==========
+///
+/// MODO TESTING (Para demostración/presentación):
+/// - Línea 36: Mantener TimeSpan.FromMinutes(1) activo
+/// - Línea 33: Mantener TimeSpan.FromHours(24) comentado
+/// - Línea 51: Mantener await WaitUntilMidnight() comentado
+/// - Línea 54: Mantener mensaje "MODO TESTING" activo
+///
+/// MODO PRODUCCIÓN (Después de la presentación):
+/// - Línea 36: Comentar TimeSpan.FromMinutes(1)
+/// - Línea 33: Descomentar TimeSpan.FromHours(24)
+/// - Línea 51: Descomentar await WaitUntilMidnight()
+/// - Línea 54: Comentar mensaje "MODO TESTING"
+///
+/// ==========================================
 public class NotificationBackgroundService : BackgroundService
 {
     private readonly IServiceProvider _serviceProvider;
     private readonly ILogger<NotificationBackgroundService> _logger;
-    //private readonly TimeSpan _checkInterval = TimeSpan.FromHours(24); // Verificar cada 24 horas
 
-    private readonly TimeSpan _checkInterval = TimeSpan.FromMinutes(1); // TESTING: Verificar cada minuto (cambiar a 24 horas en producción)
+    // MODO PRODUCCIÓN: Descomentar esta línea después de la presentación
+    // private readonly TimeSpan _checkInterval = TimeSpan.FromHours(24);
+
+    // MODO TESTING: Comentar esta línea después de la presentación
+    private readonly TimeSpan _checkInterval = TimeSpan.FromMinutes(1);
 
     public NotificationBackgroundService(
         IServiceProvider serviceProvider,
@@ -27,10 +44,10 @@ public class NotificationBackgroundService : BackgroundService
     {
         _logger.LogInformation("🔔 NotificationBackgroundService iniciado");
 
-        // Esperar hasta la próxima medianoche para la primera ejecución
-
-        // TESTING: Ejecutar inmediatamente sin esperar medianoche
+        // MODO PRODUCCIÓN: Descomentar esta línea después de la presentación
         // await WaitUntilMidnight(stoppingToken);
+
+        // MODO TESTING: Comentar esta línea después de la presentación
         _logger.LogInformation("⚡ MODO TESTING: Ejecutando inmediatamente cada minuto");
 
         while (!stoppingToken.IsCancellationRequested)
@@ -52,10 +69,7 @@ public class NotificationBackgroundService : BackgroundService
                 _logger.LogError(ex, "❌ Error al generar notificaciones automáticas");
             }
 
-            // Esperar 24 horas hasta la próxima ejecución
-           // await Task.Delay(_checkInterval, stoppingToken);
-
-            // Esperar el intervalo configurado (1 minuto en testing, 24 horas en producción)
+            // Esperar el intervalo configurado (1 minuto en modo testing, 24 horas en modo producción)
             await Task.Delay(_checkInterval, stoppingToken);
         }
     }
