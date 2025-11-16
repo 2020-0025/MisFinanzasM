@@ -213,6 +213,17 @@ builder.Services.Configure<ForwardedHeadersOptions>(options =>
 
 var app = builder.Build();
 
+// Forzar HTTPS en producción ANTES de cualquier otro middleware
+if (!app.Environment.IsDevelopment())
+{
+    app.Use(async (context, next) =>
+    {
+        context.Request.Scheme = "https";
+        context.Request.Host = new HostString(context.Request.Host.Host);
+        await next();
+    });
+}
+
 // APLICAR MIGRACIONES AUTOMÁTICAMENTE EN PRODUCCIÓN
 using (var scope = app.Services.CreateScope())
 {
@@ -239,17 +250,6 @@ using (var scope = app.Services.CreateScope())
         // En producción, podrías querer que falle si no puede migrar
         // throw;
     }
-}
-
-// Forzar HTTPS en producción ANTES de cualquier otro middleware
-if (!app.Environment.IsDevelopment())
-{
-    app.Use(async (context, next) =>
-    {
-        context.Request.Scheme = "https";
-        context.Request.Host = new HostString(context.Request.Host.Host);
-        await next();
-    });
 }
 
 // Aplicar ForwardedHeaders
