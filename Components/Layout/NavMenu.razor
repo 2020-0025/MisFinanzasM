@@ -671,6 +671,7 @@
         box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
     }
 
+    /* NAVBAR CONTENT – LAYOUT ARREGLADO */
     .navbar-content {
         height: 100%;
         padding: 0 2rem;
@@ -678,15 +679,20 @@
         align-items: center;
         justify-content: space-between;
         gap: 0.5rem;
+        flex-wrap: wrap; /* permite reorganización en zoom */
+        row-gap: 0.5rem; /* espacio vertical si baja de línea */
     }
 
-    /* ===== LINKS DESKTOP ===== */
+    /* LINKS DESKTOP – FIX DEL PROBLEMA */
     .navbar-links {
         display: flex;
         align-items: center;
         gap: 0.5rem;
-        flex: 1;
-        justify-content: center;
+        /* Removemos flex:1 (causa principal del desplazamiento) */
+        /* flex: 1;  LO QUITAMOS */
+
+        justify-content: center; /* mantiene centrado */
+        flex-wrap: wrap; /* permite que NO se mueva a la izquierda */
     }
 
     .nav-link-horizontal {
