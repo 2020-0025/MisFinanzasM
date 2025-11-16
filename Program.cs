@@ -53,6 +53,16 @@ authBuilder.AddGoogle(options =>
     options.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"]
         ?? throw new InvalidOperationException("Google ClientSecret not configured");
     options.CallbackPath = "/signin-google";
+    // Forzar uso de HTTPS en producción (Render)
+    if (!builder.Environment.IsDevelopment())
+    {
+        options.Events.OnRedirectToAuthorizationEndpoint = context =>
+        {
+            context.HttpContext.Request.Scheme = "https";
+            context.Response.Redirect(context.RedirectUri.Replace("http://", "https://"));
+            return Task.CompletedTask;
+        };
+    }
     options.SaveTokens = true;
 
     // Solicitar permisos de perfil y email
@@ -69,6 +79,16 @@ authBuilder.AddMicrosoftAccount(options =>
     options.ClientSecret = builder.Configuration["Authentication:Microsoft:ClientSecret"]
         ?? throw new InvalidOperationException("Microsoft ClientSecret not configured");
     options.CallbackPath = "/signin-microsoft";
+    // Forzar uso de HTTPS en producción (Render)
+    if (!builder.Environment.IsDevelopment())
+    {
+        options.Events.OnRedirectToAuthorizationEndpoint = context =>
+        {
+            context.HttpContext.Request.Scheme = "https";
+            context.Response.Redirect(context.RedirectUri.Replace("http://", "https://"));
+            return Task.CompletedTask;
+        };
+    }
     options.SaveTokens = true;
 
     // Solicitar permisos de perfil y email
