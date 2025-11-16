@@ -1047,11 +1047,12 @@
         }
 
         // Cargar notificaciones si está autenticado
-        if (_isAuthenticated)
-        {
-            await LoadNotifications();
-            StartNotificationTimer();
-        }
+        // TEMPORALMENTE DESHABILITADO para configuración de PostgreSQL/Render
+        // if (_isAuthenticated)
+        // {
+        //     await LoadNotifications();
+        //     StartNotificationTimer();
+        // }
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -1064,10 +1065,11 @@
             await InvokeAsync(StateHasChanged);
 
             // Cargar notificaciones después de autenticarse
-            if (_isAuthenticated)
-            {
-                await LoadNotifications();
-            }
+            // TEMPORALMENTE DESHABILITADO para configuración de PostgreSQL/Render
+            // if (_isAuthenticated)
+            // {
+            //     await LoadNotifications();
+            // }
         }
     }
 
@@ -1083,18 +1085,19 @@
         UpdateLocalState();
         InvokeAsync(StateHasChanged);
 
-        // Cargar notificaciones cuando cambia el estado de autenticación
-        if (_isAuthenticated)
-        {
-            InvokeAsync(async () => await LoadNotifications());
-            StartNotificationTimer();
-        }
-        else
-        {
-            StopNotificationTimer();
-            notifications.Clear();
-            unreadCount = 0;
-        }
+       // Cargar notificaciones cuando cambia el estado de autenticación
+       // TEMPORALMENTE DESHABILITADO para configuración de PostgreSQL/Render
+       // if (_isAuthenticated)
+       // {
+       //     InvokeAsync(async () => await LoadNotifications());
+       //     StartNotificationTimer();
+       // }
+       // else
+      //  {
+         //   StopNotificationTimer();
+         //   notifications.Clear();
+         //   unreadCount = 0;
+      //  }
     }
 
     private async Task Logout()
