@@ -170,6 +170,14 @@ builder.WebHost.ConfigureKestrel(options =>
     options.ListenAnyIP(int.Parse(port));
 });
 
+// Configurar ForwardedHeaders en el builder (ANTES de construir la app)
+builder.Services.Configure<ForwardedHeadersOptions>(options =>
+{
+    options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+    options.KnownNetworks.Clear();
+    options.KnownProxies.Clear();
+});
+
 
 var app = builder.Build();
 
@@ -201,7 +209,10 @@ using (var scope = app.Services.CreateScope())
     }
 }
 
-// Configurar headers para detectar HTTPS cuando está detrás de un proxy (Render)
+// Aplicar ForwardedHeaders lo más temprano posible
+app.UseForwardedHeaders();
+
+// Forzar HTTPS en producción
 if (!app.Environment.IsDevelopment())
 {
     app.Use((context, next) =>
@@ -210,14 +221,6 @@ if (!app.Environment.IsDevelopment())
         return next();
     });
 }
-
-var forwardedHeadersOptions = new ForwardedHeadersOptions
-{
-    ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
-};
-forwardedHeadersOptions.KnownNetworks.Clear();
-forwardedHeadersOptions.KnownProxies.Clear();
-app.UseForwardedHeaders(forwardedHeadersOptions);
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
