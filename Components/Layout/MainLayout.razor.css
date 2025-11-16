@@ -50,6 +50,21 @@ main {
     }
 }
 
+@media (max-width: 420px) {
+    .sidebar {
+        width: 100%;
+    }
+
+    main {
+        padding: 0.5rem !important;
+    }
+
+    .top-row {
+        height: auto;
+        padding: 0.75rem;
+    }
+}
+
 @media (min-width: 641px) {
     .page {
         flex-direction: row;

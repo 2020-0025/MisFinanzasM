@@ -34,7 +34,7 @@
 .auth-card-column {
     display: flex;
     flex-direction: column;
-    min-width: 350px;
+    min-width: 280px;
 }
 
 /* SEPARADOR VERTICAL */
@@ -322,25 +322,32 @@
 }
 
 @media (max-width: 576px) {
+    .auth-container-split {
+        padding: 20px 10px;
+    }
+
     .auth-grid {
-        padding: 20px;
+        padding: 20px 15px;
+    }
+
+    .auth-card-column {
+        min-width: auto;
     }
 
     .login-footer-custom {
-        display: flex;
-        gap: 10px;
-        justify-content: flex-end;
-        margin-top: 20px;
+        flex-direction: column;
+        gap: 8px;
+        align-items: stretch;
     }
 
-    .btnGoogle {
-        width: 70%;
-        margin: 0 auto;
+    .btnLogin, .btnComeBack {
+        width: 100%;
+        text-align: center;
     }
 
-    .btnMicrosoft {
-        width: 70%;
-        margin: 0 auto;
+    .btnGoogle, .btnMicrosoft {
+        width: 80%;
+        font-size: 14px;
     }
 }
 
@@ -352,5 +359,35 @@
 
     .btnMicrosoft {
         width: 90%;
+    }
+}
+
+@media (max-width: 380px) {
+    .auth-header h2 {
+        font-size: 1.3rem;
+    }
+
+    .auth-header p {
+        font-size: 0.85rem;
+    }
+
+    .form-label {
+        font-size: 0.85rem;
+    }
+
+    .form-control {
+        padding: 10px;
+        font-size: 0.9rem;
+    }
+
+    .btnGoogle, .btnMicrosoft {
+        width: 95%;
+        padding: 10px 15px;
+        font-size: 13px;
+    }
+
+    .btnExternal svg {
+        width: 16px;
+        height: 16px;
     }
 }

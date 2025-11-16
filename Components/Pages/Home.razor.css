@@ -165,6 +165,31 @@
    
 }
 
+@media (max-width: 400px) {
+    .title {
+        flex-direction: column !important;
+        text-align: center !important;
+    }
+
+        .title img {
+            width: 60px !important;
+            height: 60px !important;
+        }
+
+    h1 {
+        font-size: 1.8rem !important;
+    }
+
+    .home-container {
+        padding: 15px !important;
+    }
+
+    /* Reducir tamaño de cards en móviles pequeños */
+    .glass-card {
+        padding: 20px !important;
+    }
+}
+
                            
 @media (max-width: 360px) {
 
@@ -180,6 +205,10 @@
     }
 
     h1 {
-        font-size: 1.5rem !important;
+        font-size: 1.6rem !important;
+    }
+
+    .title {
+        flex-direction: column !important;
     }
 }

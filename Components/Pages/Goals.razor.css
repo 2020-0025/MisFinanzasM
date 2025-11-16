@@ -541,6 +541,83 @@
     }
 }
 
+@media (max-width: 576px) {
+    .goals-container {
+        padding: 10px;
+    }
+
+    .page-header {
+        padding: 15px;
+    }
+
+        .page-header h2 {
+            font-size: 1.3rem;
+        }
+
+    .balance-info-card h3 {
+        font-size: 1.2rem;
+    }
+
+    .goal-card {
+        padding: 15px;
+    }
+
+    .goal-icon {
+        font-size: 2rem;
+    }
+
+    .goal-header h4 {
+        font-size: 1.1rem;
+    }
+
+    .progress-bar {
+        height: 6px;
+    }
+
+    .goal-footer {
+        font-size: 0.8rem;
+    }
+}
+
+@media (max-width: 420px) {
+    .goals-container {
+        padding: 8px;
+    }
+
+    .page-header {
+        padding: 12px;
+    }
+
+        .page-header h2 {
+            font-size: 1.1rem;
+        }
+
+    .balance-info-card h3 {
+        font-size: 1rem;
+    }
+
+    .goal-card {
+        padding: 12px;
+    }
+
+    .goal-icon {
+        font-size: 1.75rem;
+    }
+
+    .goal-header h4 {
+        font-size: 1rem;
+    }
+
+    .goal-amount {
+        font-size: 1.1rem;
+    }
+
+    .goal-actions .btn {
+        padding: 0.4rem 0.6rem;
+        font-size: 0.8rem;
+    }
+}
+
 /* Animación para mensajes de éxito */
 .alert-success {
     animation: fadeIn 0.3s ease-in;
