@@ -29,6 +29,15 @@ CultureInfo.DefaultThreadCurrentUICulture = dominicanCulture;
 // Leer configuración de encriptación
 var useEncryption = builder.Configuration.GetValue<bool>("Security:UsePasswordEncryption");
 
+// Configurar que la aplicación siempre use HTTPS en producción
+if (!builder.Environment.IsDevelopment())
+{
+    builder.Services.AddHttpsRedirection(options =>
+    {
+        options.HttpsPort = 443;
+    });
+}
+
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
@@ -45,6 +54,12 @@ var authBuilder = builder.Services.AddAuthentication(options =>
 });
 
 authBuilder.AddIdentityCookies();
+
+// Configurar cookies para usar HTTPS
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+});
 
 authBuilder.AddGoogle(options =>
 {
