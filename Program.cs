@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
 using MisFinanzas.Components;
 using MisFinanzas.Domain.Entities;
@@ -199,6 +200,12 @@ using (var scope = app.Services.CreateScope())
         // throw;
     }
 }
+
+// Configurar headers para detectar HTTPS cuando está detrás de un proxy (Render)
+app.UseForwardedHeaders(new ForwardedHeadersOptions
+{
+    ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+});
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
