@@ -215,6 +215,28 @@
       
     }
 
+
+    /* Paginación */
+.pagination-container {
+    padding: 1rem;
+    background: transparent;
+    border-radius: 8px;
+    backdrop-filter: blur(20px);
+}
+
+    .pagination-container .btn-outline-light:disabled {
+        opacity: 0.3;
+    }
+
+    .pagination-container .btn-primary {
+        background-color: rgba(13, 110, 253, 0.8);
+        border-color: rgba(13, 110, 253, 0.8);
+    }
+
+    .pagination-container .btn-outline-light:hover:not(:disabled) {
+        background-color: rgba(255, 255, 255, 0.1);
+    }
+
         
 
 
@@ -485,6 +507,10 @@
         width: 70%;
         font-size: 0.7rem;
     }
+
+    .pagination-container div {
+        align-content: center;
+    }
 }
 
 @media (max-width: 390px) {
@@ -498,6 +524,16 @@
         font-size: 50%;
     }
 }
+
+@media (max-height: 705px) and (max-width:1114px) {
+    .transactions-card {
+        /* 1. Define un límite de altura */
+        max-height: 450px;
+        /* 2. Muestra el scroll vertical SI es necesario */
+        overflow-y: auto;
+        margin-bottom: 3rem;
+    }
+})
 
 /* Animación para mensajes de éxito */
 .alert-success {

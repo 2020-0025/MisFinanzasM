@@ -212,7 +212,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach (var item in expensesIncomes)
+                                @foreach (var item in GetPagedTransactions())
                                 {
                                     <tr>
                                         <td>
@@ -248,6 +248,70 @@
                                 }
                             </tbody>
                         </table>
+
+                        <!-- Controles de Paginación -->
+                        <div class="pagination-container mt-3">
+                            <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+                                <!-- Selector de tamaño de página -->
+                                <div class="d-flex align-items-center gap-2">
+                                    <label class="text-white mb-0">Mostrar:</label>
+                                    <select class="form-select form-select-sm glass-card text-white border-primary"
+                                            style="width: auto;"
+                                            @onchange="@(e => ChangePageSize(int.Parse(e.Value?.ToString() ?? "10")))">
+                                        <option value="5" selected="@(pageSize == 5)">5</option>
+                                        <option value="10" selected="@(pageSize == 10)">10</option>
+                                        <option value="25" selected="@(pageSize == 25)">25</option>
+                                        <option value="50" selected="@(pageSize == 50)">50</option>
+                                        <option value="100" selected="@(pageSize == 100)">100</option>
+                                    </select>
+                                    <span class="text-white">registros por página</span>
+                                </div>
+
+                                <!-- Información de registros -->
+                                <div class="text-white">
+                                    Mostrando @((currentPage - 1) * pageSize + 1)
+                                    a @(Math.Min(currentPage * pageSize, expensesIncomes.Count))
+                                    de @expensesIncomes.Count registros
+                                </div>
+
+                                <!-- Botones de navegación -->
+                                <div class="btn-group" role="group">
+                                    <button type="button"
+                                            class="btn btn-sm btn-outline-light"
+                                            @onclick="PreviousPage"
+                                            disabled="@(currentPage == 1)">
+                                        ‹ Anterior
+                                    </button>
+
+                                    @for (int i = 1; i <= totalPages; i++)
+                                    {
+                                        var pageNumber = i;
+                                        @if (totalPages <= 7 ||
+                                                                    pageNumber == 1 ||
+                                                                    pageNumber == totalPages ||
+                                                                    (pageNumber >= currentPage - 1 && pageNumber <= currentPage + 1))
+                                        {
+                                            <button type="button"
+                                                    class="btn btn-sm @(currentPage == pageNumber ? "btn-primary" : "btn-outline-light")"
+                                                    @onclick="() => GoToPage(pageNumber)">
+                                                @pageNumber
+                                            </button>
+                                        }
+                                        else if (pageNumber == currentPage - 2 || pageNumber == currentPage + 2)
+                                        {
+                                            <button type="button" class="btn btn-sm btn-outline-light" disabled>...</button>
+                                        }
+                                    }
+
+                                    <button type="button"
+                                            class="btn btn-sm btn-outline-light"
+                                            @onclick="NextPage"
+                                            disabled="@(currentPage == totalPages)">
+                                        Siguiente ›
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 }
             </div>
@@ -404,6 +468,14 @@
     private DateTime? customEndDate;
     private bool isGeneratingReport = false;
 
+    // Variables de paginación
+    private int currentPage = 1;
+    private int pageSize = 10;
+    private int totalPages => expensesIncomes == null || !expensesIncomes.Any()
+        ? 0
+        : (int)Math.Ceiling(expensesIncomes.Count / (double)pageSize);
+
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
@@ -468,6 +540,52 @@
         {
             isLoading = false;
         }
+    }
+
+    //Paginación
+    private List<ExpenseIncomeDto> GetPagedTransactions()
+    {
+        if (expensesIncomes == null || !expensesIncomes.Any())
+            return new List<ExpenseIncomeDto>();
+
+        return expensesIncomes
+            .Skip((currentPage - 1) * pageSize)
+            .Take(pageSize)
+            .ToList();
+    }
+
+    private void GoToPage(int page)
+    {
+        if (page < 1 || page > totalPages)
+            return;
+
+        currentPage = page;
+        StateHasChanged();
+    }
+
+    private void NextPage()
+    {
+        if (currentPage < totalPages)
+        {
+            currentPage++;
+            StateHasChanged();
+        }
+    }
+
+    private void PreviousPage()
+    {
+        if (currentPage > 1)
+        {
+            currentPage--;
+            StateHasChanged();
+        }
+    }
+
+    private void ChangePageSize(int newSize)
+    {
+        pageSize = newSize;
+        currentPage = 1; // Resetear a la primera página
+        StateHasChanged();
     }
 
     private void OpenModal(TransactionType type)
@@ -847,4 +965,5 @@
         successTimer?.Dispose();
         errorTimer?.Dispose();
     }
+
 }
