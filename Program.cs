@@ -62,6 +62,12 @@ authBuilder.AddGoogle(options =>
             context.Response.Redirect(context.RedirectUri.Replace("http://", "https://"));
             return Task.CompletedTask;
         };
+
+        options.Events.OnRemoteFailure = context =>
+        {
+            context.HttpContext.Request.Scheme = "https";
+            return Task.CompletedTask;
+        };
     }
     options.SaveTokens = true;
 
@@ -86,6 +92,12 @@ authBuilder.AddMicrosoftAccount(options =>
         {
             context.HttpContext.Request.Scheme = "https";
             context.Response.Redirect(context.RedirectUri.Replace("http://", "https://"));
+            return Task.CompletedTask;
+        };
+
+        options.Events.OnRemoteFailure = context =>
+        {
+            context.HttpContext.Request.Scheme = "https";
             return Task.CompletedTask;
         };
     }
