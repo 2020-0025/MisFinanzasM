@@ -169,6 +169,34 @@ builder.WebHost.ConfigureKestrel(options =>
 
 var app = builder.Build();
 
+// APLICAR MIGRACIONES AUTOMÁTICAMENTE EN PRODUCCIÓN
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    try
+    {
+        var context = services.GetRequiredService<ApplicationDbContext>();
+
+        // Aplicar migraciones pendientes
+        if (context.Database.GetPendingMigrations().Any())
+        {
+            Console.WriteLine("🔄 Aplicando migraciones pendientes...");
+            context.Database.Migrate();
+            Console.WriteLine("✅ Migraciones aplicadas exitosamente");
+        }
+        else
+        {
+            Console.WriteLine("✅ Base de datos ya está actualizada");
+        }
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"❌ Error al aplicar migraciones: {ex.Message}");
+        // En producción, podrías querer que falle si no puede migrar
+        // throw;
+    }
+}
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
