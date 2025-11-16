@@ -9,6 +9,8 @@ using MisFinanzas.Infrastructure.Services;
 using MisFinanzas.Services;
 using System.Globalization;
 
+// Configurar PostgreSQL para usar timestamps sin zona horaria (compatibilidad con SQLite)
+AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -74,10 +76,24 @@ authBuilder.AddMicrosoftAccount(options =>
     Console.WriteLine("✅ Microsoft Authentication configured");
 });
 
-// CONFIGURAR SQLite CON NUESTRO DbContext
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
+// CONFIGURAR PostgreSQL
+// En producción (Render), usar variable de entorno DATABASE_URL
+var connectionString = Environment.GetEnvironmentVariable("DATABASE_URL")
+    ?? builder.Configuration.GetConnectionString("DefaultConnection")
+    ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+
+// Render usa formato DATABASE_URL de Heroku, convertir a formato Npgsql si es necesario
+if (connectionString.StartsWith("postgres://"))
+{
+    var uri = new Uri(connectionString);
+    connectionString = $"Host={uri.Host};Port={uri.Port};Database={uri.LocalPath.TrimStart('/')};Username={uri.UserInfo.Split(':')[0]};Password={uri.UserInfo.Split(':')[1]};SSL Mode=Require;Trust Server Certificate=true";
+}
+builder.Services.AddDbContextFactory<ApplicationDbContext>(options =>
+    options.UseNpgsql(connectionString));
+
+// Registrar también DbContext para servicios que lo necesiten directamente
+builder.Services.AddScoped(p =>
+    p.GetRequiredService<IDbContextFactory<ApplicationDbContext>>().CreateDbContext());
 
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
@@ -118,8 +134,11 @@ builder.Services.AddScoped<CategoryService>();
 builder.Services.AddScoped<ExpenseIncomeService>();
 builder.Services.AddScoped<FinancialGoalService>();
 builder.Services.AddScoped<BudgetService>();
+
 // Registrar servicio de fondo para notificaciones automáticas
-builder.Services.AddHostedService<NotificationBackgroundService>();
+// TEMPORALMENTE DESHABILITADO para configuración de PostgreSQL/Render
+// builder.Services.AddHostedService<NotificationBackgroundService>();
+
 // Registrar servicios de reportes
 builder.Services.AddScoped<ReportService>();
 builder.Services.AddScoped<PdfReportGenerator>();
@@ -138,6 +157,15 @@ builder.Services.AddSignalR(options =>
 {
     options.MaximumReceiveMessageSize = 10 * 1024 * 1024; // 10 MB
 });
+
+
+// Configurar puerto para Render (usa variable de entorno PORT)
+var port = Environment.GetEnvironmentVariable("PORT") ?? "5000";
+builder.WebHost.ConfigureKestrel(options =>
+{
+    options.ListenAnyIP(int.Parse(port));
+});
+
 
 var app = builder.Build();
 
