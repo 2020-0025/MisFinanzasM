@@ -1,4 +1,3 @@
-Usa esta versión final de render.yaml:
 services:
   - type: web
     name: misfinanzas
