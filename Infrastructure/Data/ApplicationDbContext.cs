@@ -101,7 +101,7 @@ namespace MisFinanzas.Infrastructure.Data
                     .HasMaxLength(500);
 
                 entity.Property(ei => ei.Date)
-                    .HasDefaultValueSql("datetime('now')");
+                    .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
                 // Relación con ApplicationUser
                 entity.HasOne(ei => ei.User)
@@ -123,7 +123,7 @@ namespace MisFinanzas.Infrastructure.Data
 
                 // Validación: Amount debe ser positivo
                 entity.ToTable(t => t.HasCheckConstraint(
-                    "CK_ExpenseIncome_Amount", "Amount > 0"));
+                   "CK_ExpenseIncome_Amount", "\"Amount\" > 0"));
             });
 
             // ====== CONFIGURACIÓN DE FINANCIAL GOALS ======
@@ -152,7 +152,7 @@ namespace MisFinanzas.Infrastructure.Data
                     .HasDefaultValue(0);
 
                 entity.Property(g => g.StartDate)
-                    .HasDefaultValueSql("datetime('now')");
+                    .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
                 entity.Property(g => g.TargetDate)
                     .IsRequired();
@@ -177,11 +177,11 @@ namespace MisFinanzas.Infrastructure.Data
 
                 // Validaciones
                 entity.ToTable(t => t.HasCheckConstraint(
-                    "CK_Goal_TargetAmount", "TargetAmount > 0"));
+                    "CK_Goal_TargetAmount", "\"TargetAmount\" > 0"));
                 entity.ToTable(t => t.HasCheckConstraint(
-                    "CK_Goal_CurrentAmount", "CurrentAmount >= 0"));
+                    "CK_Goal_CurrentAmount", "\"CurrentAmount\" >= 0"));
                 entity.ToTable(t => t.HasCheckConstraint(
-                    "CK_Goal_Dates", "TargetDate >= StartDate"));
+                    "CK_Goal_Dates", "\"TargetDate\" >= \"StartDate\""));
             });
 
             // ====== CONFIGURACIÓN DE BUDGETS (NUEVO) ======
@@ -224,13 +224,13 @@ namespace MisFinanzas.Infrastructure.Data
 
                 // Validaciones
                 entity.ToTable(t => t.HasCheckConstraint(
-                    "CK_Budget_AssignedAmount", "AssignedAmount > 0"));
+                    "CK_Budget_AssignedAmount", "\"AssignedAmount\" > 0"));
                 entity.ToTable(t => t.HasCheckConstraint(
-                    "CK_Budget_SpentAmount", "SpentAmount >= 0"));
+                    "CK_Budget_SpentAmount", "\"SpentAmount\" >= 0"));
                 entity.ToTable(t => t.HasCheckConstraint(
-                    "CK_Budget_Month", "Month BETWEEN 1 AND 12"));
+                    "CK_Budget_Month", "\"Month\" BETWEEN 1 AND 12"));
                 entity.ToTable(t => t.HasCheckConstraint(
-                    "CK_Budget_Year", "Year >= 2020"));
+                    "CK_Budget_Year", "\"Year\" >= 2020"));
 
                 // Ignorar propiedades calculadas (no se mapean a BD)
                 entity.Ignore(b => b.AvailableAmount);
@@ -254,7 +254,7 @@ namespace MisFinanzas.Infrastructure.Data
                     .HasDefaultValue(false);
 
                 entity.Property(n => n.CreatedAt)
-                    .HasDefaultValueSql("datetime('now')");
+                    .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
                 // Relación con ApplicationUser
                 entity.HasOne(n => n.User)
@@ -306,7 +306,7 @@ namespace MisFinanzas.Infrastructure.Data
                     .IsRequired();
 
                 entity.Property(l => l.StartDate)
-                    .HasDefaultValueSql("datetime('now')");
+                    .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
                 entity.Property(l => l.IsActive)
                     .HasDefaultValue(true);
@@ -333,15 +333,15 @@ namespace MisFinanzas.Infrastructure.Data
 
                 // Validaciones
                 entity.ToTable(t => t.HasCheckConstraint(
-                    "CK_Loan_PrincipalAmount", "PrincipalAmount > 0"));
+                    "CK_Loan_PrincipalAmount", "\"PrincipalAmount\" > 0"));
                 entity.ToTable(t => t.HasCheckConstraint(
-                    "CK_Loan_InstallmentAmount", "InstallmentAmount > 0"));
+                    "CK_Loan_InstallmentAmount", "\"InstallmentAmount\" > 0"));
                 entity.ToTable(t => t.HasCheckConstraint(
-                    "CK_Loan_NumberOfInstallments", "NumberOfInstallments >= 1 AND NumberOfInstallments <= 1000"));
+                    "CK_Loan_NumberOfInstallments", "\"NumberOfInstallments\" >= 1 AND \"NumberOfInstallments\" <= 1000"));
                 entity.ToTable(t => t.HasCheckConstraint(
-                    "CK_Loan_DueDay", "DueDay >= 1 AND DueDay <= 31"));
+                    "CK_Loan_DueDay", "\"DueDay\" >= 1 AND \"DueDay\" <= 31"));
                 entity.ToTable(t => t.HasCheckConstraint(
-                    "CK_Loan_InstallmentsPaid", "InstallmentsPaid >= 0"));
+                    "CK_Loan_InstallmentsPaid", "\"InstallmentsPaid\" >= 0"));
 
                 // Ignorar propiedades calculadas (no se mapean a BD)
                 entity.Ignore(l => l.TotalToPay);
@@ -400,7 +400,7 @@ namespace MisFinanzas.Infrastructure.Data
                     FullName = "Administrador del Sistema",
                     UserRole = "Admin",
                     IsActive = true,
-                    CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc)
+                    CreatedAt = DateTime.SpecifyKind(new DateTime(2024, 1, 1, 0, 0, 0), DateTimeKind.Utc)
                 }
             );
 

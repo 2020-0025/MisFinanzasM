@@ -9,13 +9,9 @@ namespace MisFinanzas.Infrastructure.Data
         public ApplicationDbContext CreateDbContext(string[] args)
         {
             var optionsBuilder = new DbContextOptionsBuilder<ApplicationDbContext>();
-            optionsBuilder.UseSqlite("Data Source=C:\\DataBases\\MisFinanzas.db");
+            optionsBuilder.UseNpgsql("Host=localhost;Database=misfinanzas_dev;Username=postgres;Password=postgres");
 
             return new ApplicationDbContext(optionsBuilder.Options);
         }
     }
-
-
-
-
 }
