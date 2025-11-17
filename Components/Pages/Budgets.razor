@@ -474,11 +474,11 @@
         }
     }
 
-    private void SetCurrentMonth()
+    private async Task SetCurrentMonth()
     {
         selectedMonth = DateTime.Now.Month;
         selectedYear = DateTime.Now.Year;
-        _ = LoadData();
+        await LoadData();
     }
 
     private void OpenCreateModal()
