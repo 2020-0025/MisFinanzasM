@@ -157,7 +157,7 @@ window.tourService = {
         const allSteps = [
             {
                 popover: {
-                    title: '💰 Bienvenido a Presupuestos',
+                    title: '💰 Presupuestos',
                     description: 'Los presupuestos te ayudan a controlar cuánto gastas en cada categoría mensualmente. Te guiaré por las funciones principales.',
                 }
             },
@@ -256,7 +256,7 @@ window.tourService = {
         const allSteps = [
             {
                 popover: {
-                    title: '🏷️ Bienvenido a Categorías',
+                    title: '🏷️ Categorías',
                     description: 'Las categorías te permiten organizar tus ingresos y gastos de forma clara y personalizada. Te guiaré por las funciones principales.',
                 }
             },
@@ -562,7 +562,7 @@ window.tourService = {
         const allSteps = [
             {
                 popover: {
-                    title: '🎯 Bienvenido a Metas Financieras',
+                    title: '🎯 Metas Financieras',
                     description: 'Define objetivos de ahorro y sigue tu progreso hacia ellos. Te guiaré por las funciones principales.',
                 }
             },
