@@ -140,15 +140,15 @@
                     <!-- Botones -->
                     <div class="col-12">
                         <div class="d-flex gap-2 justify-content-end">
-                            <button class="btnExportPdf" @onclick="GeneratePdfReport" disabled="@isGeneratingReport">
-                                @if (isGeneratingReport)
+                            <button class="btnExportPdf" @onclick="GeneratePdfReport" disabled="@isGeneratingPdf">
+                                @if (isGeneratingPdf)
                                 {
                                     <span class="spinner-border spinner-border-sm me-2"></span>
                                 }
                                 📄 Descargar PDF
                             </button>
-                            <button class="btnExportExcel" @onclick="GenerateExcelReport" disabled="@isGeneratingReport">
-                                @if (isGeneratingReport)
+                            <button class="btnExportExcel" @onclick="GenerateExcelReport" disabled="@isGeneratingExcel">
+                                @if (isGeneratingExcel)
                                 {
                                     <span class="spinner-border spinner-border-sm me-2"></span>
                                 }
@@ -467,7 +467,8 @@
     private int reportCategoryId = 0;
     private DateTime? customStartDate;
     private DateTime? customEndDate;
-    private bool isGeneratingReport = false;
+    private bool isGeneratingPdf = false;
+    private bool isGeneratingExcel = false;
 
     // Variables de paginación
     private int currentPage = 1;
@@ -814,7 +815,7 @@
     {
         try
         {
-            isGeneratingReport = true;
+            isGeneratingPdf = true;
             StateHasChanged();
 
             // Validar fechas personalizadas
@@ -886,7 +887,7 @@
         }
         finally
         {
-            isGeneratingReport = false;
+            isGeneratingPdf = false;
             StateHasChanged();
         }
     }
@@ -895,7 +896,7 @@
     {
         try
         {
-            isGeneratingReport = true;
+            isGeneratingExcel = true;
             StateHasChanged();
 
             // Validar fechas personalizadas
@@ -954,7 +955,7 @@
         }
         finally
         {
-            isGeneratingReport = false;
+            isGeneratingExcel = false;
             StateHasChanged();
         }
     }
