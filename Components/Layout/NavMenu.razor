@@ -1029,6 +1029,8 @@
     private int unreadCount = 0;
     private bool showDropdown = false;
     private System.Threading.Timer? notificationTimer;
+    private SemaphoreSlim _loadNotificationsSemaphore = new SemaphoreSlim(1, 1);
+    private bool _isLoadingNotifications = false;
 
     protected override async Task OnInitializedAsync()
     {
@@ -1111,8 +1113,18 @@
 
     private async Task LoadNotifications()
     {
+        // Evitar llamadas concurrentes
+        if (_isLoadingNotifications)
+            return;
+
+        // Intentar adquirir el semáforo (sin espera)
+        if (!await _loadNotificationsSemaphore.WaitAsync(0))
+            return;
+
         try
         {
+            _isLoadingNotifications = true;
+
             if (!_isAuthenticated || string.IsNullOrEmpty(AuthService.UserId))
                 return;
 
@@ -1123,6 +1135,11 @@
         catch (Exception ex)
         {
             Console.WriteLine($"Error loading notifications: {ex.Message}");
+        }
+        finally
+        {
+            _isLoadingNotifications = false;
+            _loadNotificationsSemaphore.Release();
         }
     }
 
@@ -1212,7 +1229,8 @@
 
     public void Dispose()
     {
-        AuthService.OnAuthStateChanged -= HandleAuthStateChanged;
         StopNotificationTimer();
+        _loadNotificationsSemaphore?.Dispose();
+        AuthService.OnAuthStateChanged -= HandleAuthStateChanged;
     }
 }
