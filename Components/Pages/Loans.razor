@@ -31,14 +31,17 @@
                     <h1>🏦 Préstamos</h1>
                     <p class="mb-0 text-white">Gestiona tus préstamos y cuotas</p>
                 </div>
-                <button class="btnAddLoans" @onclick="OpenCreateModal">
+                <button class="btn btn-help" @onclick="StartTour">
+                    <span style="font-size: 20px;">❓</span> Ayuda
+                </button>
+                <button class="btnAddLoans" id="loans-add-button" @onclick="OpenCreateModal">
                     <span style="font-size: 17px;">➕</span> Nuevo préstamo
                 </button>
             </div>
         </div>
 
         <!-- Resumen General -->
-        <div class="summary-card">
+        <div class="summary-card" id="loans-summary-card">
             <h4>📊 Resumen General</h4>
             <div class="row">
                 <div class="col-md-3 col-6">
@@ -83,7 +86,7 @@
         </div>
 
         <!-- Filtros -->
-        <div class="filters-card">
+        <div class="filters-card" id="loans-filters">
             <div class="btn-group" role="group">
                 <button class="text-white btn @(showActiveOnly ? "btn-primary" : "btn-outline-primary")"
                         @onclick="() => ToggleFilter(true)">
@@ -114,7 +117,7 @@
         }
 
         <!-- Lista de Préstamos -->
-        <div class="row">
+        <div class="row" id="loans-list">
             @if (isLoading)
             {
                 <div class="col-12">
@@ -159,27 +162,45 @@
                                     <div class="loan-actions">
                                         @if (loan.IsActive && !loan.IsCompleted)
                                         {
-                                            <button class="btn btn-sm btn-success" style="background-color:rgba(76, 175, 80, 0.25);" @onclick="() => RegisterPayment(loan.LoanId)" title="Registrar Pago">
+                                            <button class="btn btn-sm btn-success"
+                                                    id="@(filteredLoans.First() == loan ? "loans-register-payment-button" : "")"
+                                                    style="background-color:rgba(76, 175, 80, 0.25);"
+                                                    @onclick="() => RegisterPayment(loan.LoanId)"
+                                                    title="Registrar Pago">
                                                 <span style="font-size: 13px;">💵</span>
                                             </button>
                                             @if (loan.InstallmentsPaid > 0)
                                             {
-                                                <button class="btn btn-sm btn-info" style="background-color: rgba(33, 150, 243, 0.25);" @onclick="() => UndoLastPayment(loan.LoanId)" title="Deshacer Último Pago">
+                                                <button class="btn btn-sm btn-info"
+                                                        id="@(filteredLoans.First() == loan ? "loans-undo-payment-button" : "")"
+                                                        style="background-color: rgba(33, 150, 243, 0.25);"
+                                                        @onclick="() => UndoLastPayment(loan.LoanId)"
+                                                        title="Deshacer Último Pago">
                                                     <span style="font-size: 13px;">↩️</span>
                                                 </button>
                                             }
-                                            <button class="btn btn-sm btn-warning" style="background-color:rgba(255, 193, 7, 0.25);" @onclick="() => OpenEditModal(loan)" title="Editar">
+                                            <button class="btn btn-sm btn-warning"
+                                                    id="@(filteredLoans.First() == loan ? "loans-edit-button" : "")"
+                                                    style="background-color:rgba(255, 193, 7, 0.25);"
+                                                    @onclick="() => OpenEditModal(loan)"
+                                                    title="Editar">
                                                 <span style="font-size: 13px;">📝</span>
                                             </button>
                                         }
                                         else if (!loan.IsActive && !loan.IsCompleted)
                                         {
                                             <!-- Préstamo cancelado - mostrar botón reactivar -->
-                                            <button class="btn btn-sm btn-primary" style="background-color:rgba(76, 175, 80, 0.25);" @onclick="() => ReactivateLoan(loan.LoanId)" title="Reactivar Préstamo">
+                                            <button class="btn btn-sm btn-primary"
+                                                    id="@(filteredLoans.First() == loan ? "loans-reactivate-button" : "")"
+                                                    style="background-color:rgba(76, 175, 80, 0.25);"
+                                                    @onclick="() => ReactivateLoan(loan.LoanId)"
+                                                    title="Reactivar Préstamo">
                                                 <span style="font-size: 13px;">🔄</span>
                                             </button>
                                         }
-                                        <button class="btn btn-sm btn-danger" style="background-color:rgba(244, 67, 54, 0.25);"
+                                        <button class="btn btn-sm btn-danger"
+                                                id="@(filteredLoans.First() == loan ? "loans-delete-button" : "")"
+                                                style="background-color:rgba(244, 67, 54, 0.25);"
                                                 @onclick="() => HandleDeleteLoan(loan)"
                                                 title="@(loan.IsActive ? "Eliminar" : "Eliminar del historial")">
                                             <span style="font-size: 13px;">🗑️</span>
@@ -557,6 +578,11 @@
         {
             Console.WriteLine($"Error al cargar resumen: {ex.Message}");
         }
+    }
+
+    private async Task StartTour()
+    {
+        await JSRuntime.InvokeVoidAsync("tourService.startLoansTour");
     }
 
     private void ToggleFilter(bool activeOnly)

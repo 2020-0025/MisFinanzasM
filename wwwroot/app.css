@@ -42,6 +42,25 @@ body {
     align-content:center;
 }
 
+
+/*Boton de ayuda*/
+
+.btn-help {
+    background: rgba(255, 193, 7, 0.15);
+    border: 1px solid rgba(255, 193, 7, 0.3);
+    color: #FFC107;
+    padding: 10px 20px;
+    border-radius: 10px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+    .btn-help:hover {
+        background: rgba(255, 193, 7, 0.25);
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(255, 193, 7, 0.3);
+    }
+
 /* ===================================
    ANIMACIONES GLOBALES
    =================================== */

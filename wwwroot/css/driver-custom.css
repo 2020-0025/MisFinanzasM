@@ -1,0 +1,51 @@
+﻿/* Estilos personalizados para Driver.js */
+
+.driver-popover {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 12px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+}
+
+.driver-popover-title {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: white;
+}
+
+.driver-popover-description {
+    font-size: 0.95rem;
+    color: rgba(255, 255, 255, 0.95);
+    line-height: 1.5;
+}
+
+.driver-popover-footer {
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.driver-popover-next-btn,
+.driver-popover-prev-btn,
+.driver-popover-close-btn {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+    .driver-popover-next-btn:hover,
+    .driver-popover-prev-btn:hover {
+        background: rgba(255, 255, 255, 0.3);
+        transform: translateY(-2px);
+    }
+
+    .driver-popover-close-btn:hover {
+        background: rgba(244, 67, 54, 0.3);
+    }
+
+.driver-popover-progress-text {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.85rem;
+}

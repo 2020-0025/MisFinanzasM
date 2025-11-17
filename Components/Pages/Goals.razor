@@ -34,14 +34,17 @@
                     <h1>🎯 Metas Financieras</h1>
                     <p class="mb-0 text-white">Define y alcanza tus objetivos</p>
                 </div>
-                <button class="btnAddGoals" @onclick="OpenCreateModal">
+                <button class="btn btn-help" @onclick="StartTour">
+                    <span style="font-size: 20px;">❓</span> Ayuda
+                </button>
+                <button class="btnAddGoals" id="goals-add-button" @onclick="OpenCreateModal">
                     <span style="font-size: 17px;">➕</span> Nueva meta
                 </button>
             </div>
         </div>
 
         <!-- Balance Disponible -->
-        <div class="balance-info-card">
+        <div class="balance-info-card" id="goals-balance-card">
             <div class="d-flex justify-content-between align-items-center">
                 <div>
                     <h5 class="text-white">💵 Balance Disponible</h5>
@@ -60,7 +63,7 @@
         </div>
 
         <!-- Filtros -->
-        <div class="filters-card">
+        <div class="filters-card" id="goals-filters">
             <div class="btn-group" role="group">
                 <button class="btn btn-InProgress @(currentFilter == GoalStatus.InProgress ? "" : "btn-outline-primary")"
                         @onclick="() => FilterGoals(GoalStatus.InProgress)">
@@ -99,7 +102,7 @@
         }
 
         <!-- Lista de Metas -->
-        <div class="row">
+        <div class="row" id="goals-list">
             @if (isLoading)
             {
                 <div class="col-12">
@@ -135,37 +138,63 @@
                                     <div class="goal-actions">
                                         @if (goal.Status == GoalStatus.InProgress)
                                         {
-                                            <button class="btn btn-sm btn-success" style="background-color:rgba(76, 175, 80, 0.25);" @onclick="() => OpenProgressModal(goal)" title="Agregar progreso">
+                                            <button class="btn btn-sm btn-success"
+                                                    id="@(filteredGoals.First() == goal ? "goals-add-progress-button" : "")"
+                                                    style="background-color:rgba(76, 175, 80, 0.25);"
+                                                    @onclick="() => OpenProgressModal(goal)"
+                                                    title="Agregar progreso">
                                                 <span style="font-size: 13px;">➕</span>
                                             </button>
-                                            <button class="btn btn-sm btn-secondary" style="background-color:rgba(158, 158, 158, 0.25);" @onclick="() => OpenWithdrawModal(goal)" title="Retirar dinero">
+                                            <button class="btn btn-sm btn-secondary"
+                                                    id="@(filteredGoals.First() == goal ? "goals-withdraw-button" : "")"
+                                                    style="background-color:rgba(158, 158, 158, 0.25);"
+                                                    @onclick="() => OpenWithdrawModal(goal)"
+                                                    title="Retirar dinero">
                                                 <span style="font-size: 13px;">➖</span>
                                             </button>
-                                            <button class="btn btn-sm btn-warning" style="background-color:rgba(255, 193, 7, 0.25);" @onclick="() => OpenEditModal(goal)" title="Editar">
+                                            <button class="btn btn-sm btn-warning"
+                                                    id="@(filteredGoals.First() == goal ? "goals-edit-button" : "")"
+                                                    style="background-color:rgba(255, 193, 7, 0.25);"
+                                                    @onclick="() => OpenEditModal(goal)"
+                                                    title="Editar">
                                                 <span style="font-size: 13px;">📝</span>
                                             </button>
-                                            <button class="btn btn-sm btn-secondary" style="background-color: rgba(33, 150, 243, 0.25);" @onclick="() => ConfirmCancel(goal.GoalId, goal.Title)" title="Cancelar">
+                                            <button class="btn btn-sm btn-secondary"
+                                                    id="@(filteredGoals.First() == goal ? "goals-cancel-button" : "")"
+                                                    style="background-color: rgba(33, 150, 243, 0.25);"
+                                                    @onclick="() => ConfirmCancel(goal.GoalId, goal.Title)"
+                                                    title="Cancelar">
                                                 <span style="font-size: 13px;">❌</span>
                                             </button>
-                                            
                                         }
                                         else if (goal.Status == GoalStatus.Completed)
                                         {
-                                            <button class="btn btn-sm btn-warning" style="background-color:rgba(158, 158, 158, 0.25);" @onclick="() => OpenWithdrawModal(goal)" title="Retirar dinero">
+                                            <button class="btn btn-sm btn-warning"
+                                                    id="@(filteredGoals.First() == goal ? "goals-withdraw-button" : "")"
+                                                    style="background-color:rgba(158, 158, 158, 0.25);"
+                                                    @onclick="() => OpenWithdrawModal(goal)"
+                                                    title="Retirar dinero">
                                                 <span style="font-size: 13px;">➖</span>
                                             </button>
                                         }
                                         else if (goal.Status == GoalStatus.Cancelled)
                                         {
-                                            <button class="btn btn-sm btn-success" style="background-color:rgba(76, 175, 80, 0.25);" @onclick="() => ConfirmReactivate(goal.GoalId, goal.Title)" title="Reactivar meta">
+                                            <button class="btn btn-sm btn-success"
+                                                    id="@(filteredGoals.First() == goal ? "goals-reactivate-button" : "")"
+                                                    style="background-color:rgba(76, 175, 80, 0.25);"
+                                                    @onclick="() => ConfirmReactivate(goal.GoalId, goal.Title)"
+                                                    title="Reactivar meta">
                                                 <span style="font-size: 13px;">🔄</span>
                                             </button>
                                         }
                                         <!-- Eliminar está disponible para todas las metas -->
-                                        <button class="btn btn-sm btn-danger" style="background-color:rgba(244, 67, 54, 0.25);" @onclick="() => ConfirmDelete(goal.GoalId, goal.Title)" title="Eliminar">
+                                        <button class="btn btn-sm btn-danger"
+                                                id="@(filteredGoals.First() == goal ? "goals-delete-button" : "")"
+                                                style="background-color:rgba(244, 67, 54, 0.25);"
+                                                @onclick="() => ConfirmDelete(goal.GoalId, goal.Title)"
+                                                title="Eliminar">
                                             <span style="font-size: 13px;">🗑️</span>
                                         </button>
-                                       
                                     </div>
                                 </div>
                             </div>
@@ -657,6 +686,11 @@
         {
             isLoading = false;
         }
+    }
+
+    private async Task StartTour()
+    {
+        await JSRuntime.InvokeVoidAsync("tourService.startGoalsTour");
     }
 
     private void FilterGoals(GoalStatus? status)

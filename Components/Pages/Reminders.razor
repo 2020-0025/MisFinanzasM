@@ -29,7 +29,7 @@
 
             <!-- Filtros y acciones -->
             <div class="filters-section mt-0">
-                <div class="filter-buttons mb-4">
+                <div class="filter-buttons mb-4" id="reminders-filters">
                     <button class="btn-filter @(currentFilter == "all" ? "active" : "")" @onclick='() => SetFilter("all")'>
                         Todos (@allNotifications.Count)
                     </button>
@@ -40,9 +40,14 @@
                         Leídos (@allNotifications.Count(n => n.IsRead))
                     </button>
                 </div>
+
+                <button class="btn btn-help" @onclick="StartTour">
+                    <span style="font-size: 20px;">❓</span> Ayuda
+                </button>
+
                 @if (allNotifications.Any(n => !n.IsRead))
                 {
-                    <button class="btn-mark-all-page text-white mb-4" @onclick="MarkAllAsRead">
+                    <button class="btn-mark-all-page text-white mb-4" id="reminders-mark-all-button" @onclick="MarkAllAsRead">
                         ✓ Marcar todos como leídos
                     </button>
                 }
@@ -71,7 +76,7 @@
    
 
     <!-- Lista de notificaciones -->
-    <div class="notifications-list">
+        <div class="notifications-list" id="reminders-list">
         @if (isLoading)
         {
             <div class="loading-state">
@@ -100,7 +105,8 @@
                     <div class="notification-card-content">
                         <div class="notification-card-header">
                             <h6>@notification.Category?.Title</h6>
-                            <span class="notification-status-badge @(notification.IsOverdue ? "overdue" : "")">
+                            <span class="notification-status-badge @(notification.IsOverdue ? "overdue" : "")"
+                                      id="@(filteredNotifications.First() == notification ? "reminders-status-badge" : "")">
                                 @notification.StatusText
                             </span>
                         </div>
@@ -126,7 +132,9 @@
                         <div>
                                 @if (!notification.IsRead)
                                 {
-                                    <button class="btn-mark-read" @onclick="() => MarkAsRead(notification.NotificationId)" title="Marcar como leído">
+                                    <button class="btn-mark-read"
+                                            id="@(filteredNotifications.First() == notification ? "reminders-mark-read-button" : "")"
+                                    @onclick="() => MarkAsRead(notification.NotificationId)" title="Marcar como leído">
                                         ✓
                                     </button>
                                 }
@@ -138,7 +146,9 @@
                         </div>
 
                         <div>
-                                <button class="btn-delete-notification" @onclick="() => DeleteNotification(notification.NotificationId)" title="Eliminar notificación">
+                                <button class="btn-delete-notification"
+                                        id="@(filteredNotifications.First() == notification ? "reminders-delete-button" : "")"
+                                @onclick="() => DeleteNotification(notification.NotificationId)" title="Eliminar notificación">
                                     🗑️
                                 </button>
 
@@ -223,6 +233,11 @@
         {
             isLoading = false;
         }
+    }
+
+    private async Task StartTour()
+    {
+        await JSRuntime.InvokeVoidAsync("tourService.startRemindersTour");
     }
 
     private void SetFilter(string filter)

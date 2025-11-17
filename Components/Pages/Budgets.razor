@@ -31,14 +31,17 @@
                     <h1>💰 Presupuestos</h1>
                     <p class="mb-0 text-white">Controla tus gastos por categoría</p>
                 </div>
-                <button class="btnAddBudgets" @onclick="OpenCreateModal">
+                <button class="btn btn-help" @onclick="StartTour">
+                    <span style="font-size: 20px;">❓</span> Ayuda
+                </button>
+                <button class="btnAddBudgets" id="budgets-add-button" @onclick="OpenCreateModal">
                     <span style="font-size: 17px;">➕</span> Nuevo presupuesto
                 </button>
             </div>
         </div>
 
         <!-- Selector de Mes/Año -->
-        <div class="period-selector-card">
+        <div class="period-selector-card" id="budgets-period-selector">
             <div class="row align-items-center">
                 <div class="col-md-4">
                     <label class="form-label text-white">Mes</label>
@@ -75,7 +78,7 @@
         </div>
 
         <!-- Resumen General -->
-        <div class="summary-card">
+        <div class="summary-card" id="budgets-summary">
             <h4>📊 Resumen del Periodo</h4>
             <div class="row">
                 <div class="col-md-4">
@@ -132,13 +135,13 @@
         }
 
         <!-- Lista de Presupuestos -->
-        <div class="budgets-list-card">
+        <div class="budgets-list-card" id="budgets-list">
             <div class="card-header">
                 <h4>📋 Presupuestos por Categoría</h4>
 
                 @if (!budgets.Any() && !isLoading)
                 {
-                    <button class="copy-button" @onclick="CopyFromPreviousMonth" disabled="@isCopying">
+                    <button class="copy-button" id="budgets-copy-previous" @onclick="CopyFromPreviousMonth" disabled="@isCopying">
                         @if (isCopying)
                         {
                             <span>⏳ Copiando...</span>
@@ -162,7 +165,7 @@
                 {
                     <div class="text-center py-5">
                         <p class="text-white">No hay presupuestos configurados para este periodo</p>
-                        <button class="btnAddBudgets mt-3" @onclick="OpenCreateModal">
+                        <button class="btnAddBudgets mt-3" id="budgets-create-first" @onclick="OpenCreateModal">
                             <span style="font-size: 17px;">➕</span> Crear Primer Presupuesto
                         </button>
                     </div>
@@ -183,10 +186,16 @@
                                             </div>
                                         </div>
                                         <div class="budget-actions">
-                                            <button class="btn btn-sm btn-warning" style="background-color:rgba(255, 193, 7, 0.25);" @onclick="() => EditBudget(budget)">
+                                            <button class="btn btn-sm btn-warning"
+                                                    id="@(budgets.First() == budget ? "budgets-edit-button" : "")"
+                                                    style="background-color:rgba(255, 193, 7, 0.25);"
+                                                    @onclick="() => EditBudget(budget)">
                                                 <span style="font-size: 13px;">📝</span>
                                             </button>
-                                            <button class="btn btn-sm btn-danger" style="background-color:rgba(244, 67, 54, 0.25);" @onclick="() => ConfirmDelete(budget.Id, budget.CategoryTitle)">
+                                            <button class="btn btn-sm btn-danger"
+                                                    id="@(budgets.First() == budget ? "budgets-delete-button" : "")"
+                                                    style="background-color:rgba(244, 67, 54, 0.25);"
+                                                    @onclick="() => ConfirmDelete(budget.Id, budget.CategoryTitle)">
                                                 <span style="font-size: 13px;">🗑️</span>
                                             </button>
                                         </div>
@@ -472,6 +481,11 @@
         {
             isLoading = false;
         }
+    }
+
+    private async Task StartTour()
+    {
+        await JSRuntime.InvokeVoidAsync("tourService.startBudgetsTour");
     }
 
     private async Task SetCurrentMonth()

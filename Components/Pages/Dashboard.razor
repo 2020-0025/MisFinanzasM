@@ -46,6 +46,9 @@
                     </h1>
                     <p class="text-white mb-0">Resumen de tus finanzas</p>
                 </div>
+                <button class="btn btn-help" @onclick="StartTour">
+                    <span style="font-size: 20px;">❓</span> Ayuda
+                </button>
                 <div class="glass-badge">
                     <span style="font-size: 17px;">📅</span>
                     <span class="text-white">Últimos @selectedDays días</span>
@@ -54,7 +57,7 @@
         </div>
 
         <!-- Summary Cards -->
-        <div class="row g-4 mb-4">
+        <div class="row g-4 mb-4" id="dashboard-summary-cards">
             <!-- Balance Card -->
             <div class="col-xl-3 col-md-6">
                 <div class="glass-card stat-card animate-slide-up h-100">
@@ -177,7 +180,7 @@
         <!-- Main Charts Row -->
         <div class="row g-4 mb-4">
             <!-- Bar Chart -->
-            <div class="col-lg-12">
+            <div class="col-lg-12" id="dashboard-income-expense-chart">
                 <div class="glass-card h-100 animate-slide-up" style="animation-delay: 0.4s;">
                     <div class="card-header-glass">
                         <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
@@ -185,7 +188,7 @@
                                 <span style="font-size: 20px;">📊</span>
                                 Ingresos vs gastos
                             </h5>
-                            <div class="btn-group btn-group-sm" role="group">
+                            <div class="btn-group btn-group-sm" id="dashboard-period-selector" role="group">
                                 <button type="button"
                                         class="glass-btn text-white @(selectedDays == 7 ? "active" : "")"
                                         @onclick="() => ChangePeriod(7)">
@@ -217,7 +220,7 @@
                 </div>
             </div>
             <!-- Expenses Distribution Doughnut Chart -->
-            <div class="col-lg-6">
+            <div class="col-lg-6" id="dashboard-expenses-by-category">
                 <div class="glass-card animate-slide-up" style="animation-delay: 0.8s;">
                     <div class="card-header-glass">
                         <h5 class="mb-0 text-white fw-semibold">
@@ -242,7 +245,7 @@
                 </div>
             </div>
             <!-- Budget Doughnut Chart -->
-            <div class="col-lg-6">
+            <div class="col-lg-6" id="dashboard-budget-chart">
                 <div class="glass-card animate-slide-up" style="animation-delay: 0.6s;">
                     <div class="card-header-glass">
                         <h5 class="mb-0 text-white fw-semibold">
@@ -281,7 +284,7 @@
         <!-- Goals + Alerts -->
         <div class="row g-4 mb-4">
             <!--  Goals -->
-            <div class="col-lg-6">
+            <div class="col-lg-6" id="dashboard-active-goals">
                 <div class="glass-card h-100 animate-slide-up" style="animation-delay: 0.5s;">
                     <div class="card-header-glass">
                         <div class="d-flex justify-content-between align-items-center">
@@ -329,7 +332,7 @@
                 </div>
             </div>
             <!-- Alerts Widget -->
-            <div class="col-lg-6">
+            <div class="col-lg-6" id="dashboard-budget-alerts">
                 <div class="glass-card animate-slide-up" style="animation-delay: 0.7s;">
                     <div class="card-header-glass">
                         <h5 class="mb-0 text-white fw-semibold">
@@ -366,7 +369,7 @@
 
         <!-- Recent Transactions -->
         <div class="row g-4">
-            <div class="col-12">
+            <div class="col-12" id="dashboard-recent-transactions">
                 <div class="glass-card">
                     <div class="card-header-glass">
                         <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
@@ -374,7 +377,7 @@
                                 <span style="font-size: 32px;">💳</span>
                                 Historial
                             </h5>
-                            <a href="/expenses-incomes" class="glass-link">
+                            <a href="/expenses-incomes" class="glass-link" id="dashboard-view-all-link">
                                 Ver todas <i class="bi bi-arrow-right ms-1"></i>
                             </a>
                         </div>
@@ -424,7 +427,7 @@
                             <div class="empty-state">
                                 <i class="bi bi-receipt"></i>
                                 <p class="mb-3 text-white">No Hay Registros recientes</p>
-                                <a href="/expenses-incomes" class="glass-button text-white">
+                                <a href="/expenses-incomes" class="glass-button text-white" id="dashboard-register-transaction">
                                     Registrar Gasto/Ingreso
                                 </a>
                             </div>
@@ -582,6 +585,11 @@
             Console.WriteLine($"   Stack: {ex.StackTrace}");
             isLoading = false;
         }
+    }
+
+    private async Task StartTour()
+    {
+        await JSRuntime.InvokeVoidAsync("tourService.startDashboardTour");
     }
 
     private async Task ChangePeriod(int days)

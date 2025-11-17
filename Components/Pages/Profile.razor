@@ -27,6 +27,9 @@
                     <h1>Mi perfil</h1>
                     <p class="text-white">Gestiona tu información personal</p>
                 </div>
+                <button class="btn btn-help" @onclick="StartTour">
+                    <span style="font-size: 20px;">❓</span> Ayuda
+                </button>
             </div>
 
     </div>
@@ -58,7 +61,7 @@
         <div class="cards-container">
 
             <!-- Card: Información Personal -->
-                <div class="profile-card">
+                <div class="profile-card" id="profile-info-card">
                 <div class="card-header">
                     <h2>📋 Información personal</h2>
                 </div>
@@ -115,7 +118,7 @@
                         </div>
 
                         <div class="card-actions">
-                            <button class="btn btn-primary" @onclick="EnableEditInfo">
+                                <button class="btn btn-primary" id="profile-edit-info-button" @onclick="EnableEditInfo">
                                 ✏️ Editar información
                             </button>
                         </div>
@@ -124,7 +127,7 @@
             </div>
 
             <!-- Card: Cambiar Contraseña -->
-            <div class="profile-card">
+                <div class="profile-card" id="profile-password-card">
                 <div class="card-header">
                     <h2>🔐 Cambiar contraseña</h2>
                 </div>
@@ -162,7 +165,7 @@
                         }
 
                         <div class="card-actions">
-                            <button type="submit" class="btn btn-primary" disabled="@_isSaving">
+                                <button type="submit" class="btn btn-primary" id="profile-change-password-button" disabled="@_isSaving">
                                 @if (_isSaving)
                                 {
                                     <span class="spinner-border spinner-border-sm"></span>
@@ -178,7 +181,7 @@
             </div>
 
             <!-- Card: Eliminar Cuenta -->
-            <div class="profile-card danger-card">
+                <div class="profile-card danger-card" id="profile-danger-zone-card">
                 <div class="card-header">
                     <h2>⚠️ Zona de peligro</h2>
                 </div>
@@ -190,7 +193,7 @@
                     <p class="warning-text"><strong>Esta acción no se puede deshacer.</strong></p>
 
                     <div class="card-actions">
-                        <button class="btn btn-danger" @onclick="ConfirmDeleteAccount">
+                            <button class="btn btn-danger" id="profile-delete-account-button" @onclick="ConfirmDeleteAccount">
                             🗑️ Eliminar mi cuenta
                         </button>
                     </div>
@@ -274,6 +277,11 @@
         {
             _isLoading = false;
         }
+    }
+
+    private async Task StartTour()
+    {
+        await JSRuntime.InvokeVoidAsync("tourService.startProfileTour");
     }
 
     private async Task ReloadData()

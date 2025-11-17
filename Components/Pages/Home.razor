@@ -25,12 +25,12 @@
             <div class="links" style="display: flex; gap: 15px; flex-wrap: wrap;">
                 @if (!isAuthenticated)
                 {
-                    <a href="/register" class="btnLogin">Registrarse</a>
-                    <a href="/login" class="btnLogin">Iniciar sesión</a>
+                    <a href="/register" class="btnLogin" id="home-register-button">Registrarse</a>
+                    <a href="/login" class="btnLogin" id="home-login-button">Iniciar sesión</a>
                 }
                 else
                 {
-                    <a href="/dashboard" class="btnLogin">Ir a control</a>
+                    <a href="/dashboard" class="btnLogin" id="home-dashboard-button">Ir a control</a>
                 }
             </div>
 
@@ -47,6 +47,9 @@
                 Mis Finanzas
             </h1>
         </div>
+        <button class="btn btn-help" @onclick="StartTour">
+            <span style="font-size: 20px;">❓</span> Ayuda
+        </button>
         <p class="text-white" style="font-size: 1.3rem; max-width: 600px; margin: 0 auto;">
             Toma el control de tu dinero con inteligencia y simplicidad
         </p>
@@ -59,7 +62,7 @@
 
             <!-- FILA 1: Categorías + Presupuestos -->
             <!-- Categories Card -->
-            <div class="glass-card animate-slide-up animate-delay-3" style="padding: 30px;">
+            <div class="glass-card animate-slide-up animate-delay-3" id="home-categories-card" style="padding: 30px;">
                 <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 20px;">
                     <span style="font-size: 32px;">🏷️</span>
                     <h2 style="color: white; margin: 0; font-size: 1.5rem;">Categorías</h2>
@@ -93,7 +96,7 @@
             </div>
 
             <!-- Budgets Card -->
-            <div class="glass-card animate-slide-up animate-delay-3" style="padding: 30px;">
+            <div class="glass-card animate-slide-up animate-delay-3" id="home-budgets-card" style="padding: 30px;">
                 <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 20px;">
                     <span style="font-size: 32px;">💰</span>
                     <h2 style="color: white; margin: 0; font-size: 1.5rem;">Presupuestos</h2>
@@ -136,7 +139,7 @@
 
             <!-- FILA 2: Gastos e Ingresos + Recordatorios -->
             <!-- Transactions Card -->
-            <div class="glass-card animate-slide-up animate-delay-4" style="padding: 30px;">
+            <div class="glass-card animate-slide-up animate-delay-4" id="home-transactions-card" style="padding: 30px;">
                 <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 20px;">
                     <span style="font-size: 32px;">💳</span>
                     <h2 style="color: white; margin: 0; font-size: 1.5rem;">Gastos e ingresos</h2>
@@ -170,7 +173,7 @@
             </div>
 
             <!-- Reminders/Notifications Card (NUEVO) -->
-            <div class="glass-card animate-slide-up animate-delay-4" style="padding: 30px;">
+            <div class="glass-card animate-slide-up animate-delay-4" id="home-reminders-card" style="padding: 30px;">
                 <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 20px;">
                     <span style="font-size: 32px;">🔔</span>
                     <h2 style="color: white; margin: 0; font-size: 1.5rem;">Recordatorios</h2>
@@ -214,7 +217,7 @@
 
             <!-- FILA 3: Metas Financieras + Préstamos -->
             <!-- Financial Goals Card -->
-            <div class="glass-card animate-slide-up animate-delay-5" style="padding: 30px;">
+            <div class="glass-card animate-slide-up animate-delay-5" id="home-goals-card" style="padding: 30px;">
                 <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 20px;">
                     <span style="font-size: 32px;">🎯</span>
                     <h2 style="color: white; margin: 0; font-size: 1.5rem;">Metas financieras</h2>
@@ -256,7 +259,7 @@
             </div>
 
             <!-- Loans Card (NUEVO) -->
-            <div class="glass-card animate-slide-up animate-delay-5" style="padding: 30px;">
+            <div class="glass-card animate-slide-up animate-delay-5" id="home-loans-card" style="padding: 30px;">
                 <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 20px;">
                     <span style="font-size: 32px;">🏦</span>
                     <h2 style="color: white; margin: 0; font-size: 1.5rem;">Préstamos</h2>
@@ -303,8 +306,8 @@
     <!-- FILA 4: Panel de Control (ancho completo) -->
     <div style="display: flex; justify-content: center; margin-top: 30px; width:100%;">
         <div style="width: 100%; max-width: 900px; padding: 0 20px;">
-            <div class="glass-card animate-slide-up animate-delay-2" style="padding: 30px;">
-                <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 20px;">
+            <div class="glass-card animate-slide-up animate-delay-2"  style="padding: 30px;">
+                <div id="home-dashboard-card" style="display: flex; align-items: center; gap: 12px; margin-bottom: 20px;">
                     <span style="font-size: 32px;">📊</span>
                     <h2 style="color: white; margin: 0; font-size: 1.5rem;">Panel de control</h2>
                 </div>
@@ -461,14 +464,14 @@
             Aprende como administrar tus finanzas
         </p>
         <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
-            <button class="btnLogin" style="font-size: 1.1rem; padding: 14px 32px;" @onclick="DownloadUserManual">
+            <button class="btnLogin" id="home-download-manual-button" style="font-size: 1.1rem; padding: 14px 32px;" @onclick="DownloadUserManual">
                 📥 Descargar manual de usuario
             </button>
         </div>
     </div>
 
     <!-- Contact Card (NUEVO) -->
-    <div class="glass-card animate-slide-up" style="padding: 40px; text-align: center; margin-bottom: 40px;">
+    <div class="glass-card animate-slide-up" id="home-contact-card" style="padding: 40px; text-align: center; margin-bottom: 40px;">
         <h2 style="color: white; font-size: 1.8rem; margin-bottom: 10px;">📞 ¿Necesitas ayuda?</h2>
         <p style="color: white; font-size: 1rem; margin-bottom: 25px;">
             Contáctanos y con gusto te asistiremos
@@ -503,6 +506,11 @@
         }
 
         isAuthenticated = AuthService.IsAuthenticated;
+    }
+
+    private async Task StartTour()
+    {
+        await JSRuntime.InvokeVoidAsync("tourService.startHomeTour");
     }
 
     private async Task DownloadUserManual()

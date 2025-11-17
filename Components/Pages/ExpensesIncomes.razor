@@ -40,19 +40,22 @@
                     <h1 class="text-white">💸 Gastos e Ingresos</h1>
                     <p class="mb-0 text-white">Registra tus Gastos e Ingresos</p>
                 </div>
+                <button class="btn btn-help" @onclick="StartTour">
+                    <span style="font-size: 20px;">❓</span> Ayuda
+                </button>
             </div>
             <div class="btnSaveGroup gap-2">
-                <button class="btnAddExpenses" @onclick="() => OpenModal(TransactionType.Expense)">
+                <button class="btnAddExpenses" id="expenses-add-expense-button" @onclick="() => OpenModal(TransactionType.Expense)">
                     ➕ Agregar gasto
                 </button>
-                <button class="btnAddIncomes" @onclick="() => OpenModal(TransactionType.Income)">
+                <button class="btnAddIncomes" id="expenses-add-income-button" @onclick="() => OpenModal(TransactionType.Income)">
                     ➕ Agregar ingreso
                 </button>
             </div>
         </div>
 
         <!-- Balance -->
-        <div class="row mb-4">
+        <div class="row mb-4" id="expenses-balance-cards">
             <div class="col-md-4">
                 <div class="balance-card income">
                     <div class="balance-icon">📈</div>
@@ -83,7 +86,7 @@
         </div>
 
         <!-- Panel de Filtros de Reportes -->
-        <div class="glass-card mb-4">
+        <div class="glass-card mb-4" id="expenses-report-panel">
             <div class="card-header">
                 <h4 class="text-white" style="font-weight:600;">📊 Generar Reporte</h4>
             </div>
@@ -140,14 +143,14 @@
                     <!-- Botones -->
                     <div class="col-12">
                         <div class="d-flex gap-2 justify-content-end">
-                            <button class="btnExportPdf" @onclick="GeneratePdfReport" disabled="@isGeneratingPdf">
+                            <button class="btnExportPdf" id="expenses-download-pdf" @onclick="GeneratePdfReport" disabled="@isGeneratingPdf">
                                 @if (isGeneratingPdf)
                                 {
                                     <span class="spinner-border spinner-border-sm me-2"></span>
                                 }
                                 📄 Descargar PDF
                             </button>
-                            <button class="btnExportExcel" @onclick="GenerateExcelReport" disabled="@isGeneratingExcel">
+                            <button class="btnExportExcel" id="expenses-download-excel" @onclick="GenerateExcelReport" disabled="@isGeneratingExcel">
                                 @if (isGeneratingExcel)
                                 {
                                     <span class="spinner-border spinner-border-sm me-2"></span>
@@ -178,7 +181,7 @@
         }
 
         <!-- Tabla de Transacciones -->
-        <div class="transactions-card">
+        <div class="transactions-card" id="expenses-history-table">
             <div class="card-header">
                 <h4>📋 Historial</h4>
             </div>
@@ -236,10 +239,16 @@
                                         </td>
                                         <td>
                                             <div class="btn-group btn-group-sm">
-                                                <button class="btn btn-warning" style="background-color:rgba(255, 193, 7, 0.25);" @onclick="() => EditTransaction(item)">
+                                                <button class="btn btn-warning" 
+                                                id="@(GetPagedTransactions().First() == item ? "expenses-edit-button" : "")" 
+                                                style="background-color:rgba(255, 193, 7, 0.25);" 
+                                                @onclick="() => EditTransaction(item)">
                                                     <span style="font-size: 13px;">📝</span>
                                                 </button>
-                                                <button class="btn btn-danger" style="background-color:rgba(244, 67, 54, 0.25);" @onclick="() => ConfirmDelete(item.Id, item.Description ?? item.CategoryTitle)">
+                                                <button class="btn btn-danger" 
+                                                id="@(GetPagedTransactions().First() == item ? "expenses-delete-button" : "")" 
+                                                style="background-color:rgba(244, 67, 54, 0.25);" 
+                                                @onclick="() => ConfirmDelete(item.Id, item.Description ?? item.CategoryTitle)">
                                                     <span style="font-size: 13px;">🗑️</span>
                                                 </button>
                                             </div>
@@ -250,12 +259,13 @@
                         </table>
 
                         <!-- Controles de Paginación -->
-                        <div class="pagination-container mt-3">
+                        <div class="pagination-container mt-3" id="expenses-pagination-container">
                             <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
                                 <!-- Selector de tamaño de página -->
                                 <div class="d-flex align-items-center gap-2">
                                     <label class="text-white mb-0">Mostrar:</label>
                                     <select class="form-select form-select-sm glass-card text-white border-primary"
+                                            id="expenses-page-size-selector"
                                             style="width: auto;"
                                             @onchange="@(e => ChangePageSize(int.Parse(e.Value?.ToString() ?? "10")))">
                                         <option value="5" selected="@(pageSize == 5)">5</option>
@@ -278,6 +288,7 @@
                                 <div class="btn-group" role="group">
                                     <button type="button"
                                             class="btn btn-sm btn-outline-light text-white"
+                                            id="expenses-previous-button"
                                             @onclick="PreviousPage"
                                             disabled="@(currentPage == 1)">
                                         ‹ Anterior
@@ -305,6 +316,7 @@
 
                                     <button type="button"
                                             class="btn btn-sm btn-outline-light text-white"
+                                            id="expenses-next-button"
                                             @onclick="NextPage"
                                             disabled="@(currentPage == totalPages)">
                                         Siguiente ›
@@ -554,6 +566,11 @@
             .Skip((currentPage - 1) * pageSize)
             .Take(pageSize)
             .ToList();
+    }
+
+    private async Task StartTour()
+    {
+        await JSRuntime.InvokeVoidAsync("tourService.startExpensesIncomesTour");
     }
 
     private void GoToPage(int page)

@@ -32,7 +32,10 @@
                     <h1>🏷️ Categorías</h1>
                     <p class="mb-0 text-white">Organiza tus gastos e ingresos</p>
                 </div>
-                <button class="btnAddCategory" @onclick="OpenModal">
+                <button class="btn btn-help" @onclick="StartTour">
+                    <span style="font-size: 20px;">❓</span> Ayuda
+                </button>
+                <button class="btnAddCategory" id="categories-add-button" @onclick="OpenModal">
                     <span style="font-size: 17px;">➕</span> Nueva categoría
                 </button>
             </div>
@@ -65,7 +68,7 @@
         else
         {
             <!-- Categorías de Gastos -->
-            <div class="categories-section">
+            <div class="categories-section" id="categories-expenses-section">
                 <h4 class="section-title">📉 Categorías de Gastos</h4>
                 <div class="row">
                     @if (expenseCategories.Any())
@@ -80,10 +83,16 @@
                                         <span class="badge bg-danger">Gasto</span>
                                     </div>
                                     <div class="category-actions">
-                                        <button class="btn btn-sm btn-warning" style="background-color:rgba(255, 193, 7, 0.25);" @onclick="() => EditCategory(category)">
+                                        <button class="btn btn-sm btn-warning"
+                                                id="@(expenseCategories.First() == category ? "categories-expense-edit-button" : "")"
+                                                style="background-color:rgba(255, 193, 7, 0.25);"
+                                                @onclick="() => EditCategory(category)">
                                             <span style="font-size: 13px;">📝</span>
                                         </button>
-                                        <button class="btn btn-sm btn-danger" style="background-color:rgba(244, 67, 54, 0.25);" @onclick="() => ConfirmDelete(category.CategoryId, category.Title)">
+                                        <button class="btn btn-sm btn-danger"
+                                                id="@(expenseCategories.First() == category ? "categories-expense-delete-button" : "")"
+                                                style="background-color:rgba(244, 67, 54, 0.25);"
+                                                @onclick="() => ConfirmDelete(category.CategoryId, category.Title)">
                                             <span style="font-size: 13px;">🗑️</span>
                                         </button>
                                     </div>
@@ -101,7 +110,7 @@
             </div>
 
             <!-- Categorías de Ingresos -->
-            <div class="categories-section">
+            <div class="categories-section" id="categories-incomes-section">
                 <h4 class="section-title">📈 Categorías de Ingresos</h4>
                 <div class="row">
                     @if (incomeCategories.Any())
@@ -116,10 +125,16 @@
                                         <span class="badge bg-success">Ingreso</span>
                                     </div>
                                     <div class="category-actions">
-                                        <button class="btn btn-sm btn-warning" style="background-color:rgba(255, 193, 7, 0.25);" @onclick="() => EditCategory(category)">
+                                        <button class="btn btn-sm btn-warning"
+                                                id="@(incomeCategories.First() == category ? "categories-income-edit-button" : "")"
+                                                style="background-color:rgba(255, 193, 7, 0.25);"
+                                                @onclick="() => EditCategory(category)">
                                             <span style="font-size: 13px;">📝</span>
                                         </button>
-                                        <button class="btn btn-sm btn-danger" style="background-color:rgba(244, 67, 54, 0.25);" @onclick="() => ConfirmDelete(category.CategoryId, category.Title)">
+                                        <button class="btn btn-sm btn-danger"
+                                                id="@(incomeCategories.First() == category ? "categories-income-delete-button" : "")"
+                                                style="background-color:rgba(244, 67, 54, 0.25);"
+                                                @onclick="() => ConfirmDelete(category.CategoryId, category.Title)">
                                             <span style="font-size: 13px;">🗑️</span>
                                         </button>
                                     </div>
@@ -413,6 +428,11 @@
         {
             isLoading = false;
         }
+    }
+
+    private async Task StartTour()
+    {
+        await JSRuntime.InvokeVoidAsync("tourService.startCategoriesTour");
     }
 
     private void OpenModal()
