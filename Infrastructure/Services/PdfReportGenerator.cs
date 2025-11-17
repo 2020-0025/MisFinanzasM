@@ -2,6 +2,7 @@
 using PdfSharpCore.Pdf;
 using MisFinanzas.Domain.DTOs;
 using MisFinanzas.Domain.Enums;
+using System.IO;
 
 namespace MisFinanzas.Infrastructure.Services
 {
@@ -13,12 +14,24 @@ namespace MisFinanzas.Infrastructure.Services
             var page = document.AddPage();
             var gfx = XGraphics.FromPdfPage(page);
 
-            var fontTitle = new XFont("Times New Roman", 20, XFontStyle.Bold);
-            var fontSubtitle = new XFont("Times New Roman", 12, XFontStyle.Regular);
-            var fontHeader = new XFont("Times New Roman", 14, XFontStyle.Bold);
-            var fontNormal = new XFont("Times New Roman", 10, XFontStyle.Regular);
-            var fontSmall = new XFont("Times New Roman", 8, XFontStyle.Regular);
-            var fontBold = new XFont("Times New Roman", 10, XFontStyle.Bold);
+            // Cargar fuentes desde archivos embebidos
+            var fontPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "wwwroot", "fonts");
+            var regularFontPath = Path.Combine(fontPath, "LiberationSans-Regular.ttf");
+            var boldFontPath = Path.Combine(fontPath, "LiberationSans-Bold.ttf");
+
+            // Verificar que las fuentes existan
+            if (!File.Exists(regularFontPath))
+            {
+                throw new FileNotFoundException($"Font file not found: {regularFontPath}");
+            }
+
+            var fontOptions = new XPdfFontOptions(PdfFontEncoding.Unicode);
+            var fontTitle = new XFont("Liberation Sans", 20, XFontStyle.Bold, fontOptions);
+            var fontSubtitle = new XFont("Liberation Sans", 12, XFontStyle.Regular, fontOptions);
+            var fontHeader = new XFont("Liberation Sans", 14, XFontStyle.Bold, fontOptions);
+            var fontNormal = new XFont("Liberation Sans", 10, XFontStyle.Regular, fontOptions);
+            var fontSmall = new XFont("Liberation Sans", 8, XFontStyle.Regular, fontOptions);
+            var fontBold = new XFont("Liberation Sans", 10, XFontStyle.Bold, fontOptions);
 
             double yPosition = 40;
 
