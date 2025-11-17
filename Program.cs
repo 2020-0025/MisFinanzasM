@@ -210,12 +210,15 @@ builder.Services.AddSignalR(options =>
 });
 
 
-// Configurar puerto para Render (usa variable de entorno PORT)
-var port = Environment.GetEnvironmentVariable("PORT") ?? "5000";
-builder.WebHost.ConfigureKestrel(options =>
+// Configurar puerto para Render (usa variable de entorno PORT) - SOLO EN PRODUCCIÓN
+if (!builder.Environment.IsDevelopment())
 {
-    options.ListenAnyIP(int.Parse(port));
-});
+    var port = Environment.GetEnvironmentVariable("PORT") ?? "5000";
+    builder.WebHost.ConfigureKestrel(options =>
+    {
+        options.ListenAnyIP(int.Parse(port));
+    });
+}
 
 // Configurar ForwardedHeaders en el builder (ANTES de construir la app)
 builder.Services.Configure<ForwardedHeadersOptions>(options =>
