@@ -32,7 +32,7 @@
                     <p class="mb-0 text-white">Gestiona tus préstamos y cuotas</p>
                 </div>
                 <button class="btnAddLoans" @onclick="OpenCreateModal">
-                    <span style="font-size: 17px;">➕</span> Nuevo Préstamo
+                    <span style="font-size: 17px;">➕</span> Nuevo préstamo
                 </button>
             </div>
         </div>
@@ -196,19 +196,19 @@
                             <div class="loan-info">
                                 <div class="row text-white">
                                     <div class="col-6">
-                                        <small class="text-white">💵 Monto Prestado:</small>
+                                        <small class="text-white">💵 Monto prestado:</small>
                                         <p><strong>@loan.PrincipalAmount.ToString("C")</strong></p>
                                     </div>
                                     <div class="col-6">
-                                        <small class="text-white">📅 Cuota Mensual:</small>
+                                        <small class="text-white">📅 Cuota mensual:</small>
                                         <p><strong>@loan.InstallmentAmount.ToString("C")</strong></p>
                                     </div>
                                     <div class="col-6">
-                                        <small class="text-white">💰 Total a Pagar:</small>
+                                        <small class="text-white">💰 Total a pagar:</small>
                                         <p><strong>@loan.TotalToPay.ToString("C")</strong></p>
                                     </div>
                                     <div class="col-6">
-                                        <small class="text-white">📈 Interés Cobrado:</small>
+                                        <small class="text-white">📈 Interés cobrado:</small>
                                         <p>
                                             <strong class="@GetInterestColorClass(loan.InterestRateCategory)">
                                                 @loan.TotalInterest.ToString("C") (@loan.ApproximateInterestRate.ToString("F2")%)
@@ -245,7 +245,7 @@
                                         <p>@loan.StartDate.ToString("dd/MM/yyyy")</p>
                                     </div>
                                     <div class="col-6">
-                                        <small class="text-white">📆 Próximo Pago:</small>
+                                        <small class="text-white">📆 Próximo pago:</small>
                                         <p>@(loan.IsActive && !loan.IsCompleted ? loan.NextPaymentDate.ToString("dd/MM/yyyy") : "N/A")</p>
                                     </div>
                                 </div>
@@ -263,7 +263,7 @@
     <div class="modal-overlay">
         <div class="modal-content-custom" @onclick:stopPropagation="true">
             <div class="modal-header-custom border-secondary">
-                <h5>@(isEditMode ? "✏️ Editar Préstamo" : "➕ Nuevo Préstamo")</h5>
+                <h5>@(isEditMode ? "✏️ Editar préstamo" : "➕ Nuevo préstamo")</h5>
                 <button class="btn-close-custom" @onclick="CloseModal">✕</button>
             </div>
             <div class="modal-body-custom">
@@ -271,7 +271,10 @@
                     <DataAnnotationsValidator />
 
                     <div class="mb-3">
-                        <label class="form-label text-white">Título *</label>
+                        <div style="display:flex; gap:0.4rem;">
+                            <label class="form-label text-white">Título</label>
+                            <label class="text-danger" style="font-size:1.1rem;"> *</label>
+                        </div>
                         <InputText class="form-control glass-input" @bind-Value="currentLoan.Title" placeholder="Ej: Préstamo Personal Banco Popular" />
                         <ValidationMessage For="@(() => currentLoan.Title)" />
                     </div>
@@ -284,12 +287,18 @@
 
                     <div class="row">
                         <div class="col-md-6 mb-3">
-                            <label class="form-label text-white">Monto del Préstamo *</label>
+                            <div style="display:flex; gap:0.4rem;">
+                                <label class="form-label text-white">Monto del préstamo</label>
+                                <label class="text-danger" style="font-size:1.1rem;"> *</label>
+                            </div>
                             <InputNumber class="form-control glass-input" @bind-Value="currentLoan.PrincipalAmount" @bind-Value:after="CalculatePreview" placeholder="10000" ParsingErrorMessage="Este campo es requerido" />
                             <ValidationMessage For="@(() => currentLoan.PrincipalAmount)" />
                         </div>
                         <div class="col-md-6 mb-3">
-                            <label class="form-label text-white">Cuota Mensual *</label>
+                            <div style="display:flex; gap:0.4rem;">
+                                <label class="form-label text-white">Cuota mensual</label>
+                                <label class="text-danger" style="font-size:1.1rem;"> *</label>
+                            </div>
                             <InputNumber class="form-control glass-input" @bind-Value="currentLoan.InstallmentAmount" @bind-Value:after="CalculatePreview" placeholder="500" ParsingErrorMessage="Este campo es requerido" />
                             <ValidationMessage For="@(() => currentLoan.InstallmentAmount)" />
                         </div>
@@ -297,19 +306,28 @@
 
                     <div class="row">
                         <div class="col-md-6 mb-3">
-                            <label class="form-label text-white">Cantidad de Cuotas *</label>
+                            <div style="display:flex; gap:0.4rem;">
+                                <label class="form-label text-white">Cantidad de Cuotas</label>
+                                <label class="text-danger" style="font-size:1.1rem;"> *</label>
+                            </div>
                             <InputNumber class="form-control glass-input" @bind-Value="currentLoan.NumberOfInstallments" @bind-Value:after="CalculatePreview" placeholder="12" ParsingErrorMessage="Este campo es requerido" />
                             <ValidationMessage For="@(() => currentLoan.NumberOfInstallments)" />
                         </div>
                         <div class="col-md-6 mb-3">
-                            <label class="form-label text-white">Día de Pago (1-31) *</label>
+                            <div style="display:flex; gap:0.4rem;">
+                                <label class="form-label text-white">Día de Pago (1-31)</label>
+                                <label class="text-danger" style="font-size:1.1rem;"> *</label>
+                            </div>
                             <InputNumber class="form-control glass-input" @bind-Value="currentLoan.DueDay" placeholder="15" ParsingErrorMessage="Este campo es requerido" />
                             <ValidationMessage For="@(() => currentLoan.DueDay)" />
                         </div>
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label text-white">Fecha de Inicio *</label>
+                        <div style="display:flex; gap:0.4rem;">
+                            <label class="form-label text-white">Fecha de Inicio</label>
+                            <label class="text-danger" style="font-size:1.1rem;"> *</label>
+                        </div>
                         <InputDate class="form-control glass-input" @bind-Value="currentLoan.StartDate" />
                         <ValidationMessage For="@(() => currentLoan.StartDate)" />
                     </div>
@@ -334,20 +352,20 @@
                     @if (previewTotalToPay > 0)
                     {
                         <div class="preview-card">
-                            <h6 class="text-white">💡 Vista Previa</h6>
+                            <h6 class="text-white">💡 Vista previa</h6>
                             <div class="preview-info">
                                 <div class="d-flex justify-content-between">
-                                    <span>Total a Pagar:</span>
+                                    <span>Total a pagar:</span>
                                     <strong>@previewTotalToPay.ToString("C")</strong>
                                 </div>
                                 <div class="d-flex justify-content-between">
-                                    <span>Interés Total:</span>
+                                    <span>Interés total:</span>
                                     <strong class="@GetInterestColorClass(previewInterestCategory)">
                                         @previewInterest.ToString("C")
                                     </strong>
                                 </div>
                                 <div class="d-flex justify-content-between">
-                                    <span>Tasa Aproximada:</span>
+                                    <span>Tasa aproximada:</span>
                                     <strong class="@GetInterestColorClass(previewInterestCategory)">
                                         @previewInterestRate.ToString("F2")%
                                     </strong>
@@ -380,7 +398,7 @@
     <div class="modal-overlay">
         <div class="modal-content-custom modal-delete" @onclick:stopPropagation="true">
             <div class="modal-header-custom">
-                <h5>🗑️ Eliminar Préstamo</h5>
+                <h5>🗑️ Eliminar préstamo</h5>
                 <button class="btn-close-custom" @onclick="CloseDeleteModal">✕</button>
             </div>
             <div class="modal-body-custom">

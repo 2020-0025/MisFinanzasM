@@ -43,10 +43,10 @@
             </div>
             <div class="btnSaveGroup gap-2">
                 <button class="btnAddExpenses" @onclick="() => OpenModal(TransactionType.Expense)">
-                    ➕ Agregar Gasto
+                    ➕ Agregar gasto
                 </button>
                 <button class="btnAddIncomes" @onclick="() => OpenModal(TransactionType.Income)">
-                    ➕ Agregar Ingreso
+                    ➕ Agregar ingreso
                 </button>
             </div>
         </div>
@@ -85,7 +85,7 @@
         <!-- Panel de Filtros de Reportes -->
         <div class="glass-card mb-4">
             <div class="card-header">
-                <h4 class="text-white">📊 Generar Reporte</h4>
+                <h4 class="text-white" style="font-weight:600;">📊 Generar Reporte</h4>
             </div>
             <div class="card-body">
                 <div class="row g-3">
@@ -326,7 +326,7 @@
         <div class="modal-content text-white" @onclick:stopPropagation="true">
             <div class="modal-header border-secondary">
                 <h5 class="modal-title">
-                    @(isEditing ? "✏️ Editar" : (currentType == TransactionType.Income ? "📈 Agregar Ingreso" : "📉 Agregar Gasto"))
+                    @(isEditing ? "✏️ Editar" : (currentType == TransactionType.Income ? "📈 Agregar ingreso" : "📉 Agregar gasto"))
                 </h5>
                 <button class="btn-close-custom" @onclick="CloseModal">✕</button>
             </div>
@@ -335,8 +335,9 @@
                     <DataAnnotationsValidator />
 
                     <div class="mb-3">
-                        <label class="form-label">Categoría</label>
-                        <InputSelect @bind-Value="formModel.CategoryId" class="form-select glass-card text-white">
+                        <label class="form-label">Categoría</label> <br />
+                        <label class="form-label text-warning">Debes tener al menos una categoría creada</label>
+                        <InputSelect @bind-Value="formModel.CategoryId" class="form-select glass-card text-white border-primary">
                             <option value="0">Selecciona una categoría</option>
                             @foreach (var category in availableCategories)
                             {
@@ -401,7 +402,7 @@
     <div class="modal-overlay">
         <div class="modal-content text-white" @onclick:stopPropagation="true">
             <div class="modal-header border-secondary">
-                <h5 class="modal-title">⚠️ Confirmar Eliminación</h5>
+                <h5 class="modal-title">⚠️ Confirmar eliminación</h5>
                 <button class="btn-close-custom" @onclick="CancelDelete">✕</button>
             </div>
             <div class="modal-body">

@@ -152,12 +152,13 @@
     background: rgba(244, 67, 54, 0.25);
     border: 1px solid rgba(244, 67, 54, 0.5);
     color: white;
-    font-weight: 600;
     box-shadow: 0 0 12px rgba(244, 67, 54, 0.3);
     border-radius: 10px;
     padding: 0.6rem 1.2rem;
     transition: all 0.3s ease;
     text-decoration: none;
+    width: 4rem;
+    font-size: 1.2rem;
 }
 
     .btnComeBack:hover {
@@ -340,9 +341,15 @@
         align-items: stretch;
     }
 
-    .btnLogin, .btnComeBack {
-        width: 100%;
+    .btnLogin {
+        width: 70%;
         text-align: center;
+        margin: 0 auto;
+    }
+
+    .btnComeBack {
+        width: 4rem;
+        font-size: 1.2rem;
     }
 
     .btnGoogle {

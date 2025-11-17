@@ -33,7 +33,7 @@
                     <p class="mb-0 text-white">Organiza tus gastos e ingresos</p>
                 </div>
                 <button class="btnAddCategory" @onclick="OpenModal">
-                    <span style="font-size: 17px;">➕</span> Nueva Categoría
+                    <span style="font-size: 17px;">➕</span> Nueva categoría
                 </button>
             </div>
         </div>
@@ -149,7 +149,7 @@
         <div class="modal-content text-white" @onclick:stopPropagation="true">
             <div class="modal-header border-secondary">
                 <h5 class="modal-title">
-                    @(isEditing ? "✏️ Editar Categoría" : "➕ Nueva Categoría")
+                    @(isEditing ? "✏️ Editar categoría" : "➕ Nueva categoría")
                 </h5>
                 <button class="btn-close-custom" @onclick="CloseModal">✕</button>
 
@@ -252,7 +252,7 @@
 
         <div class="modal-content text-white" @onclick:stopPropagation="true">
             <div class="modal-header border-secondary">
-                <h5 class="modal-title">⚠️ Confirmar Eliminación</h5>
+                <h5 class="modal-title">⚠️ Confirmar eliminación</h5>
                 <button class="btn-close-custom" @onclick="CancelDelete">✕</button>
 
             </div>

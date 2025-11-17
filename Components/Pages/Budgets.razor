@@ -32,7 +32,7 @@
                     <p class="mb-0 text-white">Controla tus gastos por categoría</p>
                 </div>
                 <button class="btnAddBudgets" @onclick="OpenCreateModal">
-                    <span style="font-size: 17px;">➕</span> Nuevo Presupuesto
+                    <span style="font-size: 17px;">➕</span> Nuevo presupuesto
                 </button>
             </div>
         </div>
@@ -238,7 +238,7 @@
         <div class="modal-content text-white" @onclick:stopPropagation="true">
             <div class="modal-header border-secondary">
                 <h5 class="modal-title">
-                    @(isEditing ? "✏️ Editar Presupuesto" : "➕ Nuevo Presupuesto")
+                    @(isEditing ? "✏️ Editar presupuesto" : "➕ Nuevo presupuesto")
                 </h5>
                 <button class="btn-close-custom" @onclick="CloseModal">✕</button>
 
@@ -264,13 +264,13 @@
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label">Nombre del Presupuesto</label>
+                        <label class="form-label">Nombre del presupuesto</label>
                         <InputText @bind-Value="formModel.Name" class="form-control" placeholder="Ej: Presupuesto Alimentación" />
                         <ValidationMessage For="() => formModel.Name" class="text-danger" />
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label">Monto Asignado</label>
+                        <label class="form-label">Monto asignado</label>
                         <InputNumber @bind-Value="formModel.AssignedAmount" class="form-control" placeholder="0.00" />
                         <ValidationMessage For="() => formModel.AssignedAmount" class="text-danger" />
                     </div>
@@ -342,7 +342,7 @@
 
         <div class="modal-content text-white" @onclick:stopPropagation="true">
             <div class="modal-header border-secondary">
-                <h5 class="modal-title">⚠️ Eliminar Presupuesto</h5>
+                <h5 class="modal-title">⚠️ Eliminar presupuesto</h5>
                 <button class="btn-close-custom" @onclick="CloseDeleteModal">✕</button>
 
             </div>

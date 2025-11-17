@@ -26,7 +26,7 @@
         <div class="admin-header">
             <div class="d-flex justify-content-between align-items-center">
                 <div>
-                    <h1>👨‍💼 Panel de Administración</h1>
+                    <h1>👨‍💼 Panel de administración</h1>
                     <p class="mb-0 text-white">Gestiona usuarios y visualiza estadísticas del sistema</p>
                 </div>
             </div>
@@ -39,7 +39,7 @@
                     <div class="stats-icon">👥</div>
                     <div class="stats-info">
                         <h3>@totalUsers</h3>
-                        <p class="text-white">Total de Usuarios</p>
+                        <p class="text-white">Total de usuarios</p>
                     </div>
                 </div>
             </div>
@@ -48,7 +48,7 @@
                     <div class="stats-icon">✅</div>
                     <div class="stats-info">
                         <h3>@activeUsers</h3>
-                        <p class="text-white">Usuarios Activos</p>
+                        <p class="text-white">Usuarios activos</p>
                     </div>
                 </div>
             </div>
@@ -57,7 +57,7 @@
                     <div class="stats-icon">⛔</div>
                     <div class="stats-info">
                         <h3>@inactiveUsers</h3>
-                        <p class="text-white">Usuarios Inactivos</p>
+                        <p class="text-white">Usuarios inactivos</p>
                     </div>
                 </div>
             </div>
@@ -83,7 +83,7 @@
         <!-- Tabla de Usuarios -->
         <div class="users-table-card">
             <div class="card-header">
-                <h4>📋 Lista de Usuarios</h4>
+                <h4>📋 Lista de usuarios</h4>
             </div>
             <div class="card-body">
                 @if (isLoading)
@@ -110,10 +110,10 @@
                                     <th>Usuario</th>
                                     <th>Email</th>
                                     <th>Contraseña</th>
-                                    <th>Nombre Completo</th>
+                                    <th>Nombre completo</th>
                                     <th>Rol</th>
                                     <th>Estado</th>
-                                    <th>Último Acceso</th>
+                                    <th>Último acceso</th>
                                     <th>Acciones</th>
                                 </tr>
                             </thead>
@@ -179,29 +179,30 @@
 <!-- Modal de Confirmación de Eliminación -->
 @if (showDeleteModal)
 {
-    <div class="modal-backdrop show"></div>
-    <div class="modal show d-block" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content text-white">
-                <div class="modal-header border-secondary">
-                    <h5 class="modal-title">⚠️ Confirmar Eliminación</h5>
-                    <button type="button" class="btn-close" @onclick="CancelDelete">❌</button>
-                </div>
-                <div class="modal-body">
-                    <p>¿Estás seguro de que deseas eliminar al usuario <strong>@userToDelete</strong>?</p>
-                    <p class="text-danger mb-0">
-                        <small>Esta acción no se puede deshacer.</small>
-                    </p>
-                </div>
-                <div class="modal-footer border-secondary">
-                    <button type="button" class="btnCancel" @onclick="CancelDelete">Cancelar</button>
-                    <button type="button" class="btnDelete" @onclick="DeleteUser">
-                        <i class="bi bi-trash"></i> Eliminar
-                    </button>
-                </div>
+    <div class="modal-overlay">
+
+        <div class="modal-content text-white">
+            <div class="modal-header border-secondary">
+                <h5 class="modal-title">⚠️ Confirmar eliminación</h5>
+                <button class="btn-close-custom" @onclick="CancelDelete">✕</button>
+
+            </div>
+            <div class="modal-body">
+                <p>¿Estás seguro de que deseas eliminar al usuario <strong>@userToDelete</strong>?</p>
+                <p class="text-danger mb-0">
+                    <small>Esta acción no se puede deshacer.</small>
+                </p>
+            </div>
+            <div class="modal-footer border-secondary">
+                <button type="button" class="btnCancel" @onclick="CancelDelete">Cancelar</button>
+                <button type="button" class="btnDelete" @onclick="DeleteUser">
+                    <i class="bi bi-trash"></i> Eliminar
+                </button>
             </div>
         </div>
+
     </div>
+    
 }
 
 @code {

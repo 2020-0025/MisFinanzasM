@@ -35,7 +35,7 @@
                     <p class="mb-0 text-white">Define y alcanza tus objetivos</p>
                 </div>
                 <button class="btnAddGoals" @onclick="OpenCreateModal">
-                    <span style="font-size: 17px;">➕</span> Nueva Meta
+                    <span style="font-size: 17px;">➕</span> Nueva meta
                 </button>
             </div>
         </div>
@@ -53,8 +53,8 @@
                     </small>
                 </div>
                 <div class="text-end">
-                    <p class="mb-1"><strong>Total Ingresos:</strong> @totalIngresos.ToString("C")</p>
-                    <p class="mb-0"><strong>Total Gastos:</strong> @totalGastos.ToString("C")</p>
+                    <p class="mb-1 text-success"><strong class="text-white">Total Ingresos:</strong> @totalIngresos.ToString("C")</p>
+                    <p class="mb-0 text-danger"><strong class="text-white">Total Gastos:</strong> @totalGastos.ToString("C")</p>
                 </div>
             </div>
         </div>
@@ -64,7 +64,7 @@
             <div class="btn-group" role="group">
                 <button class="btn btn-InProgress @(currentFilter == GoalStatus.InProgress ? "" : "btn-outline-primary")"
                         @onclick="() => FilterGoals(GoalStatus.InProgress)">
-                    🟢 En Progreso (@activeCount)
+                    🟢 En progreso (@activeCount)
                 </button>
                 <button class="text-white btn btn-Completed @(currentFilter == GoalStatus.Completed ? "" : "btn-outline-success")"
                         @onclick="() => FilterGoals(GoalStatus.Completed)">
@@ -231,7 +231,7 @@
         <div class="modal-content text-white" @onclick:stopPropagation="true">
             <div class="modal-header border-secondary">
                 <h5 class="modal-title">
-                    @(isEditing ? "✏️ Editar Meta" : "🎯 Nueva Meta")
+                    @(isEditing ? "✏️ Editar meta" : "🎯 Nueva meta")
                 </h5>
                 <button class="btn-close-custom" @onclick="CloseModal">✕</button>
 
@@ -242,7 +242,7 @@
 
                     <div class="row">
                         <div class="col-md-7 mb-0">
-                            <label class="form-label text-white">Nombre de la Meta</label>
+                            <label class="form-label text-white">Nombre de la meta</label>
                             <InputText @bind-Value="formModel.Name" class="form-control" placeholder="Ej: Fondo de emergencia" />
                             <ValidationMessage For="() => formModel.Name" class="text-danger" />
                             @if (!string.IsNullOrEmpty(nameValidationError))
@@ -252,7 +252,6 @@
                         </div>
 
                         <div class="col-md-4 mb-0">
-                            @* <label class="form-label">Icono</label> *@
                             <IconSelector @bind-SelectedIcon="formModel.Icon" />
                             <ValidationMessage For="() => formModel.Icon" class="text-danger" />
                             @if (!string.IsNullOrEmpty(iconValidationError))
@@ -269,19 +268,19 @@
 
                     <div class="row">
                         <div class="col-md-4 mb-3">
-                            <label class="form-label text-white">Monto Objetivo</label>
+                            <label class="form-label text-white">Monto objetivo</label>
                             <InputNumber @bind-Value="formModel.TargetAmount" class="form-control" placeholder="0.00" />
                             <ValidationMessage For="() => formModel.TargetAmount" class="text-danger" />
                         </div>
 
                         <div class="col-md-4 mb-3">
-                            <label class="form-label text-white">Fecha Inicio</label>
+                            <label class="form-label text-white">Fecha inicio</label>
                             <InputDate @bind-Value="formModel.StartDate" class="form-control text-white'" />
                             <ValidationMessage For="() => formModel.StartDate" class="text-danger" />
                         </div>
 
                         <div class="col-md-4 mb-3">
-                            <label class="form-label text-white">Fecha Meta</label>
+                            <label class="form-label text-white">Fecha meta</label>
                             <InputDate @bind-Value="formModel.TargetDate" class="form-control" />
                             <ValidationMessage For="() => formModel.TargetDate" class="text-danger" />
                         </div>
@@ -316,7 +315,7 @@
 
         <div class="modal-content text-white" @onclick:stopPropagation="true">
             <div class="modal-header border-secondary">
-                <h5 class="modal-title">💰 Agregar Progreso</h5>
+                <h5 class="modal-title">💰 Agregar progreso</h5>
                 <button class="btn-close-custom" @onclick="CloseProgressModal">✕</button>
 
             </div>
@@ -341,7 +340,7 @@
                         <DataAnnotationsValidator />
 
                         <div class="mb-3">
-                            <label class="form-label text-white">Monto a Agregar</label>
+                            <label class="form-label text-white">Monto para agregar</label>
                             <InputNumber @bind-Value="progressModel.Amount" class="form-control" placeholder="0.00" />
                             <ValidationMessage For="() => progressModel.Amount" class="text-danger" />
                             <small class="form-text text-danger">
@@ -358,7 +357,7 @@
                                 }
                                 else
                                 {
-                                    <span>Agregar Progreso</span>
+                                    <span>Agregar progreso</span>
                                 }
                             </button>
                             <button type="button" class="btn btnCancel" @onclick="CloseProgressModal">Cancelar</button>
@@ -379,7 +378,7 @@
 
         <div class="modal-content text-white" @onclick:stopPropagation="true">
             <div class="modal-header border-secondary">
-                <h5 class="modal-title">💸 Retirar Dinero de la Meta</h5>
+                <h5 class="modal-title">💸 Retirar dinero de la meta</h5>
                 <button class="btn-close-custom" @onclick="CloseWithdrawModal">✕</button>
 
             </div>
@@ -401,7 +400,7 @@
                         <DataAnnotationsValidator />
 
                         <div class="mb-3">
-                            <label class="form-label text-white">Monto a Retirar</label>
+                            <label class="form-label text-white">Monto a retirar</label>
                             <InputNumber @bind-Value="withdrawModel.Amount" class="form-control" placeholder="0.00" />
                             <ValidationMessage For="() => withdrawModel.Amount" class="text-danger" />
                             <small class="form-text text-warning">
@@ -418,7 +417,7 @@
                                 }
                                 else
                                 {
-                                    <span>Retirar Dinero</span>
+                                    <span>Retirar dinero</span>
                                 }
                             </button>
                             <button type="button" class=" btn btnCancel" @onclick="CloseWithdrawModal">Cancelar</button>
@@ -439,7 +438,7 @@
 
         <div class="modal-content text-white" @onclick:stopPropagation="true">
             <div class="modal-header border-secondary">
-                <h5 class="modal-title">⚠️ Cancelar Meta</h5>
+                <h5 class="modal-title">⚠️ Cancelar meta</h5>
                 <button class="btn-close-custom" @onclick="CloseCancelModal">✕</button>
 
             </div>
@@ -468,7 +467,7 @@
 
         <div class="modal-content text-white" @onclick:stopPropagation="true">
             <div class="modal-header border-secondary">
-                <h5 class="modal-title">🔄 Reactivar Meta</h5>
+                <h5 class="modal-title">🔄 Reactivar meta</h5>
                 <button class="btn-close-custom" @onclick="CloseReactivateModal">✕</button>
 
             </div>
@@ -497,7 +496,7 @@
 
         <div class="modal-content text-white" @onclick:stopPropagation="true">
             <div class="modal-header border-secondary">
-                <h5 class="modal-title">⚠️ Eliminar Meta</h5>
+                <h5 class="modal-title">⚠️ Eliminar meta</h5>
                 <button class="btn-close-custom" @onclick="CloseDeleteModal">✕</button>
 
             </div>

@@ -20,8 +20,10 @@
 
         <!-- COLUMNA IZQUIERDA: Registro Tradicional -->
         <div class="auth-card-column">
+            <a class="btnComeBack" href="/">🏠</a>
+
             <div class="auth-header">
-                <h2>📝 Crear Cuenta</h2>
+                <h2>📝 Crear cuenta</h2>
                 <p class="text-white">Regístrate en MisFinanzas</p>
             </div>
 
@@ -43,7 +45,7 @@
                 <DataAnnotationsValidator />
 
                 <div class="mb-3">
-                    <label for="fullName" class="form-label">Nombre Completo</label>
+                    <label for="fullName" class="form-label">Nombre completo</label>
                     <InputText @bind-Value="registerModel.FullName"
                                class="form-control"
                                id="fullName"
@@ -84,7 +86,7 @@
                 </div>
 
                 <div class="mb-3">
-                    <label for="confirmPassword" class="form-label">Confirmar Contraseña</label>
+                    <label for="confirmPassword" class="form-label">Confirmar contraseña</label>
                     <InputText @bind-Value="registerModel.ConfirmPassword"
                                type="password"
                                class="form-control"
@@ -94,7 +96,6 @@
                 </div>
 
                 <div class="login-footer-custom">
-                    <a class="btnComeBack" href="/">Regresar</a>
 
                     <button type="submit" class="btnLogin" disabled="@isLoading">
                         @if (isLoading)
@@ -104,7 +105,7 @@
                         }
                         else
                         {
-                            <span>Crear Cuenta</span>
+                            <span>Crear cuenta</span>
                         }
                     </button>
                 </div>
@@ -112,7 +113,7 @@
 
             <div class="auth-footer">
                 <p>
-                    ¿Ya tienes cuenta? <a href="/login">Inicia sesión aquí</a>
+                    ¿Ya tienes cuenta? <a class="text-info" href="/login">Inicia sesión aquí</a>
                 </p>
             </div>
         </div>
@@ -127,12 +128,12 @@
         <!-- COLUMNA DERECHA: Proveedores Externos -->
         <div class="auth-card-column">
             <div class="auth-header">
-                <h2>🌐 Registro Rápido</h2>
+                <h2>🌐 Registro rápido</h2>
                 <p class="text-white">Regístrate con tu cuenta externa</p>
             </div>
 
             <div class="external-providers">
-                <p class="text-white text-center mb-3" style="font-size: 0.9rem; opacity: 0.8;">
+                <p class="text-white text-center mb-3" style="font-size: 0.9rem;">
                     Crea tu cuenta con:
                 </p>
 

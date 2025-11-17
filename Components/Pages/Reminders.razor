@@ -25,7 +25,7 @@
     {
         <div class="reminders-header mb-1">
             <h3>🔔 Recordatorios</h3>
-            <p class="text-white">Gestiona tus notificaciones de gastos recurrentes</p> <br />
+            <p class="text-white">Gestiona tus recordatorios de gastos recurrentes</p> <br />
 
             <!-- Filtros y acciones -->
             <div class="filters-section mt-0">
@@ -85,8 +85,8 @@
         {
             <div class="empty-state">
                 <span style="font-size: 64px;">📭</span>
-                <h5>No hay Recordatoris</h5>
-                <p>@GetEmptyMessage()</p>
+                <h5>No hay recordatoris</h5>
+                <p class="text-white">@GetEmptyMessage()</p>
             </div>
         }
         else
@@ -117,7 +117,7 @@
                                 </div>
                             }
                             <div class="detail-item">
-                                <span class="detail-label">🕐 Notificación creada:</span>
+                                <span class="detail-label">🕐 Recordatorio creado:</span>
                                 <span class="detail-value">@notification.CreatedAt.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</span>
                             </div>
                         </div>

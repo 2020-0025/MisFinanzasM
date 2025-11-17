@@ -20,8 +20,11 @@
 
         <!-- COLUMNA IZQUIERDA: Login Tradicional -->
         <div class="auth-card-column">
+            <a class="btnComeBack" href="/">🏠</a>
+
             <div class="auth-header">
-                <h2>🔑 Iniciar Sesión</h2>
+
+                <h2>🔑 Iniciar sesión</h2>
                 <p class="text-white">Usa tu cuenta de MisFinanzas</p>
             </div>
 
@@ -62,8 +65,6 @@
                 </div>
 
                 <div class="login-footer-custom">
-                    <a class="btnComeBack" href="/">Regresar</a>
-
                     <button type="submit" class="btnLogin" disabled="@isLoading">
                         @if (isLoading)
                         {
@@ -72,7 +73,7 @@
                         }
                         else
                         {
-                            <span>Iniciar Sesión</span>
+                            <span>Iniciar sesión</span>
                         }
                     </button>
                 </div>
@@ -80,7 +81,7 @@
 
             <div class="auth-footer">
                 <p>
-                    ¿No tienes cuenta? <a href="/register">Regístrate aquí</a>
+                    ¿No tienes cuenta? <a class="text-info" href="/register">Regístrate aquí</a>
                 </p>
             </div>
         </div>
@@ -95,12 +96,12 @@
         <!-- COLUMNA DERECHA: Proveedores Externos -->
         <div class="auth-card-column">
             <div class="auth-header">
-                <h2>🌐 Inicio Rápido</h2>
+                <h2>🌐 Inicio rápido</h2>
                 <p class="text-white">Usa tu cuenta externa</p>
             </div>
 
             <div class="external-providers">
-                <p class="text-white text-center mb-3" style="font-size: 0.9rem; opacity: 0.8;">
+                <p class="text-white text-center mb-3" style="font-size: 0.9rem;">
                     Inicia sesión con tu cuenta de:
                 </p>
 
