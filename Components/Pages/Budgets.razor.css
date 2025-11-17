@@ -316,7 +316,7 @@
     width: 100%;
     max-width: 600px;
     /* 1. Define un límite de altura */
-    max-height: 520px;
+    max-height: 550px;
     /* 2. Muestra el scroll vertical SI es necesario */
     overflow-y: auto;
     animation: slideUp 0.3s ease;

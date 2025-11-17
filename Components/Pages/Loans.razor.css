@@ -276,7 +276,7 @@
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
     animation: slideUp 0.3s ease;
     /* 1. Define un límite de altura */
-    max-height: 475px;
+    max-height: 850px;
     /* 2. Muestra el scroll vertical SI es necesario */
     overflow-y: auto;
     margin-top: 20px;
@@ -642,6 +642,11 @@
         width: 45px;
         height: 45px;
         font-size: 1.3rem;
+    }
+
+    .page-header .d-flex > button {
+        width: 70%;
+        font-size: 80%;
     }
 }
 
