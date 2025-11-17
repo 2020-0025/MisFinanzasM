@@ -20,6 +20,12 @@
     background: rgba(0, 0, 0, 0.5);
 }
 
+.dashboard-header .btn{
+    width:5.5rem;
+    height:2.7rem;
+    margin: 0 auto;
+}
+
 .glass-badge {
     background: rgba(255, 255, 255, 0.1);
     border: 1px solid rgba(255, 255, 255, 0.2);

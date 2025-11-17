@@ -22,6 +22,12 @@
     row-gap: 1.5rem; /* espacio vertical cuando baja a dos líneas */
 }
 
+    .page-header .btn-help {
+        width: 5.5rem;
+        height: 2.7rem;
+        margin: 0 auto;
+    }
+
 /* Botones */
 .btnSaveGroup {
     display: flex;

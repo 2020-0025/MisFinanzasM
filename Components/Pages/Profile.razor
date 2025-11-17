@@ -22,13 +22,16 @@
     <div class="profile-header-container">
 
             <div class="profile-header">
-                <div class="header-icon">👤</div>
                 <div>
-                    <h1>Mi perfil</h1>
-                    <p class="text-white">Gestiona tu información personal</p>
+                    <div class="header-icon">👤</div>
+                    <div>
+                        <h1>Mi perfil</h1>
+                        <p class="text-white">Gestiona tu información personal</p>
+                    </div>
+
                 </div>
                 <button class="btn btn-help" @onclick="StartTour">
-                    <span style="font-size: 20px;">❓</span> Ayuda
+                    Ayuda <span style="font-size: 15px;">❓</span>
                 </button>
             </div>
 
@@ -219,6 +222,9 @@
     private EditInfoModel _editModel = new();
     private PasswordModel _passwordModel = new();
 
+    //Tour automático
+    private bool _tourLaunched = false;
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender && !_hasRendered)
@@ -229,6 +235,12 @@
                 await LoadUserData();
                 StateHasChanged();
             });
+        }
+        else if (_hasRendered && !_tourLaunched)
+        {
+            _tourLaunched = true;
+            await Task.Delay(800);
+            await JSRuntime.InvokeVoidAsync("tourService.startTourIfFirstTime", "profile");
         }
     }
 

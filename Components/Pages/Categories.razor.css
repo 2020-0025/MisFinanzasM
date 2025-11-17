@@ -27,6 +27,12 @@
         color: rgba(255, 255, 255, 0.8);
     }
 
+.page-header .btn-help {
+    width: 5.5rem;
+    height: 2.7rem;
+    margin: 0 auto;
+}
+
 .btnAddCategory {
     background: rgba(76, 175, 80, 0.25);
     border: 1px solid rgba(76, 175, 80, 0.5);
@@ -36,6 +42,7 @@
     border-radius: 10px;
     padding: 0.5rem 1rem;
     transition: all 0.3s ease;
+    font-size:80%;
 }
 
 .btnAddCategory:hover {

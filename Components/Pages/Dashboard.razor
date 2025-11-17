@@ -47,7 +47,7 @@
                     <p class="text-white mb-0">Resumen de tus finanzas</p>
                 </div>
                 <button class="btn btn-help" @onclick="StartTour">
-                    <span style="font-size: 20px;">❓</span> Ayuda
+                    Ayuda<span style="font-size: 15px;">❓</span>
                 </button>
                 <div class="glass-badge">
                     <span style="font-size: 17px;">📅</span>
@@ -478,6 +478,10 @@
             if (isAuthorized)
             {
                 await LoadDashboardData();
+
+                // NUEVO: Iniciar tour automáticamente si es primera vez
+                await Task.Delay(500); // Pequeño delay para que cargue la UI
+                await JSRuntime.InvokeVoidAsync("tourService.startTourIfFirstTime", "dashboard");
             }
 
             StateHasChanged();

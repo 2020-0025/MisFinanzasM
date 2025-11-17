@@ -32,7 +32,7 @@
                     <p class="mb-0 text-white">Controla tus gastos por categoría</p>
                 </div>
                 <button class="btn btn-help" @onclick="StartTour">
-                    <span style="font-size: 20px;">❓</span> Ayuda
+                    Ayuda <span style="font-size: 15px;">❓</span>
                 </button>
                 <button class="btnAddBudgets" id="budgets-add-button" @onclick="OpenCreateModal">
                     <span style="font-size: 17px;">➕</span> Nuevo presupuesto
@@ -414,6 +414,9 @@
     private int budgetIdToDelete;
     private string? budgetToDelete;
 
+    //Tour automático
+    private bool _tourLaunched = false;
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
@@ -426,6 +429,12 @@
             }
 
             StateHasChanged();
+        }
+        else if (!_tourLaunched && isAuthorized)
+        {
+            _tourLaunched = true;
+            await Task.Delay(800);
+            await JSRuntime.InvokeVoidAsync("tourService.startTourIfFirstTime", "budgets");
         }
     }
 

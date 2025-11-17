@@ -4,7 +4,6 @@ window.tourService = {
     driver: null,
 
     init: function () {
-        // Driver.js define window.driver.js.driver en lugar de window.driver
         if (!window.driver || !window.driver.js || typeof window.driver.js.driver !== 'function') {
             console.error('Driver.js no está cargado correctamente');
             console.log('window.driver:', window.driver);
@@ -18,8 +17,18 @@ window.tourService = {
             doneBtnText: '✓ Finalizar',
             closeBtnText: '✕',
             progressText: '{{current}} de {{total}}',
-            overlayColor: 'rgba(0, 0, 0, 0.7)',
-            popoverClass: 'driverjs-theme'
+            popoverClass: 'driverjs-theme',
+            // ===== CONFIGURACIÓN DEL OVERLAY =====
+            overlayColor: '#000',           // Color base del overlay
+            overlayOpacity: 0.35,           // Opacidad del overlay (35%)
+            smoothScroll: true,             // Scroll suave al elemento
+            allowClose: true,               // Permitir cerrar con ESC o click
+            doneBtnText: '✓ Finalizar',
+            // ===== CONFIGURACIÓN DE ANIMACIÓN =====
+            animate: true,                  // Habilitar animaciones
+            // ===== PADDING DEL ELEMENTO DESTACADO =====
+            stagePadding: 5,                // Padding alrededor del elemento destacado
+            stageRadius: 8                  // Radio de borde del elemento destacado
         });
     },
 
@@ -31,7 +40,7 @@ window.tourService = {
         const allSteps = [
             {
                 popover: {
-                    title: '📊 Bienvenido(a) al Panel de control',
+                    title: '📊 Bienvenido(a)',
                     description: 'Aquí puedes ver un resumen completo de tu situación financiera actual. Te guiaré por las secciones principales.',
                 }
             },
@@ -74,7 +83,7 @@ window.tourService = {
             {
                 element: '#dashboard-budget-chart',
                 popover: {
-                    title: '💰 Porcentaje de Presupuesto Gastado',
+                    title: '💰 % de Presupuesto Gastado',
                     description: 'Monitorea qué porcentaje de cada presupuesto has utilizado para evitar sobregastos.',
                     side: 'right',
                     align: 'center'
@@ -976,5 +985,64 @@ window.tourService = {
         if (this.driver) {
             this.driver.destroy();
         }
+    },
+
+    // Verificar si el tour ya fue visto
+hasTourBeenSeen: function (tourName) {
+        const seenTours = JSON.parse(localStorage.getItem('seenTours') || '[]');
+        return seenTours.includes(tourName);
+    },
+
+    // Marcar tour como visto
+    markTourAsSeen: function (tourName) {
+        const seenTours = JSON.parse(localStorage.getItem('seenTours') || '[]');
+        if (!seenTours.includes(tourName)) {
+            seenTours.push(tourName);
+            localStorage.setItem('seenTours', JSON.stringify(seenTours));
+        }
+    },
+
+    // Iniciar tour automáticamente si no ha sido visto
+    startTourIfFirstTime: function (tourName) {
+        if (!this.hasTourBeenSeen(tourName)) {
+            // Iniciar el tour correspondiente
+            switch (tourName) {
+                case 'dashboard':
+                    this.startDashboardTour();
+                    break;
+                case 'categories':
+                    this.startCategoriesTour();
+                    break;
+                case 'budgets':
+                    this.startBudgetsTour();
+                    break;
+                case 'expenses':
+                    this.startExpensesIncomesTour();
+                    break;
+                case 'goals':
+                    this.startGoalsTour();
+                    break;
+                case 'loans':
+                    this.startLoansTour();
+                    break;
+                case 'reminders':
+                    this.startRemindersTour();
+                    break;
+                case 'home':
+                    this.startHomeTour();
+                    break;
+                case 'profile':
+                    this.startProfileTour();
+                    break;
+            }
+            // Marcar como visto
+            this.markTourAsSeen(tourName);
+        }
+    },
+
+    // Resetear todos los tours (útil para testing)
+    resetAllTours: function () {
+        localStorage.removeItem('seenTours');
+        console.log('✅ Todos los tours han sido reseteados');
     }
 };

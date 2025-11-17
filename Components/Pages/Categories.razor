@@ -33,7 +33,7 @@
                     <p class="mb-0 text-white">Organiza tus gastos e ingresos</p>
                 </div>
                 <button class="btn btn-help" @onclick="StartTour">
-                    <span style="font-size: 20px;">❓</span> Ayuda
+                    Ayuda<span style="font-size: 15px;">❓</span>
                 </button>
                 <button class="btnAddCategory" id="categories-add-button" @onclick="OpenModal">
                     <span style="font-size: 17px;">➕</span> Nueva categoría
@@ -368,6 +368,8 @@
     private string? loanTitle = null;   
     private string? titleValidationError;
     private string? iconValidationError;
+    //Tour automático
+    private bool _tourLaunched = false;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -381,6 +383,12 @@
             }
 
             StateHasChanged();
+        }
+        else if (!_tourLaunched && isAuthorized)
+        {
+            _tourLaunched = true;
+            await Task.Delay(800);
+            await JSRuntime.InvokeVoidAsync("tourService.startTourIfFirstTime", "categories");
         }
     }
 

@@ -32,7 +32,7 @@
                     <p class="mb-0 text-white">Gestiona tus préstamos y cuotas</p>
                 </div>
                 <button class="btn btn-help" @onclick="StartTour">
-                    <span style="font-size: 20px;">❓</span> Ayuda
+                    Ayuda<span style="font-size: 15px;">❓</span>
                 </button>
                 <button class="btnAddLoans" id="loans-add-button" @onclick="OpenCreateModal">
                     <span style="font-size: 17px;">➕</span> Nuevo préstamo
@@ -499,6 +499,9 @@
     private System.Threading.Timer? successTimer;
     private System.Threading.Timer? errorTimer;
 
+    //Tour automático
+    private bool _tourLaunched = false;
+
     
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -514,6 +517,12 @@
             }
 
             StateHasChanged();
+        }
+        else if (!_tourLaunched && isAuthorized)
+        {
+            _tourLaunched = true;
+            await Task.Delay(800);
+            await JSRuntime.InvokeVoidAsync("tourService.startTourIfFirstTime", "loans");
         }
     }
 

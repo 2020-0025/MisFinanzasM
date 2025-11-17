@@ -7,7 +7,7 @@
 }
 
 .page-header {
-    background: transparent;
+    background: rgba(0, 0, 0, 0.5);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
     border-radius: 16px;
@@ -25,6 +25,12 @@
 
     .page-header p {
         color: rgba(255, 255, 255, 0.8);
+    }
+
+    .page-header .btn-help {
+        width: 5.5rem;
+        height: 2.7rem;
+        margin: 0 auto;
     }
 
 .btnAddGoals {

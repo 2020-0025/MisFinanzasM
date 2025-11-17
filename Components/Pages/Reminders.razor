@@ -29,26 +29,30 @@
 
             <!-- Filtros y acciones -->
             <div class="filters-section mt-0">
-                <div class="filter-buttons mb-4" id="reminders-filters">
-                    <button class="btn-filter @(currentFilter == "all" ? "active" : "")" @onclick='() => SetFilter("all")'>
-                        Todos (@allNotifications.Count)
-                    </button>
-                    <button class="btn-filter @(currentFilter == "unread" ? "active" : "")" @onclick='() => SetFilter("unread")'>
-                        No leídos (@allNotifications.Count(n => !n.IsRead))
-                    </button>
-                    <button class="btn-filter @(currentFilter == "read" ? "active" : "")" @onclick='() => SetFilter("read")'>
-                        Leídos (@allNotifications.Count(n => n.IsRead))
+                <div>
+                    <div class="filter-buttons mb-4" id="reminders-filters">
+                        <button class="btn-filter @(currentFilter == "all" ? "active" : "")" @onclick='() => SetFilter("all")'>
+                            Todos (@allNotifications.Count)
+                        </button>
+                        <button class="btn-filter @(currentFilter == "unread" ? "active" : "")" @onclick='() => SetFilter("unread")'>
+                            No leídos (@allNotifications.Count(n => !n.IsRead))
+                        </button>
+                        <button class="btn-filter @(currentFilter == "read" ? "active" : "")" @onclick='() => SetFilter("read")'>
+                            Leídos (@allNotifications.Count(n => n.IsRead))
+                        </button>
+                        
+                    </div>
+                </div>
+                <div>
+                    <button class="btn btn-help" @onclick="StartTour">
+                        Ayuda <span style="font-size: 15px;">❓</span>
                     </button>
                 </div>
-
-                <button class="btn btn-help" @onclick="StartTour">
-                    <span style="font-size: 20px;">❓</span> Ayuda
-                </button>
 
                 @if (allNotifications.Any(n => !n.IsRead))
                 {
                     <button class="btn-mark-all-page text-white mb-4" id="reminders-mark-all-button" @onclick="MarkAllAsRead">
-                        ✓ Marcar todos como leídos
+                        ✓ Marcar todos
                     </button>
                 }
             </div>
@@ -178,6 +182,9 @@
     private System.Threading.Timer? successTimer;
     private System.Threading.Timer? errorTimer;
 
+    //Tour automático
+    private bool _tourLaunched = false;
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
@@ -190,6 +197,12 @@
             }
 
             StateHasChanged();
+        }
+        else if (!_tourLaunched && isAuthorized)
+        {
+            _tourLaunched = true;
+            await Task.Delay(800);
+            await JSRuntime.InvokeVoidAsync("tourService.startTourIfFirstTime", "reminders");
         }
     }
 

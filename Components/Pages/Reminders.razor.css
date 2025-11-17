@@ -38,6 +38,13 @@
     display: flex;
     gap: 0.75rem;
     flex-wrap: wrap;
+    font-size:85%;
+}
+
+.btn {
+    width: auto;
+    padding: 8px 16px;
+    margin-bottom:1.5rem;
 }
 
 .btn-filter {
@@ -303,19 +310,43 @@
     .reminders-header {
         text-align: center;
     }
-    
+
     .filters-section {
         flex-direction: column;
-        align-items: stretch;
+        align-items: center; /* Centrar todo */
+        gap: 1rem;
     }
+
+        /* Contenedor de filtros centrado */
+        .filters-section > div:first-child {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+        }
 
     .filter-buttons {
         width: 100%;
+        justify-content: center;
     }
 
     .btn-filter {
         flex: 1;
-        height:4rem;
+        min-height: 3rem;
+        font-size: 0.85rem;
+    }
+
+    /* Botón de ayuda centrado */
+    .filters-section .btn-help {
+        width: auto !important;
+        margin: 0 auto !important;
+        padding: 8px 16px !important;
+    }
+
+    /* Botón marcar todos centrado */
+    .btn-mark-all-page {
+        width: 100%;
+        max-width: 250px;
+        margin: 0 auto;
     }
 
     .btn-mark-all-page {
@@ -340,6 +371,24 @@
 
     .notification-card-actions {
         display: flex !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .filter-buttons {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .btn-filter {
+        width: 100%;
+        max-width: 300px;
+        margin: 0 auto;
+    }
+
+    .btn-help {
+        max-width: 120px !important;
+        font-size: 0.8rem !important;
     }
 }
 

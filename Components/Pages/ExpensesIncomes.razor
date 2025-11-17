@@ -40,10 +40,10 @@
                     <h1 class="text-white">💸 Gastos e Ingresos</h1>
                     <p class="mb-0 text-white">Registra tus Gastos e Ingresos</p>
                 </div>
-                <button class="btn btn-help" @onclick="StartTour">
-                    <span style="font-size: 20px;">❓</span> Ayuda
-                </button>
             </div>
+            <button class="btn btn-help" @onclick="StartTour">
+                Ayuda<span style="font-size: 15px;">❓</span>
+            </button>
             <div class="btnSaveGroup gap-2">
                 <button class="btnAddExpenses" id="expenses-add-expense-button" @onclick="() => OpenModal(TransactionType.Expense)">
                     ➕ Agregar gasto
@@ -481,7 +481,8 @@
     private DateTime? customEndDate;
     private bool isGeneratingPdf = false;
     private bool isGeneratingExcel = false;
-
+    //Tour automático
+    private bool _tourLaunched = false;
     // Variables de paginación
     private int currentPage = 1;
     private int pageSize = 10;
@@ -502,6 +503,12 @@
             }
 
             StateHasChanged();
+        }
+        else if (!_tourLaunched && isAuthorized)
+        {
+            _tourLaunched = true;
+            await Task.Delay(800);
+            await JSRuntime.InvokeVoidAsync("tourService.startTourIfFirstTime", "expenses");
         }
     }
 

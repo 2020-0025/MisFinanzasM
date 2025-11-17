@@ -32,6 +32,9 @@
                 {
                     <a href="/dashboard" class="btnLogin" id="home-dashboard-button">Ir a control</a>
                 }
+                <button class="btn btn-help" @onclick="StartTour">
+                    Ayuda<span style="font-size: 15px;">❓</span>
+                </button>
             </div>
 
         </div>
@@ -47,9 +50,7 @@
                 Mis Finanzas
             </h1>
         </div>
-        <button class="btn btn-help" @onclick="StartTour">
-            <span style="font-size: 20px;">❓</span> Ayuda
-        </button>
+        
         <p class="text-white" style="font-size: 1.3rem; max-width: 600px; margin: 0 auto;">
             Toma el control de tu dinero con inteligencia y simplicidad
         </p>
@@ -306,8 +307,8 @@
     <!-- FILA 4: Panel de Control (ancho completo) -->
     <div style="display: flex; justify-content: center; margin-top: 30px; width:100%;">
         <div style="width: 100%; max-width: 900px; padding: 0 20px;">
-            <div class="glass-card animate-slide-up animate-delay-2"  style="padding: 30px;">
-                <div id="home-dashboard-card" style="display: flex; align-items: center; gap: 12px; margin-bottom: 20px;">
+            <div class="glass-card animate-slide-up animate-delay-2" id="home-dashboard-card" style="padding: 30px;">
+                <div  style="display: flex; align-items: center; gap: 12px; margin-bottom: 20px;">
                     <span style="font-size: 32px;">📊</span>
                     <h2 style="color: white; margin: 0; font-size: 1.5rem;">Panel de control</h2>
                 </div>
@@ -506,6 +507,17 @@
         }
 
         isAuthenticated = AuthService.IsAuthenticated;
+
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            // NUEVO: Iniciar tour automáticamente si es primera vez
+            await Task.Delay(500); // Pequeño delay para que cargue la UI
+            await JSRuntime.InvokeVoidAsync("tourService.startTourIfFirstTime", "home");
+        }
     }
 
     private async Task StartTour()
