@@ -900,7 +900,7 @@
 
             // Abrir URL de descarga
             var downloadUrl = $"/api/FileDownload/{fileId}";
-            await JSRuntime.InvokeVoidAsync("eval", $"window.open('{downloadUrl}', '_blank')");
+            NavigationManager.NavigateTo(downloadUrl, forceLoad: true);
 
             ShowSuccessMessage("Reporte PDF generado correctamente");
         }
@@ -968,7 +968,7 @@
 
             // Abrir URL de descarga
             var downloadUrl = $"/api/FileDownload/{fileId}";
-            await JSRuntime.InvokeVoidAsync("eval", $"window.open('{downloadUrl}', '_blank')");
+            NavigationManager.NavigateTo(downloadUrl, forceLoad: true);
 
             ShowSuccessMessage("Reporte Excel generado correctamente");
         }
