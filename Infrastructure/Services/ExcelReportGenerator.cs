@@ -33,7 +33,7 @@ namespace MisFinanzas.Infrastructure.Services
         {
             var worksheet = workbook.Worksheets.Add("Resumen");
 
-            // 🔥 CONFIGURAR ANCHOS DE COLUMNA PRIMERO
+            //  CONFIGURAR ANCHOS DE COLUMNA PRIMERO
             worksheet.Column(1).Width = 30.09; // Columna A - Logo
             worksheet.Column(2).Width = 20.09; // Columna B - Labels
             worksheet.Column(3).Width = 29.09; // Columna C - Valores
@@ -41,21 +41,21 @@ namespace MisFinanzas.Infrastructure.Services
             worksheet.Column(5).Width = 22.55; // Columna E - Comparación Labels
             worksheet.Column(6).Width = 23.09; // Columna F - Comparación Valores
 
-            // 🔥 CONFIGURAR ALTURAS DE FILA
+            //  CONFIGURAR ALTURAS DE FILA
             worksheet.Row(1).Height = 60;   // Fila 1 - Logo y Título
             worksheet.Row(8).Height = 19;   // Fila 8 - Título Resumen
 
-            // 🔥 COMBINAR CELDAS A1:A6 PARA EL LOGO
+            //  COMBINAR CELDAS A1:A6 PARA EL LOGO
             worksheet.Range("A1:A6").Merge();
 
-            // 🔥 LOGO EN A1:A6
+            //  LOGO EN A1:A6
             try
             {
                 if (!string.IsNullOrEmpty(logoPath) && File.Exists(logoPath))
                 {
                     var picture = worksheet.AddPicture(logoPath);
                     picture.MoveTo(worksheet.Cell(1, 1)); // A1
-                    picture.Scale(0.05); // Escala exacta
+                    picture.Scale(0.20); // Escala exacta
                 }
             }
             catch (Exception ex)
@@ -63,7 +63,7 @@ namespace MisFinanzas.Infrastructure.Services
                 System.Diagnostics.Debug.WriteLine($"Error loading logo in Excel: {ex.Message}");
             }
 
-            // 🔥 TÍTULO EN B1:L1
+            //  TÍTULO EN B1:L1
             var titleRange = worksheet.Range("B1:L1");
             titleRange.Merge();
             worksheet.Cell(1, 2).Value = "REPORTE DE MIS FINANZAS";
@@ -75,7 +75,7 @@ namespace MisFinanzas.Infrastructure.Services
             titleRange.Style.Fill.BackgroundColor = XLColor.DarkBlue;
             titleRange.Style.Border.OutsideBorder = XLBorderStyleValues.Medium;
 
-            // 🔥 INFORMACIÓN DEL REPORTE (B2:C6)
+            //  INFORMACIÓN DEL REPORTE (B2:C6)
             worksheet.Cell(2, 2).Value = "Usuario:";
             worksheet.Cell(2, 2).Style.Font.Bold = true;
             worksheet.Cell(2, 3).Value = reportData.UserName;
@@ -102,7 +102,7 @@ namespace MisFinanzas.Infrastructure.Services
             infoRange.Style.Border.InsideBorder = XLBorderStyleValues.Thin;
             infoRange.Style.Fill.BackgroundColor = XLColor.FromHtml("#F9F9F9");
 
-            // 🔥 COMPARACIÓN CON PERÍODO ANTERIOR (E3:F6) - Al lado de la info
+            //  COMPARACIÓN CON PERÍODO ANTERIOR (E3:F6) - Al lado de la info
             if (reportData.Comparison != null)
             {
                 // Título de comparación (E2:F2)
@@ -136,7 +136,7 @@ namespace MisFinanzas.Infrastructure.Services
                 compRange.Style.Fill.BackgroundColor = XLColor.FromHtml("#E6F2FF");
             }
 
-            // 🔥 RESUMEN GENERAL (B8:C13)
+            //  RESUMEN GENERAL (B8:C13)
             // Título
             var summaryTitleRange = worksheet.Range("B8:C8");
             summaryTitleRange.Merge();
