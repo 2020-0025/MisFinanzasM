@@ -333,7 +333,6 @@
     </div>
     
 }
-<FloatingHelpButton OnClick="StartTour" />
 
 <!-- Modal Agregar Progreso -->
 @if (showProgressModal)
@@ -545,6 +544,10 @@
     
 }
 
+<FloatingHelpButton OnClick="StartTour" Icono="?" Bottom="90" />
+
+<FloatingHelpButton OnClick="GotoHome" Icono="🏠" Bottom="160" />
+
 @code {
     private bool isAuthorized = false;
     private bool isLoading = true;
@@ -695,9 +698,16 @@
         }
     }
 
+    //Botonoes flotantes
     private async Task StartTour()
     {
         await JSRuntime.InvokeVoidAsync("tourService.startGoalsTour");
+    }
+
+    // Lógica para redirigir
+    private void GotoHome()
+    {
+        NavigationManager.NavigateTo("/"); // Redirige al Home
     }
 
     private void FilterGoals(GoalStatus? status)

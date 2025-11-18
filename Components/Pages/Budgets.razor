@@ -340,7 +340,6 @@
     </div>
     
 }
-<FloatingHelpButton OnClick="StartTour" />
 
 <!-- Modal Confirmar Eliminación -->
 @if (showDeleteModal)
@@ -370,6 +369,10 @@
     </div>
    
 }
+
+<FloatingHelpButton OnClick="StartTour" Icono="?" Bottom="90" />
+
+<FloatingHelpButton OnClick="GotoHome" Icono="🏠" Bottom="160" />
 
 @code {
     private bool isAuthorized = false;
@@ -490,9 +493,16 @@
         }
     }
 
+    //Botones flotantes
     private async Task StartTour()
     {
         await JSRuntime.InvokeVoidAsync("tourService.startBudgetsTour");
+    }
+
+    // Lógica para redirigir
+    private void GotoHome()
+    {
+        NavigationManager.NavigateTo("/"); // Redirige al Home
     }
 
     private async Task SetCurrentMonth()

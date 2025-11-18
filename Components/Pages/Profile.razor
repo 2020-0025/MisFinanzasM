@@ -246,7 +246,9 @@
             </div>
         }
 </div>
-    <FloatingHelpButton OnClick="StartTour" />
+    <FloatingHelpButton OnClick="StartTour" Icono="?" Bottom="90" />
+
+    <FloatingHelpButton OnClick="GotoHome" Icono="🏠" Bottom="160" />
 </AuthorizedPage>
 
 @code {
@@ -334,10 +336,17 @@
             _isLoading = false;
         }
     }
+    //Botones flotantes
 
     private async Task StartTour()
     {
         await JSRuntime.InvokeVoidAsync("tourService.startProfileTour");
+    }
+
+    // Lógica para redirigir
+    private void GotoHome()
+    {
+        Navigation.NavigateTo("/"); // Redirige al Home
     }
 
     private async Task ReloadData()

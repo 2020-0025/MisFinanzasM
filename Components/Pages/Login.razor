@@ -20,7 +20,6 @@
 
         <!-- COLUMNA IZQUIERDA: Login Tradicional -->
         <div class="auth-card-column">
-            <a class="btnComeBack" href="/">🡸</a>
 
             <div class="auth-header">
 
@@ -142,6 +141,8 @@
     </div>
 </div>
 
+<FloatingHelpButton OnClick="GotoHome" Icono="🏠" Bottom="530" />
+
 @code {
     private LoginModel loginModel = new();
     private string? errorMessage;
@@ -237,6 +238,12 @@
             isLoading = false;
             StateHasChanged();
         }
+    }
+
+    // Lógica para redirigir
+    private void GotoHome()
+    {
+        NavigationManager.NavigateTo("/"); // Redirige al Home
     }
 
     private class LoginModel
