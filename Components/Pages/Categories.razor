@@ -32,9 +32,6 @@
                     <h1>🏷️ Categorías</h1>
                     <p class="mb-0 text-white">Organiza tus gastos e ingresos</p>
                 </div>
-                <button class="btn btn-help" @onclick="StartTour">
-                    Ayuda<span style="font-size: 15px;">❓</span>
-                </button>
                 <button class="btnAddCategory" id="categories-add-button" @onclick="OpenModal">
                     <span style="font-size: 17px;">➕</span> Nueva categoría
                 </button>
@@ -259,6 +256,7 @@
     </div>
     
 }
+<FloatingHelpButton OnClick="StartTour" />
 
 <!-- Modal de Eliminación -->
 @if (showDeleteModal)

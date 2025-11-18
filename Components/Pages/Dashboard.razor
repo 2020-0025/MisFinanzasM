@@ -46,9 +46,6 @@
                     </h1>
                     <p class="text-white mb-0">Resumen de tus finanzas</p>
                 </div>
-                <button class="btn btn-help" @onclick="StartTour">
-                    Ayuda<span style="font-size: 15px;">❓</span>
-                </button>
                 <div class="glass-badge">
                     <span style="font-size: 17px;">📅</span>
                     <span class="text-white">Últimos @selectedDays días</span>
@@ -438,6 +435,7 @@
         </div>
     }
 </div>
+<FloatingHelpButton OnClick="StartTour" />
 
 @code {
     // ===== VARIABLES DE ESTADO =====

@@ -1,0 +1,10 @@
+﻿@* Archivo: Shared/FloatingHelpButton.razor *@
+
+<button class="fab-help" @onclick="OnClick">
+    ?
+</button>
+
+@code {
+    [Parameter]
+    public EventCallback OnClick { get; set; }
+}

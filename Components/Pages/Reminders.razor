@@ -44,9 +44,6 @@
                     </div>
                 </div>
                 <div>
-                    <button class="btn btn-help" @onclick="StartTour">
-                        Ayuda <span style="font-size: 15px;">❓</span>
-                    </button>
                 </div>
 
                 @if (allNotifications.Any(n => !n.IsRead))
@@ -167,6 +164,7 @@
     </div>
     }
 </div>
+<FloatingHelpButton OnClick="StartTour" />
 
 @code {
     private bool isAuthorized = false;

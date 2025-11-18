@@ -31,9 +31,6 @@
                     <h1>💰 Presupuestos</h1>
                     <p class="mb-0 text-white">Controla tus gastos por categoría</p>
                 </div>
-                <button class="btn btn-help" @onclick="StartTour">
-                    Ayuda <span style="font-size: 15px;">❓</span>
-                </button>
                 <button class="btnAddBudgets" id="budgets-add-button" @onclick="OpenCreateModal">
                     <span style="font-size: 17px;">➕</span> Nuevo presupuesto
                 </button>
@@ -343,6 +340,7 @@
     </div>
     
 }
+<FloatingHelpButton OnClick="StartTour" />
 
 <!-- Modal Confirmar Eliminación -->
 @if (showDeleteModal)

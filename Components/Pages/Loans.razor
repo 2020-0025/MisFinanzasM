@@ -31,9 +31,6 @@
                     <h1>🏦 Préstamos</h1>
                     <p class="mb-0 text-white">Gestiona tus préstamos y cuotas</p>
                 </div>
-                <button class="btn btn-help" @onclick="StartTour">
-                    Ayuda<span style="font-size: 15px;">❓</span>
-                </button>
                 <button class="btnAddLoans" id="loans-add-button" @onclick="OpenCreateModal">
                     <span style="font-size: 17px;">➕</span> Nuevo préstamo
                 </button>
@@ -278,6 +275,7 @@
         </div>
     }
 </div>
+<FloatingHelpButton OnClick="StartTour" />
 <!-- Modal Crear/Editar Préstamo -->
 @if (showModal)
 {
@@ -457,6 +455,7 @@
     </div>
 }
 
+<FloatingHelpButton OnClick="StartTour" />
 
 @code {
     private bool isAuthorized = false;

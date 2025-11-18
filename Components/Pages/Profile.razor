@@ -22,7 +22,7 @@
     <div class="profile-header-container">
 
             <div class="profile-header">
-                <div>
+                <div class="title-icon-header" style="display:flex;">
                     <div class="header-icon">👤</div>
                     <div>
                         <h1>Mi perfil</h1>
@@ -30,9 +30,6 @@
                     </div>
 
                 </div>
-                <button class="btn btn-help" @onclick="StartTour">
-                    Ayuda <span style="font-size: 15px;">❓</span>
-                </button>
             </div>
 
     </div>
@@ -249,6 +246,7 @@
             </div>
         }
 </div>
+    <FloatingHelpButton OnClick="StartTour" />
 </AuthorizedPage>
 
 @code {

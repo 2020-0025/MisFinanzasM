@@ -41,9 +41,6 @@
                     <p class="mb-0 text-white">Registra tus Gastos e Ingresos</p>
                 </div>
             </div>
-            <button class="btn btn-help" @onclick="StartTour">
-                Ayuda<span style="font-size: 15px;">❓</span>
-            </button>
             <div class="btnSaveGroup gap-2">
                 <button class="btnAddExpenses" id="expenses-add-expense-button" @onclick="() => OpenModal(TransactionType.Expense)">
                     ➕ Agregar gasto
@@ -330,6 +327,7 @@
         </div>
     }
 </div>
+<FloatingHelpButton OnClick="StartTour" />
 
 <!-- Modal Agregar/Editar -->
 @if (showModal)

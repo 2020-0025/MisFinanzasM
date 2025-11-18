@@ -32,9 +32,6 @@
                 {
                     <a href="/dashboard" class="btnLogin" id="home-dashboard-button">Ir a control</a>
                 }
-                <button class="btn btn-help" @onclick="StartTour">
-                    Ayuda<span style="font-size: 15px;">❓</span>
-                </button>
             </div>
 
         </div>
@@ -494,6 +491,8 @@
     </div>
 
 </div>
+
+<FloatingHelpButton OnClick="StartTour" />
 
 @code {
     private bool isAuthenticated = false;
