@@ -55,7 +55,7 @@ namespace MisFinanzas.Infrastructure.Services
                 {
                     var picture = worksheet.AddPicture(logoPath);
                     picture.MoveTo(worksheet.Cell(1, 1)); // A1
-                    picture.Scale(0.20); // Escala exacta
+                    picture.Scale(0.25); // Escala exacta
                 }
             }
             catch (Exception ex)
