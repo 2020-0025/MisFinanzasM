@@ -18,7 +18,7 @@
             @if (_isAuthenticated)
             {
                 <button @onclick="Logout" class="btn-logout text-white" title="Cerrar Sesión">
-                    <span style="font-size: 15px;">🔐</span>
+                    <span style="font-size: 15px;">❌</span>
                     Salir
                 </button>
                 <a href="@(_isAdmin ? "/admin" : "/profile")" class="user-info">
@@ -80,7 +80,7 @@
             @if (_isAuthenticated)
             {
                 <button @onclick="Logout" class="btn-logout-mobile text-white" title="Cerrar Sesión">
-                    <span style="font-size: 15px;">🔐</span>
+                    <span style="font-size: 15px;">❌</span>
                     Salir
                 </button>
                 <a href="@(_isAdmin ? "/admin" : "/profile")" class="user-info-mobile">
