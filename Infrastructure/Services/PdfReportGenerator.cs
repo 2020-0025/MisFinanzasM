@@ -14,8 +14,43 @@ namespace MisFinanzas.Infrastructure.Services
             var page = document.AddPage();
             var gfx = XGraphics.FromPdfPage(page);
 
-            // Cargar fuentes desde archivos embebidos
-            var fontPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "wwwroot", "fonts");
+            // Cargar fuentes desde archivos embebidos - con múltiples rutas posibles
+            var basePath = AppDomain.CurrentDomain.BaseDirectory;
+            var possiblePaths = new[]
+            {
+                Path.Combine(basePath, "wwwroot", "fonts"),
+                Path.Combine(basePath, "..", "wwwroot", "fonts"),
+                Path.Combine("/app", "wwwroot", "fonts"),
+                Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "fonts")
+            };
+
+            string? fontPath = null;
+            foreach (var path in possiblePaths)
+            {
+                Console.WriteLine($"Intentando ruta de fuentes: {path}");
+                if (Directory.Exists(path))
+                {
+                    var files = Directory.GetFiles(path, "*.ttf");
+                    Console.WriteLine($"  ✓ Directorio existe. Archivos encontrados: {files.Length}");
+                    if (files.Length > 0)
+                    {
+                        fontPath = path;
+                        Console.WriteLine($"  ✓ Usando ruta: {fontPath}");
+                        break;
+                    }
+                }
+                else
+                {
+                    Console.WriteLine($"  ✗ Directorio no existe");
+                }
+            }
+
+            if (fontPath == null)
+            {
+                throw new DirectoryNotFoundException(
+                    $"No se encontró el directorio de fuentes. Intentado en: {string.Join(", ", possiblePaths)}");
+            }
+
             var regularFontPath = Path.Combine(fontPath, "LiberationSans-Regular.ttf");
             var boldFontPath = Path.Combine(fontPath, "LiberationSans-Bold.ttf");
 
@@ -24,6 +59,10 @@ namespace MisFinanzas.Infrastructure.Services
             {
                 throw new FileNotFoundException($"Font file not found: {regularFontPath}");
             }
+
+            Console.WriteLine($"Cargando fuentes desde: {fontPath}");
+            Console.WriteLine($"  - Regular: {regularFontPath} (existe: {File.Exists(regularFontPath)})");
+            Console.WriteLine($"  - Bold: {boldFontPath} (existe: {File.Exists(boldFontPath)})");
 
             var fontOptions = new XPdfFontOptions(PdfFontEncoding.Unicode);
             var fontTitle = new XFont("Liberation Sans", 20, XFontStyle.Bold, fontOptions);
