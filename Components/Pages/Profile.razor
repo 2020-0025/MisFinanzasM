@@ -205,6 +205,49 @@
 
         </div>
     }
+
+        <!-- Modal de Eliminación de Cuenta -->
+        @if (showDeleteModal)
+        {
+            <div class="modal-overlay">
+                <div class="modal-content text-white" @onclick:stopPropagation="true">
+                    <div class="modal-header border-secondary">
+                        <h5 class="modal-title">⚠️ Confirmar eliminación</h5>
+                        <button class="btn-close-custom" @onclick="CancelDeleteAccount">✕</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="alert alert-danger mb-3">
+                            <h6 class="alert-heading text-danger">
+                                <span style="font-size: 20px;">🚫</span> <strong>¡ATENCIÓN!</strong>
+                            </h6>
+                            <p class="mb-2 text-white">
+                                Al eliminar tu cuenta, perderás <strong>permanentemente</strong> todos tus datos:
+                            </p>
+                            <ul class="text-white mb-2">
+                                <li>Categorías de gastos e ingresos</li>
+                                <li>Todas tus transacciones</li>
+                                <li>Metas financieras</li>
+                                <li>Presupuestos</li>
+                                <li>Préstamos</li>
+                            </ul>
+                            <p class="mb-0 text-white">
+                                <strong>Esta acción no se puede deshacer.</strong>
+                            </p>
+                        </div>
+
+                        <p class="text-danger mb-0">
+                            <small>⚠️ ¿Estás seguro de que deseas continuar?</small>
+                        </p>
+                    </div>
+                    <div class="modal-footer border-secondary">
+                        <button type="button" class="btnCancel" @onclick="CancelDeleteAccount">Cancelar</button>
+                        <button type="button" class="btnDelete" @onclick="DeleteAccount">
+                            <span style="font-size: 13px;">🗑️</span> Eliminar mi cuenta
+                        </button>
+                    </div>
+                </div>
+            </div>
+        }
 </div>
 </AuthorizedPage>
 
@@ -221,6 +264,9 @@
     private UserDetailDto? _userDto;
     private EditInfoModel _editModel = new();
     private PasswordModel _passwordModel = new();
+
+    // Modal de eliminación de cuenta
+    private bool showDeleteModal = false;
 
     //Tour automático
     private bool _tourLaunched = false;
@@ -446,36 +492,40 @@
         }
     }
 
-    private async Task ConfirmDeleteAccount()
+    private void ConfirmDeleteAccount()
     {
         if (string.IsNullOrEmpty(AuthService.UserId))
         {
             return;
         }
 
-        var confirmed = await JSRuntime.InvokeAsync<bool>("confirm",
-            "¿Estás seguro de que deseas eliminar tu cuenta? Esta acción no se puede deshacer y perderás todos tus datos.");
+        showDeleteModal = true;
+    }
 
-        if (confirmed)
+    private void CancelDeleteAccount()
+    {
+        showDeleteModal = false;
+    }
+
+    private async Task DeleteAccount()
+    {
+        try
         {
-            try
-            {
-                var success = await UserService.DeleteUserAsync(AuthService.UserId);
+            var success = await UserService.DeleteUserAsync(AuthService.UserId!);
 
-                if (success)
-                {
-                    await AuthService.LogoutAsync();
-                    Navigation.NavigateTo("/", forceLoad: true);
-                }
-                else
-                {
-                    await JSRuntime.InvokeVoidAsync("alert", "No se pudo eliminar la cuenta");
-                }
-            }
-            catch (Exception ex)
+            if (success)
             {
-                await JSRuntime.InvokeVoidAsync("alert", $"Error al eliminar cuenta: {ex.Message}");
+                await AuthService.LogoutAsync();
+                Navigation.NavigateTo("/", forceLoad: true);
             }
+            else
+            {
+                await JSRuntime.InvokeVoidAsync("alert", "No se pudo eliminar la cuenta");
+            }
+        }
+        catch (Exception ex)
+        {
+            await JSRuntime.InvokeVoidAsync("alert", $"Error al eliminar cuenta: {ex.Message}");
         }
     }
 

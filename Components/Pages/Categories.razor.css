@@ -42,7 +42,6 @@
     border-radius: 10px;
     padding: 0.5rem 1rem;
     transition: all 0.3s ease;
-    font-size:80%;
 }
 
 .btnAddCategory:hover {
