@@ -584,6 +584,10 @@
     .goal-footer {
         font-size: 0.8rem;
     }
+
+    .btnAddGoals {
+        font-size: 80%;
+    }
 }
 
 @media (max-width: 420px) {

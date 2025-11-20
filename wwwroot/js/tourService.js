@@ -787,7 +787,7 @@ window.tourService = {
                 element: '#home-register-button',
                 popover: {
                     title: '📝 Registrarse',
-                    description: 'Si aún no tienes una cuenta, haz clic aquí para crear una y comenzar a administrar tus finanzas.',
+                    description: 'Si aún no tienes una cuenta, haz clic aquí para crear una y comenzar a gestionar tus finanzas.',
                     side: 'bottom',
                     align: 'end'
                 }
@@ -831,8 +831,8 @@ window.tourService = {
             {
                 element: '#home-transactions-card',
                 popover: {
-                    title: '💳 Gastos e Ingresos',
-                    description: 'Registra y visualiza cada movimiento de dinero. Lleva un control detallado de todos tus gastos e ingresos.',
+                    title: '💳 Gastos e ingresos',
+                    description: 'Registra y visualiza cada movimiento de dinero. Lleva un control detallado de todos tus gastos e ingresos. <strong>Recuerda:</strong> Primero necesitas crear una categoría de gasto o ingreso en la sección de Categorías.',
                     side: 'top',
                     align: 'center'
                 }
@@ -849,7 +849,7 @@ window.tourService = {
             {
                 element: '#home-goals-card',
                 popover: {
-                    title: '🎯 Metas Financieras',
+                    title: '🎯 Metas financieras',
                     description: 'Define objetivos y alcanza tus sueños. Ahorra para vacaciones, compras importantes o emergencias.',
                     side: 'top',
                     align: 'center'

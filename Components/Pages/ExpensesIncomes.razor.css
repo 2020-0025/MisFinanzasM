@@ -517,6 +517,16 @@
     .pagination-container div {
         align-content: center;
     }
+
+    .btnExportPdf {
+        width: 70%;
+        font-size: 0.7rem;
+    }
+
+    .btnExportExcel {
+        width: 70%;
+        font-size: 0.7rem;
+    }
 }
 
 @media (max-width: 390px) {
@@ -539,7 +549,7 @@
         overflow-y: auto;
         margin-bottom: 3rem;
     }
-})
+}
 
 /* Animación para mensajes de éxito */
 .alert-success {

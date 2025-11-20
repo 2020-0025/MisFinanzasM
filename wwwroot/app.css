@@ -42,64 +42,6 @@ body {
     align-content:center;
 }
 
-
-/*Boton de ayuda*/
-
-.btn-help {
-    background: rgba(255, 193, 7, 0.15);
-    border: 1px solid rgba(255, 193, 7, 0.3);
-    color: #FFC107;
-    padding: 10px 8px;
-    border-radius: 10px;
-    font-weight: 500;
-    transition: all 0.3s ease;
-    width: 5rem;
-    height: 2.8rem;
-}
-
-    .btn-help:hover {
-        background: rgba(255, 193, 7, 0.25);
-        transform: translateY(-2px);
-        box-shadow: 0 5px 15px rgba(255, 193, 7, 0.3);
-        color: #FFF176;
-    }
-
-/* Ajustes para mobile */
-@media (max-width: 600px) {
-    .btn-help {
-        width: 100% !important;
-        max-width: 120px !important;
-        height: auto !important;
-        padding: 10px 16px !important;
-        font-size: 0.9rem !important;
-        margin: 0 auto !important;
-    }
-}
-
-@media (max-width: 440px) {
-    .btn-help {
-        max-width: 110px !important;
-        padding: 8px 12px !important;
-        font-size: 0.8rem !important;
-    }
-}
-
-@media (max-width: 400px) {
-    .btn-help {
-        max-width: 100px !important;
-        padding: 6px 10px !important;
-        font-size: 0.75rem !important;
-    }
-}
-
-@media (max-width: 360px) {
-    .btn-help {
-        max-width: 90px !important;
-        padding: 6px 8px !important;
-        font-size: 0.7rem !important;
-    }
-}
-
 /* ===================================
    ANIMACIONES GLOBALES
    =================================== */
@@ -420,6 +362,8 @@ input[type="checkbox"] {
     }
 }
 
+
+
 /* Responsive */
 @media (max-width: 576px) {
     .custom-alert {
@@ -427,7 +371,6 @@ input[type="checkbox"] {
         max-width: calc(100vw - 2rem);
     }
 }
-
 
 
 /* ===================================
@@ -543,12 +486,6 @@ input[type="checkbox"] {
         max-width: 80px;
     }
 
-    
-    /* Cards más compactos 
-    .glass-card {
-        margin: 5px;
-        padding: 10px;
-    }*/
 
     /* Cards más anchos en móvil */
     .glass-card {
